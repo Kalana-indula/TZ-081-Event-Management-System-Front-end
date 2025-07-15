@@ -10,12 +10,12 @@ const Layout = ({children}: { children: React.ReactNode }) => {
             </div>
             <div className="flex-1 h-screen flex flex-col">
                 {/* Fixed Header */}
-                <div className="fixed top-0 left-[200px] right-0 z-50 bg-white">
+                <div className="top-0 flex justify-center z-50 bg-white w-full">
                     <AdminHeader/>
                 </div>
 
                 {/* Scrollable Main Content */}
-                <div className="flex-1 overflow-y-auto mt-[10vh] px-[10px]">
+                <div className="flex-1 overflow-y-auto px-[10px]">
                     {children}
                 </div>
             </div>

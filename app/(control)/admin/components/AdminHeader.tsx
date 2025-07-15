@@ -1,12 +1,21 @@
-import React from 'react'
+'use client'
+
+import React, {useState} from 'react'
 import Link from "next/link";
-import { IoIosHome } from "react-icons/io";
+import {IoIosHome, IoIosMenu} from "react-icons/io";
 import {FaUserCircle} from "react-icons/fa";
 
 const AdminHeader = () => {
+
+    const [isNavBarOpen,setIsNavBarOpen] = useState<boolean>(false);
+
+    const navBarControl=()=>{
+        setIsNavBarOpen(!isNavBarOpen);
+        console.log(isNavBarOpen);
+    }
     return (
         <>
-            <div className="h-[10vh] flex items-center justify-between px-[10px] relative">
+            <div className="h-[10vh] flex items-center justify-between px-[10px] w-full relative">
                 {/* Left Section - Home Link */}
                 <div className="hidden sm:block">
                     <Link className="flex items-center" href="/">
@@ -18,13 +27,16 @@ const AdminHeader = () => {
                         </div>
                     </Link>
                 </div>
+                <div className="block sm:hidden">
+                    <button
+                        className="p-[5px] bg-white rounded-full text-[25px] hover:cursor-pointer border border-gray-200 hover:bg-gray-100 transition-colors duration-300 active:bg-gray-300"
+                        onClick={navBarControl}>
+                        <IoIosMenu/>
+                    </button>
+                </div>
 
-                {/* Spacer for mobile screens */}
-                <div className="sm:hidden w-[50px]"></div>
-
-                {/* Center Section - Title (Always Centered) */}
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                    <h1 className="text-[30px] whitespace-nowrap">Admin Dashboard</h1>
+                    <h1 className="text-[30px] text-center">Admin Dashboard</h1>
                 </div>
 
                 {/* Right Section - User Link */}
@@ -38,9 +50,6 @@ const AdminHeader = () => {
                         </div>
                     </Link>
                 </div>
-
-                {/* Spacer for mobile screens */}
-                <div className="sm:hidden w-[50px]"></div>
             </div>
         </>
     )
