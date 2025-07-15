@@ -10,6 +10,7 @@ import {IoIosHome, IoIosLogOut} from "react-icons/io";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {FaUserCircle} from "react-icons/fa";
+import { MdEventAvailable } from "react-icons/md";
 
 const SideNavBar = () => {
 
@@ -51,9 +52,11 @@ const SideNavBar = () => {
 
     return (
         <>
-            <div className="h-[100vh] bg-[#3a86ff] w-[200px]">
-                <div className="h-[10vh]">
-                    Logo
+            <div className="h-screen bg-[#3a86ff] w-[100px] lg:w-[200px] hidden sm:block">
+                <div className="h-[10vh] flex justify-center items-center">
+                    <div className="text-white text-[32px]">
+                        <MdEventAvailable />
+                    </div>
                 </div>
 
                 <div className="block sm:hidden">
@@ -94,13 +97,13 @@ const SideNavBar = () => {
                         return (
                             <Link href={item.href} key={item.href} className="w-full">
                                 <div
-                                    className={`flex items-center justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 ${
+                                    className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 ${
                                         isActive ? 'bg-[#195fc2] text-white border-r-4 border-white' : 'text-white hover:bg-[#195fc2]'
                                     }`}>
                                     <div className="nav-icon text-[32px]">
                                         <IconComponent/>
                                     </div>
-                                    <div className="page-name text-[20px]">
+                                    <div className="page-name text-[20px] hidden lg:block">
                                         {item.label}
                                     </div>
                                 </div>
