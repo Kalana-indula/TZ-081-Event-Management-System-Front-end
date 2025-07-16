@@ -6,13 +6,18 @@ import {FaMoneyBillTransfer} from "react-icons/fa6";
 import {MdOutlinePayment} from "react-icons/md";
 import {TfiStatsUp} from "react-icons/tfi";
 import {IoSettingsOutline} from "react-icons/io5";
-import {IoIosHome, IoIosLogOut} from "react-icons/io";
+import {IoIosClose, IoIosHome, IoIosLogOut} from "react-icons/io";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {FaUserCircle} from "react-icons/fa";
-import { MdEventAvailable } from "react-icons/md";
+import {MdEventAvailable} from "react-icons/md";
 
-const SideNavBar = () => {
+interface SideNavBarProps {
+    isNavBarOpen: boolean;
+    setIsNavBarOpen: (value: boolean) => void;
+}
+
+const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
 
     //fetch current route
     const pathName = usePathname();
@@ -50,12 +55,24 @@ const SideNavBar = () => {
         }
     ];
 
+    //close nav bar when link is clicked
+    const handleLinkClick = () => {
+        setIsNavBarOpen(false);
+    }
+
     return (
         <>
-            <div className="h-screen bg-[#3a86ff] w-[100px] lg:w-[200px] hidden sm:block">
+            <div className={`h-screen bg-[#3a86ff] w-[100px] lg:w-[200px] sm:block
+                            ${isNavBarOpen ? "w-[200px]" : "hidden"}`}>
+                <div className="w-full relative py-[10px] block sm:hidden">
+                    <div className="text-white text-[32px] absolute right-[20px] hover:cursor-pointer"
+                         onClick={handleLinkClick}>
+                        <IoIosClose/>
+                    </div>
+                </div>
                 <div className="h-[10vh] flex justify-center items-center">
                     <div className="text-white text-[32px]">
-                        <MdEventAvailable />
+                        <MdEventAvailable/>
                     </div>
                 </div>
 
@@ -99,11 +116,13 @@ const SideNavBar = () => {
                                 <div
                                     className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 ${
                                         isActive ? 'bg-[#195fc2] text-white border-r-4 border-white' : 'text-white hover:bg-[#195fc2]'
-                                    }`}>
+                                    }
+                                    ${isNavBarOpen ? "justify-start" : ""}`}>
                                     <div className="nav-icon text-[32px]">
                                         <IconComponent/>
                                     </div>
-                                    <div className="page-name text-[20px] hidden lg:block">
+                                    <div
+                                        className={`page-name text-[20px] lg:block ${isNavBarOpen ? "block" : "hidden"}`}>
                                         {item.label}
                                     </div>
                                 </div>
