@@ -1,18 +1,17 @@
 'use client'
 
-import React, {useState} from 'react'
+import React from 'react'
 import Link from "next/link";
-import {IoIosHome, IoIosMenu} from "react-icons/io";
+import {IoIosClose, IoIosHome, IoIosMenu} from "react-icons/io";
 import {FaUserCircle} from "react-icons/fa";
 
-const AdminHeader = () => {
+interface AdminHeaderProps {
+    isNavBarOpen:boolean;
+    toggleNavBar:()=>void;
+}
 
-    const [isNavBarOpen,setIsNavBarOpen] = useState<boolean>(false);
+const AdminHeader = ({isNavBarOpen,toggleNavBar}:AdminHeaderProps) => {
 
-    const navBarControl=()=>{
-        setIsNavBarOpen(!isNavBarOpen);
-        console.log(isNavBarOpen);
-    }
     return (
         <>
             <div className="h-[10vh] flex items-center justify-between px-[10px] w-full relative">
@@ -30,7 +29,7 @@ const AdminHeader = () => {
                 <div className="block sm:hidden">
                     <button
                         className="p-[5px] bg-white rounded-full text-[25px] hover:cursor-pointer border border-gray-200 hover:bg-gray-100 transition-colors duration-300 active:bg-gray-300"
-                        onClick={navBarControl}>
+                        onClick={toggleNavBar}>
                         <IoIosMenu/>
                     </button>
                 </div>
