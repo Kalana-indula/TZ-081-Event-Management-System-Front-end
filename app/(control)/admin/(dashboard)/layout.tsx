@@ -1,17 +1,34 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import AdminHeader from "@/app/(control)/admin/components/AdminHeader";
 import SideNavBar from "@/app/(control)/admin/components/SideNavBar";
 
 const Layout = ({children}: { children: React.ReactNode }) => {
     // check navbar status
-    const [isNavBarOpen,setIsNavBarOpen]=useState<boolean>(false);
+    const [isNavBarOpen, setIsNavBarOpen] = useState<boolean>(false);
 
-    const toggleNavBar=()=>{
+    const toggleNavBar = () => {
         setIsNavBarOpen(!isNavBarOpen);
-        console.log(isNavBarOpen);
     }
+
+    // Auto-close navbar when screen size is larger than sm
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 640) { // 640px is Tailwind's sm breakpoint
+                setIsNavBarOpen(false);
+            }
+        };
+
+        // Add event listener
+        window.addEventListener('resize', handleResize);
+
+        // Call handler right away so state gets updated with initial window size
+        handleResize();
+
+        // Remove event listener on cleanup
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     return (
         <div className="flex relative">
             {/*add overlay effect on mobile screens*/}
@@ -28,7 +45,7 @@ const Layout = ({children}: { children: React.ReactNode }) => {
             {/*overlay backdrop for mobile*/}
             {isNavBarOpen && (
                 <div className="fixed inset-0 bg-black/25 z-40 sm:hidden"
-                     onClick={()=>setIsNavBarOpen(false)}
+                     onClick={() => setIsNavBarOpen(false)}
                 />
             )}
             <div className="flex-1 h-screen flex flex-col sm:ml-0">

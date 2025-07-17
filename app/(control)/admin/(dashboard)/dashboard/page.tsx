@@ -5,6 +5,7 @@ import { MdManageAccounts } from "react-icons/md";
 import { RiUserAddLine } from "react-icons/ri";
 import { MdOutlineDashboard } from "react-icons/md";
 import axios from "axios";
+import Image from "next/image";
 
 const Page = () => {
     //get current date and format it
@@ -66,26 +67,96 @@ const Page = () => {
     }
     return (
         <>
-            <div>
+            <div className="relative">
                 <div className="flex justify-center items-center text-[20px] h-[50px] py-[30px]">
                     <h1>Management Control</h1>
                 </div>
                 <div>
-                    <div
-                        className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                        <span className="text-gray-600 font-medium">Date:</span>
+                    <div className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                        <span className="text-gray-500 font-medium">DATE:</span>
                         <span className="text-gray-800 font-semibold ml-2">{getCurrentDate()}</span>
                     </div>
-                    <div
-                        className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                        <span className="text-gray-600 font-medium">Registered Organizers:</span>
-                        <span className="text-gray-800 font-semibold ml-2">{organizers}</span>
+
+                    {/*Organizer Details*/}
+                    <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                        <div>
+                            <h3 className="text-gray-500 font-medium">ORGANIZER STATUS</h3>
+                        </div>
+
+                        <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
+                            <div
+                                className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                                <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
+                                    <Image src="/pending.png" alt="pending" height={32} width={32}/>
+                                </div>
+                                <div>
+                                    <div className="font-medium">
+                                        Pending Approvals
+                                    </div>
+                                    <div>Count</div>
+                                </div>
+                                <button className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                    View All
+                                </button>
+                            </div>
+                            <div className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                                <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
+                                    <Image src="/approved.png" alt="pending" height={32} width={32}/>
+                                </div>
+                                <div>
+                                    <div className="font-medium">
+                                        Approved Organizers
+                                    </div>
+                                    <div>{organizers}</div>
+                                </div>
+                                <button className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        className="display-events bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                        <span className="text-gray-600 font-medium">On Going Events :</span>
-                        <span className="text-gray-800 font-semibold ml-2">{onGoingEvents}</span>
+
+                    {/*Event details*/}
+                    <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                        <div>
+                            <h3 className="text-gray-500 font-medium">EVENT STATUS</h3>
+                        </div>
+
+                        {/*Organizer Details*/}
+                        <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
+                            <div className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                                <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
+                                    <Image src="/pending.png" alt="pending" height={32} width={32}/>
+                                </div>
+                                <div>
+                                    <div className="font-medium">
+                                        Pending Approvals
+                                    </div>
+                                    <div>Count</div>
+                                </div>
+                                <button className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                    View All
+                                </button>
+                            </div>
+                            <div className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                                <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
+                                    <Image src="/ongoing.png" alt="pending" height={32} width={32}/>
+                                </div>
+                                <div>
+                                    <div className="font-medium">
+                                        On Going Events
+                                    </div>
+                                    <div>{onGoingEvents}</div>
+                                </div>
+                                <button
+                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
                 <div>
 
