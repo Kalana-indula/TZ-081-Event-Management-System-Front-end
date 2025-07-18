@@ -43,7 +43,7 @@ const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
                 </div>
 
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                    <h1 className="text-[30px] text-center">Admin Dashboard</h1>
+                    <h1 className="text-[30px] text-center">Admin Control Panel</h1>
                 </div>
 
                 {/* Right Section - User Link */}

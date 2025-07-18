@@ -6,6 +6,7 @@ import { RiUserAddLine } from "react-icons/ri";
 import { MdOutlineDashboard } from "react-icons/md";
 import axios from "axios";
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 
 const Page = () => {
     //get current date and format it
@@ -20,6 +21,14 @@ const Page = () => {
     //fetch organizer count
     const [organizers,setOrganizers]=useState<number|string>(0);
     const [onGoingEvents,setOnGoingEvents]=useState<number|string>(0);
+
+    //configure navigation
+    const router = useRouter();
+
+    //navigate
+    const routeToAddAdmin =()=>{
+        router.push("/admin/add-admin");
+    }
 
     //load data at page loading
     useEffect(() => {
@@ -67,18 +76,24 @@ const Page = () => {
     }
     return (
         <>
-            <div className="relative">
+            {/*Header section*/}
+            <div className="sticky top-0 bg-white z-40 border-b border-gray-200">
                 <div className="flex justify-center items-center text-[20px] h-[50px] py-[30px]">
-                    <h1>Management Control</h1>
+                    <h1>Admin Dashboard</h1>
                 </div>
+            </div>
+            {/*scrollable content*/}
+            <div className="relative">
                 <div>
-                    <div className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    <div
+                        className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <span className="text-gray-500 font-medium">DATE:</span>
                         <span className="text-gray-800 font-semibold ml-2">{getCurrentDate()}</span>
                     </div>
 
                     {/*Organizer Details*/}
-                    <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    <div
+                        className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <div>
                             <h3 className="text-gray-500 font-medium">ORGANIZER STATUS</h3>
                         </div>
@@ -95,11 +110,13 @@ const Page = () => {
                                     </div>
                                     <div>Count</div>
                                 </div>
-                                <button className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <button
+                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
                                     View All
                                 </button>
                             </div>
-                            <div className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                            <div
+                                className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
                                 <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
                                     <Image src="/approved.png" alt="pending" height={32} width={32}/>
                                 </div>
@@ -109,7 +126,8 @@ const Page = () => {
                                     </div>
                                     <div>{organizers}</div>
                                 </div>
-                                <button className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <button
+                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
                                     View All
                                 </button>
                             </div>
@@ -117,14 +135,16 @@ const Page = () => {
                     </div>
 
                     {/*Event details*/}
-                    <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    <div
+                        className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <div>
                             <h3 className="text-gray-500 font-medium">EVENT STATUS</h3>
                         </div>
 
                         {/*Organizer Details*/}
                         <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
-                            <div className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                            <div
+                                className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
                                 <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
                                     <Image src="/pending.png" alt="pending" height={32} width={32}/>
                                 </div>
@@ -134,11 +154,13 @@ const Page = () => {
                                     </div>
                                     <div>Count</div>
                                 </div>
-                                <button className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <button
+                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
                                     View All
                                 </button>
                             </div>
-                            <div className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
+                            <div
+                                className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
                                 <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
                                     <Image src="/ongoing.png" alt="pending" height={32} width={32}/>
                                 </div>
@@ -161,9 +183,19 @@ const Page = () => {
                 <div>
 
                 </div>
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-[20px]">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 my-[20px] gap-[20px] mx-[10px]">
+
+                    <button className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                    onClick={routeToAddAdmin}>
+                        <div className="text-4xl sm:text-2xl md:text-[40px]">
+                            <MdManageAccounts/>
+                        </div>
+                        <div className="text-base sm:text-sm md:text-base mt-2">
+                            Add Admin
+                        </div>
+                    </button>
                     <div
-                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[10px] mx-[10px] md:mx-[20px] lg:mx-[30px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <MdManageAccounts/>
                         </div>
@@ -172,7 +204,7 @@ const Page = () => {
                         </div>
                     </div>
                     <div
-                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[10px] mx-[10px] md:mx-[20px] lg:mx-[30px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <RiUserAddLine/>
                         </div>
@@ -181,7 +213,7 @@ const Page = () => {
                         </div>
                     </div>
                     <div
-                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[10px] mx-[10px] md:mx-[20px] lg:mx-[30px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <MdOutlineDashboard/>
                         </div>
