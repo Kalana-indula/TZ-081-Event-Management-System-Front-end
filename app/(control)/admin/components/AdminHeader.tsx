@@ -2,15 +2,23 @@
 
 import React from 'react'
 import Link from "next/link";
-import {IoIosClose, IoIosHome, IoIosMenu} from "react-icons/io";
+import {IoIosHome, IoIosMenu, IoIosNotifications} from "react-icons/io";
 import {FaUserCircle} from "react-icons/fa";
+import {useRouter} from "next/navigation";
+import {LuMessageSquareText} from "react-icons/lu";
 
 interface AdminHeaderProps {
-    isNavBarOpen:boolean;
-    toggleNavBar:()=>void;
+    isNavBarOpen: boolean;
+    toggleNavBar: () => void;
 }
 
-const AdminHeader = ({isNavBarOpen,toggleNavBar}:AdminHeaderProps) => {
+const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
+
+    const router = useRouter();
+
+    const navigateToUser = () => {
+        router.push("/user");
+    }
 
     return (
         <>
@@ -19,7 +27,7 @@ const AdminHeader = ({isNavBarOpen,toggleNavBar}:AdminHeaderProps) => {
                 <div className="hidden sm:block">
                     <Link className="flex items-center" href="/">
                         <div className="text-[25px]">
-                            <IoIosHome />
+                            <IoIosHome/>
                         </div>
                         <div className="text-[16px]">
                             Home
@@ -35,19 +43,34 @@ const AdminHeader = ({isNavBarOpen,toggleNavBar}:AdminHeaderProps) => {
                 </div>
 
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                    <h1 className="text-[30px] text-center">Admin Dashboard</h1>
+                    <h1 className="text-[30px] text-center">Admin Control Panel</h1>
                 </div>
 
                 {/* Right Section - User Link */}
                 <div className="hidden sm:block">
-                    <Link className="flex items-center" href="/user">
-                        <div className="text-[25px]">
-                            <FaUserCircle/>
-                        </div>
-                        <div className="text-[16px]">
-                            Username
-                        </div>
-                    </Link>
+                    <div className="flex justify-center items-center gap-[20px]">
+                        <button onClick={navigateToUser} className="hidden lg:block">
+                            <div className="text-[25px]">
+                                <IoIosNotifications/>
+                            </div>
+                        </button>
+                        <button onClick={navigateToUser} className="hidden lg:block">
+                            <div className="text-[25px]">
+                                <LuMessageSquareText/>
+                            </div>
+                        </button>
+
+                        <button className="flex items-center"
+                                onClick={navigateToUser}
+                        >
+                            <div className="text-[25px]">
+                                <FaUserCircle/>
+                            </div>
+                            <div className="text-[16px]">
+                                Username
+                            </div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </>
