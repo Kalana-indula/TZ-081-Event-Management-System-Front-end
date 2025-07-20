@@ -1,33 +1,37 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-import { MdManageAccounts } from "react-icons/md";
-import { RiUserAddLine } from "react-icons/ri";
-import { MdOutlineDashboard } from "react-icons/md";
+import {MdManageAccounts} from "react-icons/md";
+import {RiUserAddLine} from "react-icons/ri";
+import {MdOutlineDashboard} from "react-icons/md";
 import axios from "axios";
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 
 const Page = () => {
     //get current date and format it
-    const getCurrentDate = () =>{
+    const getCurrentDate = () => {
         const now = new Date();
-        const day = String(now.getDate()).padStart(2,'0');
-        const month = String(now.getMonth()+1).padStart(2,'0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = String(now.getFullYear());
         return `${day}/${month}/${year}`;
     }
 
     //fetch organizer count
-    const [organizers,setOrganizers]=useState<number|string>(0);
-    const [onGoingEvents,setOnGoingEvents]=useState<number|string>(0);
+    const [organizers, setOrganizers] = useState<number | string>(0);
+    const [onGoingEvents, setOnGoingEvents] = useState<number | string>(0);
 
     //configure navigation
     const router = useRouter();
 
     //navigate
-    const routeToAddAdmin =()=>{
+    const routeToAddAdmin = () => {
         router.push("/admin/add-admin");
+    }
+
+    const routeToAddManager=():void=>{
+        router.push("/admin/add-manager");
     }
 
     //load data at page loading
@@ -37,20 +41,20 @@ const Page = () => {
     }, []);
 
     //fetch organizers count from api
-    const getOrganizerCount = async()=> {
-        try{
+    const getOrganizerCount = async () => {
+        try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/count`);
             console.log(response.data);
             setOrganizers(response.data);
 
-        }catch(error){
+        } catch (error) {
             console.log(error);
 
             //check the error
-            if(axios.isAxiosError(error) && error.response) {
+            if (axios.isAxiosError(error) && error.response) {
                 //display the message from back end
                 setOrganizers(error.response.data);
-            }else {
+            } else {
                 //handle other errors
                 setOrganizers("Error Loading Data");
             }
@@ -58,18 +62,18 @@ const Page = () => {
     }
 
     //fetch ongoing events
-    const getOngoingEvents = async ()=>{
-        try{
+    const getOngoingEvents = async () => {
+        try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/on-going/events`);
             setOnGoingEvents(response.data);
-        }catch(error){
+        } catch (error) {
             console.log(error);
 
             //check the error
-            if(axios.isAxiosError(error) && error.response) {
+            if (axios.isAxiosError(error) && error.response) {
                 //display message
                 setOnGoingEvents(error.response.data);
-            }else{
+            } else {
                 setOnGoingEvents("Error Loading Data");
             }
         }
@@ -185,8 +189,9 @@ const Page = () => {
                 </div>
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 my-[20px] gap-[20px] mx-[10px]">
 
-                    <button className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
-                    onClick={routeToAddAdmin}>
+                    <button
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                        onClick={routeToAddAdmin}>
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <MdManageAccounts/>
                         </div>
@@ -203,15 +208,17 @@ const Page = () => {
                             Manager Control
                         </div>
                     </div>
-                    <div
-                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
+                    <button
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                        onClick={routeToAddManager}
+                    >
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <RiUserAddLine/>
                         </div>
                         <div className="text-base sm:text-sm md:text-base mt-2">
                             Add Manager
                         </div>
-                    </div>
+                    </button>
                     <div
                         className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
                         <div className="text-4xl sm:text-2xl md:text-[40px]">

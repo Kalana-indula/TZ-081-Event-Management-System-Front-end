@@ -5,7 +5,7 @@ import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
 
 //types
-interface AdminFormData {
+interface ManagerFormData {
     firstName: string;
     lastName: string;
     nic: string;
@@ -74,7 +74,7 @@ const Page = () => {
 
         if (password === confirmPassword) {
 
-            const adminData: AdminFormData = {
+            const ManagerData: ManagerFormData = {
                 firstName: firstName,
                 lastName: lastName,
                 nic: nic,
@@ -84,14 +84,14 @@ const Page = () => {
             }
 
             try {
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins`, adminData,
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers`, ManagerData,
                     {
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
                         }
                     });
-                toast.success(response.data.message+"Admin Saved Successfully!");
+                toast.success(response.data.message+"Manager Saved Successfully!");
 
                 setFirstName('');
                 setLastName('');
@@ -133,8 +133,8 @@ const Page = () => {
             {/*Header section*/}
             <div className="sticky top-0 bg-white z-40 border-b border-gray-200">
                 <div className="text-center mb-4">
-                    <h1 className="text-2xl font-semibold text-gray-900">Admin Registration</h1>
-                    <p className="mt-1 text-gray-600">Create a new admin account</p>
+                    <h1 className="text-2xl font-semibold text-gray-900">Manager Registration</h1>
+                    <p className="mt-1 text-gray-600">Create a new manager account</p>
                 </div>
             </div>
 
@@ -144,6 +144,8 @@ const Page = () => {
                 <div className="max-w-md mx-auto">
                     <div className="bg-white shadow-2xl p-8 rounded-lg">
                         <form className="space-y-6" onSubmit={handleSubmit}>
+
+                            {/*first name and last name*/}
                             <div className="grid grid-cols-1 space-y-6 sm:space-y-0 sm:grid-cols-2 sm:gap-6">
                                 <div>
                                     <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -176,6 +178,8 @@ const Page = () => {
                                     />
                                 </div>
                             </div>
+
+                            {/*nic field*/}
                             <div>
                                 <label htmlFor="nic" className="block text-sm font-medium text-gray-700 mb-2">
                                     NIC / Passport <span className="text-red-600">*</span>
@@ -192,6 +196,7 @@ const Page = () => {
                                 />
                             </div>
 
+                            {/*contact details field*/}
                             <div>
                                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                                     Phone<span className="text-red-600">*</span>
@@ -208,6 +213,7 @@ const Page = () => {
                                 />
                             </div>
 
+                            {/*email field*/}
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                                     E Mail <span className="text-red-600">*</span>
@@ -223,6 +229,8 @@ const Page = () => {
                                     className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                 />
                             </div>
+
+                            {/*password field*/}
                             <div>
                                 <label htmlFor="Password" className="block text-sm font-medium text-gray-700 mb-2">
                                     Password <span className="text-red-600">*</span>
@@ -239,6 +247,7 @@ const Page = () => {
                                 />
                             </div>
 
+                            {/*confirm password field*/}
                             <div>
                                 <label htmlFor="confirm-pw" className="block text-sm font-medium text-gray-700 mb-2">
                                     Confirm Password <span className="text-red-600">*</span>
@@ -259,14 +268,17 @@ const Page = () => {
                                 </p>
                             </div>
                             <div className="space-y-2">
+                                {/*save button*/}
                                 <button
                                     type="submit"
-                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer">
                                     Save
                                 </button>
+
+                                {/*cancel button*/}
                                 <button
                                     onClick={handleCancel}
-                                    className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer">
                                     Cancel
                                 </button>
                             </div>

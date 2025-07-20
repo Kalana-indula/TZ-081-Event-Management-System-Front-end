@@ -55,7 +55,7 @@ const Layout = ({children}: { children: React.ReactNode }) => {
                 </div>
 
                 {/* Scrollable Main Content */}
-                <div className="flex-1 overflow-y-auto px-[10px]">
+                <div className="flex-1 overflow-y-auto px-0">
                     {children}
                 </div>
             </div>
