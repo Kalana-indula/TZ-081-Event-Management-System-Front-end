@@ -131,7 +131,7 @@ const Page = () => {
     return (
         <>
             {/*Header section*/}
-            <div className="sticky top-0 bg-white z-40 border-b border-gray-200">
+            <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="text-center mb-4">
                     <h1 className="text-2xl font-semibold text-gray-900">Manager Registration</h1>
                     <p className="mt-1 text-gray-600">Create a new manager account</p>

@@ -30,8 +30,12 @@ const Page = () => {
         router.push("/admin/add-admin");
     }
 
-    const routeToAddManager=():void=>{
+    const routeToAddManager = (): void => {
         router.push("/admin/add-manager");
+    }
+
+    const routeToManagerControl=():void=>{
+        router.push("/admin/manager-control");
     }
 
     //load data at page loading
@@ -81,7 +85,7 @@ const Page = () => {
     return (
         <>
             {/*Header section*/}
-            <div className="sticky top-0 bg-white z-40 border-b border-gray-200">
+            <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="flex justify-center items-center text-[20px] h-[50px] py-[30px]">
                     <h1>Admin Dashboard</h1>
                 </div>
@@ -89,8 +93,7 @@ const Page = () => {
             {/*scrollable content*/}
             <div className="relative">
                 <div>
-                    <div
-                        className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    <div className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <span className="text-gray-500 font-medium">DATE:</span>
                         <span className="text-gray-800 font-semibold ml-2">{getCurrentDate()}</span>
                     </div>
@@ -199,15 +202,16 @@ const Page = () => {
                             Add Admin
                         </div>
                     </button>
-                    <div
-                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
+                    <button
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                        onClick={routeToManagerControl}>
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <MdManageAccounts/>
                         </div>
                         <div className="text-base sm:text-sm md:text-base mt-2">
                             Manager Control
                         </div>
-                    </div>
+                    </button>
                     <button
                         className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
                         onClick={routeToAddManager}
