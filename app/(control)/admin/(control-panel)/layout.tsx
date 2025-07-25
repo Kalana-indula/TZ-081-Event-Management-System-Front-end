@@ -1,8 +1,8 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-import AdminHeader from "@/app/(control)/admin/components/AdminHeader";
-import SideNavBar from "@/app/(control)/admin/components/SideNavBar";
+import AdminHeader from "@/app/(control)/admin/admin-components/AdminHeader";
+import SideNavBar from "@/app/(control)/admin/admin-components/SideNavBar";
 
 const Layout = ({children}: { children: React.ReactNode }) => {
     // check navbar status
@@ -55,7 +55,7 @@ const Layout = ({children}: { children: React.ReactNode }) => {
                 </div>
 
                 {/* Scrollable Main Content */}
-                <div className="flex-1 overflow-y-auto px-[10px]">
+                <div className="flex-1 overflow-y-auto px-0">
                     {children}
                 </div>
             </div>
