@@ -7,6 +7,7 @@ import {MdOutlineDashboard} from "react-icons/md";
 import axios from "axios";
 import Image from "next/image";
 import {useRouter} from "next/navigation";
+import {Button} from "@/components/ui/button";
 
 const Page = () => {
     //get current date and format it
@@ -91,7 +92,7 @@ const Page = () => {
                 </div>
             </div>
             {/*scrollable content*/}
-            <div className="relative">
+            <div className="p-3 sm:p-4 md:p-6 ">
                 <div>
                     <div className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <span className="text-gray-500 font-medium">DATE:</span>
@@ -117,10 +118,10 @@ const Page = () => {
                                     </div>
                                     <div>Count</div>
                                 </div>
-                                <button
-                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <Button
+                                    className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
                                     View All
-                                </button>
+                                </Button>
                             </div>
                             <div
                                 className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
@@ -133,10 +134,10 @@ const Page = () => {
                                     </div>
                                     <div>{organizers}</div>
                                 </div>
-                                <button
-                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <Button
+                                    className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
                                     View All
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -148,7 +149,6 @@ const Page = () => {
                             <h3 className="text-gray-500 font-medium">EVENT STATUS</h3>
                         </div>
 
-                        {/*Organizer Details*/}
                         <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
                             <div
                                 className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
@@ -161,10 +161,10 @@ const Page = () => {
                                     </div>
                                     <div>Count</div>
                                 </div>
-                                <button
-                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <Button
+                                    className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
                                     View All
-                                </button>
+                                </Button>
                             </div>
                             <div
                                 className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
@@ -177,10 +177,10 @@ const Page = () => {
                                     </div>
                                     <div>{onGoingEvents}</div>
                                 </div>
-                                <button
-                                    className="border border-black px-[10px] py-[10px] rounded-[5px] hover:bg-gray-100 transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-gray-300">
+                                <Button
+                                    className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
                                     View All
-                                </button>
+                                </Button>
                             </div>
                         </div>
 

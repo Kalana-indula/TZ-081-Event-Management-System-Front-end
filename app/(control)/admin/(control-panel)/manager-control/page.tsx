@@ -14,6 +14,7 @@ interface Manager {
     email: string;
     password: string;
     isAssigned: boolean;
+    statusUpdateDate:string;
 }
 
 const Page = () => {
@@ -145,7 +146,7 @@ const Page = () => {
                                     key={assignedManager.id}>
                                     <td className="px-6 py-4 text-sm text-gray-900 font-medium">{assignedManager.id}</td>
                                     <td className="px-6 py-4 text-sm text-gray-700">{assignedManager.firstName} {assignedManager.lastName}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-700">March 15, 2024</td>
+                                    <td className="px-6 py-4 text-sm text-gray-700">{assignedManager.statusUpdateDate}</td>
                                     <td className="px-6 py-4 text-center">
                                         <Switch id={`switch-${assignedManager.id}`} checked={assignedManager.isAssigned}
                                                 className="hover:cursor-pointer" onClick={()=>updateStatus(assignedManager.id)}/>
@@ -176,7 +177,7 @@ const Page = () => {
                                             className="hover:cursor-pointer" onClick={()=>updateStatus(assignedManager.id)}/>
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                    <span className="font-medium">Assigned: </span>March 15, 2024
+                                    <span className="font-medium">Assigned: </span>{assignedManager.statusUpdateDate}
                                 </div>
                             </div>
                         ) : (
@@ -205,7 +206,7 @@ const Page = () => {
                                     Manager Name
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                    Assigned On
+                                   Un-Assigned On
                                 </th>
                                 <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 border-b border-gray-200">
                                     Allow Access
@@ -222,7 +223,7 @@ const Page = () => {
                                             key={manager.id}>
                                             <td className="px-6 py-4 text-sm text-gray-900 font-medium">{manager.id}</td>
                                             <td className="px-6 py-4 text-sm text-gray-700">{manager.firstName} {manager.lastName}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">March 15, 2024</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700">{manager.statusUpdateDate}</td>
                                             <td className="px-6 py-4 text-center">
                                                 <Switch id={`switch-${manager.id}`} checked={manager.isAssigned}
                                                         className="hover:cursor-pointer" onClick={()=>updateStatus(manager.id)}/>
@@ -259,7 +260,7 @@ const Page = () => {
                                                     className="hover:cursor-pointer" onClick={()=>updateStatus(manager.id)}/>
                                         </div>
                                         <div className="text-sm text-gray-500">
-                                            <span className="font-medium">Assigned: </span>March 15, 2024
+                                            <span className="font-medium">Un-Assigned: </span>{manager.statusUpdateDate}
                                         </div>
                                     </div>
                                 ))
