@@ -1,6 +1,6 @@
 import React from 'react'
-import RootHeader from "@/app/components/rootComponents/RootHeader";
-import RootFooter from "@/app/components/rootComponents/RootFooter";
+import RootHeader from "@/app/app-components/RootHeader";
+import RootFooter from "@/app/app-components/RootFooter";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
