@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
     Select,
     SelectContent,
@@ -8,28 +8,41 @@ import {
     SelectItem,
     SelectLabel,
     SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+    SelectValue
+} from "@/components/ui/select";
+import earningsData from "@/data/OrganizerEarnings";
+import {useRouter} from "next/navigation";
 
-interface Payment {
+interface OrganizerEarning {
     id: number;
-    organizerName:string;
-    paymentDate:string;
-    commission:number;
-    amount:number;
+    firstName: string;
+    lastName: string;
+    totalRevenue:number;
+    totalProfit:number;
 }
 
-const Payments = () => {
-    
-    const [completedPayments,setCompletedPayments] = useState<Payment[]>([]);
-    
+const Page = () => {
+
+    const [organizerEarnings,setOrganizerEarnings] = useState<OrganizerEarning[]>([]);
+
+    const route=useRouter();
+
+    //load data at the page loading
+    useEffect(() => {
+        setOrganizerEarnings(earningsData);
+    }, []);
+
+    const roteToUser = (id:number)=>{
+        route.push(`/admin/statistics/organizer/${id}`);
+    }
+
     return (
         <>
             {/*Header section*/}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Payments</h1>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">View Payment Details</p>
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Statistics</h1>
+                    <p className="mt-1 text-sm sm:text-base text-gray-600">Analyze Financial Data</p>
                 </div>
             </div>
 
@@ -77,6 +90,7 @@ const Payments = () => {
                         </div>
                     </div>
                 </div>
+
                 {/*table*/}
                 <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
@@ -88,33 +102,30 @@ const Payments = () => {
                             <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                                 <thead className="bg-gray-300">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">Payment
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">Organizer
                                         ID
                                     </th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
                                         Organizer
                                     </th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Payment Date
+                                        Total Revenue
                                     </th>
                                     <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Commission (%)
-                                    </th>
-                                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Amount
+                                        Total Profit
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                {completedPayments && completedPayments.length > 0 ? (
-                                    completedPayments.map((payment:Payment)=> (
-                                        <tr className="hover:bg-gray-50 transition-colors duration-200"
-                                            key={payment.id}>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{payment.id}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{payment.organizerName}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{payment.paymentDate}</td>
-                                            <td className="px-6 py-4 text-center">{payment.commission}</td>
-                                            <td className="px-6 py-4 text-center">{payment.amount}</td>
+                                {organizerEarnings && organizerEarnings.length > 0 ? (
+                                    organizerEarnings.map((earning:OrganizerEarning)=> (
+                                        <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
+                                            key={earning.id}
+                                            onClick={()=>roteToUser(earning.id)}>
+                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{earning.id}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700">{earning.firstName} {earning.lastName}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700">{earning.totalRevenue}</td>
+                                            <td className="px-6 py-4 text-center">{earning.totalRevenue}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -139,23 +150,24 @@ const Payments = () => {
                         {/* Mobile Card View */}
                         <div className="md:hidden space-y-4">
                             {(() => {
-                                return completedPayments && completedPayments.length > 0
-                                    ? completedPayments.map((payment: Payment) => (
-                                        <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200"
-                                             key={payment.id}>
+                                return organizerEarnings && organizerEarnings.length > 0
+                                    ? organizerEarnings.map((earning: OrganizerEarning) => (
+                                        <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
+                                             key={earning.id}
+                                             onClick={()=>roteToUser(earning.id)}>
                                             <div className="flex justify-between items-start mb-3">
                                                 <div>
-                                                    <h3 className="text-lg font-semibold text-gray-900">Payment #{payment.id}</h3>
-                                                    <p className="text-gray-600">{payment.organizerName}</p>
+                                                    <h3 className="text-lg font-semibold text-gray-900">Payment #{earning.id}</h3>
+                                                    <p className="text-gray-600">{earning.firstName} {earning.lastName}</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <div className="text-lg font-semibold text-green-600">${payment.amount}</div>
-                                                    <div className="text-sm text-gray-500">{payment.commission}% commission</div>
+                                                    <div className="text-lg font-semibold text-green-600">${earning.totalRevenue}</div>
+                                                    <div className="text-sm text-gray-500">{earning.totalProfit}</div>
                                                 </div>
                                             </div>
-                                            <div className="text-sm text-gray-500">
-                                                <span className="font-medium">Payment Date: </span>{payment.paymentDate}
-                                            </div>
+                                            {/*<div className="text-sm text-gray-500">*/}
+                                            {/*    <span className="font-medium">Payment Date: </span>{earning.paymentDate}*/}
+                                            {/*</div>*/}
                                         </div>
                                     ))
                                     : (
@@ -177,7 +189,8 @@ const Payments = () => {
                     </div>
                 </div>
             </div>
+
         </>
     )
 }
-export default Payments;
+export default Page
