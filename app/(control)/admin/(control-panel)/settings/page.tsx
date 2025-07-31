@@ -24,10 +24,6 @@ const Page = () => {
     const routeToDeleteAccount = ()=>{
         router.push("/admin/settings/delete-account");
     }
-
-    const routeToOrganizerStats = () => {
-        router.push("/admin/statistics/organizer");
-    }
     return (
         <>
             {/*Header section*/}
@@ -78,7 +74,7 @@ const Page = () => {
                                                 className="sm:h-[75px] sm:w-[75px]"/>
                                 </div>
                                 <div className="absolute bottom-3 sm:bottom-4">
-                                    <span className="font-medium text-gray-900">Update Password</span>
+                                    <span className="font-medium text-gray-900">Password</span>
                                 </div>
                             </div>
 
@@ -90,7 +86,7 @@ const Page = () => {
                                                 className="sm:h-[75px] sm:w-[75px]"/>
                                 </div>
                                 <div className="absolute bottom-3 sm:bottom-4">
-                                    <span className="font-medium text-gray-900">Update Email</span>
+                                    <span className="font-medium text-gray-900">Email</span>
                                 </div>
                             </div>
 
@@ -102,7 +98,7 @@ const Page = () => {
                                            className="sm:h-[75px] sm:w-[75px]"/>
                                 </div>
                                 <div className="absolute bottom-3 sm:bottom-4">
-                                    <span className="font-medium text-gray-900">Update Contact Details</span>
+                                    <span className="font-medium text-gray-900">Contact Details</span>
                                 </div>
                             </div>
 
