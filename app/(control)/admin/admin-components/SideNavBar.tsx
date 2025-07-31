@@ -11,6 +11,7 @@ import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
 import {FaUserCircle} from "react-icons/fa";
 import {MdEventAvailable} from "react-icons/md";
+import {LayoutDashboard} from "lucide-react";
 
 interface SideNavBarProps {
     isNavBarOpen: boolean;
@@ -27,7 +28,7 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
     const navItems = [
         {
             href: '/admin/dashboard',
-            icon: LuLayoutDashboard,
+            icon: LayoutDashboard,
             label: 'Dashboard'
         },
         {
