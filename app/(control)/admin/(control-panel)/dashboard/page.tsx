@@ -39,6 +39,10 @@ const Page = () => {
         router.push("/admin/manager-control");
     }
 
+    const routeToManagerDachboard=():void=>{
+        router.push("/manager/dashboard");
+    }
+
     //load data at page loading
     useEffect(() => {
         getOrganizerCount();
@@ -224,7 +228,8 @@ const Page = () => {
                         </div>
                     </button>
                     <div
-                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer">
+                        className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                    onClick={routeToManagerDachboard}>
                         <div className="text-4xl sm:text-2xl md:text-[40px]">
                             <MdOutlineDashboard/>
                         </div>
