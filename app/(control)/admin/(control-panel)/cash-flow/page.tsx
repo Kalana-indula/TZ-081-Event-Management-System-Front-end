@@ -49,7 +49,7 @@ const CashFlow = () => {
         <>
             {/*Header section*/}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
-                <div className="text-center mb-2 sm:mb-4 p-3 sm:p-4">
+                <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
                     <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Cash Flow</h1>
                     <p className="mt-1 text-sm sm:text-base text-gray-600">Manage And Control The Cash Flow</p>
                 </div>
@@ -115,13 +115,12 @@ const CashFlow = () => {
                 </div>
 
                 {/* Revenue Section */}
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">REVENUE DATA</h3>
                     </div>
-                    {/*Total revenue*/}
 
+                    {/*Total revenue*/}
                     <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
                         <div
                             className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
@@ -170,9 +169,7 @@ const CashFlow = () => {
 
 
                 {/* Bank Information Section */}
-
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">BANK DETAILS</h3>
                     </div>

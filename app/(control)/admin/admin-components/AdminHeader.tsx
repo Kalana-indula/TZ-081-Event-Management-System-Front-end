@@ -3,9 +3,9 @@
 import React from 'react'
 import Link from "next/link";
 import {IoIosHome, IoIosMenu, IoIosNotifications} from "react-icons/io";
-import {FaUserCircle} from "react-icons/fa";
 import {useRouter} from "next/navigation";
 import {LuMessageSquareText} from "react-icons/lu";
+import {Bell, CircleUserRound, House, Mail} from "lucide-react";
 
 interface AdminHeaderProps {
     isNavBarOpen: boolean;
@@ -25,9 +25,9 @@ const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
             <div className="h-[10vh] flex items-center justify-between px-[10px] w-full relative">
                 {/* Left Section - Home Link */}
                 <div className="hidden sm:block">
-                    <Link className="flex items-center" href="/">
+                    <Link className="flex items-center hover:cursor-pointer" href="/">
                         <div className="text-[25px]">
-                            <IoIosHome/>
+                            <House />
                         </div>
                         <div className="text-[16px]">
                             Home
@@ -49,22 +49,22 @@ const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
                 {/* Right Section - User Link */}
                 <div className="hidden sm:block">
                     <div className="flex justify-center items-center gap-[20px]">
-                        <button onClick={navigateToUser} className="hidden lg:block">
+                        <button onClick={navigateToUser} className="hidden lg:block hover:cursor-pointer">
                             <div className="text-[25px]">
-                                <IoIosNotifications/>
+                                <Bell />
                             </div>
                         </button>
-                        <button onClick={navigateToUser} className="hidden lg:block">
+                        <button onClick={navigateToUser} className="hidden lg:block hover:cursor-pointer">
                             <div className="text-[25px]">
-                                <LuMessageSquareText/>
+                                <Mail />
                             </div>
                         </button>
 
-                        <button className="flex items-center"
+                        <button className="flex items-center hover:cursor-pointer"
                                 onClick={navigateToUser}
                         >
                             <div className="text-[25px]">
-                                <FaUserCircle/>
+                                <CircleUserRound />
                             </div>
                             <div className="text-[16px]">
                                 Username
