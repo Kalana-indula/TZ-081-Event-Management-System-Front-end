@@ -6,12 +6,12 @@ import {IoIosMenu} from "react-icons/io";
 import {useRouter} from "next/navigation";
 import {Bell, CircleUserRound, House, Mail} from "lucide-react";
 
-interface AdminHeaderProps {
+interface ManagerHeaderProps {
     isNavBarOpen: boolean;
     toggleNavBar: () => void;
 }
 
-const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
+const ManagerHeader = ({isNavBarOpen, toggleNavBar}: ManagerHeaderProps) => {
 
     const router = useRouter();
 
@@ -42,7 +42,7 @@ const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
                 </div>
 
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                    <h1 className="text-[30px] text-center font-bold text-gray-900">Admin Control Panel</h1>
+                    <h1 className="text-[30px] text-center font-bold text-gray-900">Manager Control Panel</h1>
                 </div>
 
                 {/* Right Section - User Link */}
@@ -75,4 +75,4 @@ const AdminHeader = ({isNavBarOpen, toggleNavBar}: AdminHeaderProps) => {
         </>
     )
 }
-export default AdminHeader;
+export default ManagerHeader;

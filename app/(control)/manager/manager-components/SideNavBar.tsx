@@ -2,9 +2,8 @@
 
 import React from 'react'
 import {LuMessageSquareText} from "react-icons/lu";
-import {FaMoneyBillTransfer} from "react-icons/fa6";
 import {MdOutlinePayment} from "react-icons/md";
-import {TfiStatsUp} from "react-icons/tfi";
+import { LuUserRound } from "react-icons/lu";
 import {IoSettingsOutline} from "react-icons/io5";
 import {IoIosClose, IoIosHome, IoIosLogOut, IoIosNotifications} from "react-icons/io";
 import Link from "next/link";
@@ -27,32 +26,27 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
 
     const navItems = [
         {
-            href: '/admin/dashboard',
+            href: '/manager/dashboard',
             icon: LayoutDashboard,
             label: 'Dashboard'
         },
         {
-            href: '/admin/cash-flow',
-            icon: FaMoneyBillTransfer,
-            label: 'Cash Flow'
+            href: '/manager/organizers',
+            icon: LuUserRound,
+            label: 'Organizers'
         },
         {
-            href: '/admin/payments',
+            href: '/manager/payments',
             icon: MdOutlinePayment,
             label: 'Payments'
         },
         {
-            href: '/admin/statistics',
-            icon: TfiStatsUp,
-            label: 'Statistics'
-        },
-        {
-            href: '/admin/settings',
+            href: '/manager/settings',
             icon: IoSettingsOutline,
             label: 'Settings'
         },
         {
-            href: '/admin/logout',
+            href: '/manager/logout',
             icon: IoIosLogOut,
             label: 'Logout'
         }
