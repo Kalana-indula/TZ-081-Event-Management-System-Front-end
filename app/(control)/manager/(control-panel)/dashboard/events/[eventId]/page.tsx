@@ -60,8 +60,7 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
             {/*scrollable content*/}
             <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
                 {/*event details section*/}
-                <div
-                    className="display-event bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div className="display-event bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">EVENT DETAILS</h3>
                     </div>

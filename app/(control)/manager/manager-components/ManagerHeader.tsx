@@ -42,7 +42,7 @@ const ManagerHeader = ({isNavBarOpen, toggleNavBar}: ManagerHeaderProps) => {
                 </div>
 
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                    <h1 className="text-[30px] text-center font-bold text-gray-900">Manager Control Panel</h1>
+                    <h1 className="text-[25px] sm:text-[30px] text-center font-bold text-gray-900">Manager Control Panel</h1>
                 </div>
 
                 {/* Right Section - User Link */}

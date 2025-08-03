@@ -126,8 +126,7 @@ const Page = () => {
                 </div>
 
                 {/*    table*/}
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     {/*    area title*/}
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">EVENT DETAILS</h3>
