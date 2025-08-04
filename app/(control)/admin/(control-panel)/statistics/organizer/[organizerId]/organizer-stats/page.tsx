@@ -67,6 +67,7 @@ const data: StatData[] = [
 ]
 
 const Statistics = () => {
+
     return (
         <>
             {/*Header section*/}
