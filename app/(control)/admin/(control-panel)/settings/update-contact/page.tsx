@@ -28,8 +28,7 @@ const Page = () => {
 
             {/*main content*/}
             <div className="p-3 sm:p-4 md:p-6 bg-white">
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
+                <div className="bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">UPDATE   CONTACT DETAILS</h3>
                     </div>

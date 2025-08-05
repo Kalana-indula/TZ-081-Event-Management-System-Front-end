@@ -46,8 +46,7 @@ const Page = () => {
 
             {/*main content*/}
             <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">ORGANIZER DETAILS</h3>
                     </div>
