@@ -154,9 +154,6 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                                     <p>{detail.commission} %</p>
                                                 </div>
                                             </div>
-                                            {/*<div className="text-sm text-gray-500">*/}
-                                            {/*    <span className="font-medium">Payment Date: </span>{earning.paymentDate}*/}
-                                            {/*</div>*/}
                                         </div>
                                     ))
                                     : (
