@@ -139,141 +139,153 @@ const Page = () => {
             </div>
 
             {/*page content*/}
-            <div className="h-full bg-gray-50 py-4">
+            <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
                 {/*input form div*/}
-                <div className="max-w-md mx-auto">
-                    <div className="bg-white shadow-2xl p-8 rounded-lg">
-                        <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 space-y-6 sm:space-y-0 sm:grid-cols-2 sm:gap-6">
+                <div
+                    className="display-form bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    <div>
+                        <h3 className="text-gray-500 font-medium py-2">ADMIN DETAILS</h3>
+                    </div>
+
+                    <div className="max-w-md mx-auto">
+                        <div className="bg-white shadow-2xl p-8 rounded-lg">
+                            <form className="space-y-6" onSubmit={handleSubmit}>
+                                <div className="grid grid-cols-1 space-y-6 sm:space-y-0 sm:grid-cols-2 sm:gap-6">
+                                    <div>
+                                        <label htmlFor="firstName"
+                                               className="block text-sm font-medium text-gray-700 mb-2">
+                                            First Name<span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            id="firstName"
+                                            name="firstName"
+                                            type="text"
+                                            value={firstName}
+                                            required={true}
+                                            onChange={handleFirstName}
+                                            placeholder="John"
+                                            className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="lastName"
+                                               className="block text-sm font-medium text-gray-700 mb-2">
+                                            Last Name Name<span className="text-red-600">*</span>
+                                        </label>
+                                        <input
+                                            id="lastName"
+                                            name="lastName"
+                                            type="text"
+                                            value={lastName}
+                                            required={true}
+                                            onChange={handleLastName}
+                                            placeholder="Doe"
+                                            className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
+                                        />
+                                    </div>
+                                </div>
                                 <div>
-                                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                                        First Name<span className="text-red-500">*</span>
+                                    <label htmlFor="nic" className="block text-sm font-medium text-gray-700 mb-2">
+                                        NIC / Passport <span className="text-red-600">*</span>
                                     </label>
                                     <input
-                                        id="firstName"
-                                        name="firstName"
+                                        id="nic"
+                                        name="nic"
                                         type="text"
-                                        value={firstName}
+                                        value={nic}
                                         required={true}
-                                        onChange={handleFirstName}
-                                        placeholder="John"
+                                        onChange={handleNic}
+                                        placeholder="123456789V or 123456789012"
+                                        className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Phone<span className="text-red-600">*</span>
+                                    </label>
+                                    <input
+                                        id="phone"
+                                        name="phone"
+                                        type="text"
+                                        value={phone}
+                                        required={true}
+                                        onChange={handlePhone}
+                                        placeholder="0771234567 or +94771234567"
+                                        className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                        E Mail <span className="text-red-600">*</span>
+                                    </label>
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="text"
+                                        value={email}
+                                        required={true}
+                                        onChange={handleEmail}
+                                        placeholder="john.doe@example.com"
                                         className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Last Name Name<span className="text-red-600">*</span>
+                                    <label htmlFor="Password" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Password <span className="text-red-600">*</span>
                                     </label>
                                     <input
-                                        id="lastName"
-                                        name="lastName"
-                                        type="text"
-                                        value={lastName}
+                                        id="Password"
+                                        name="Password"
+                                        type="password"
+                                        value={password}
                                         required={true}
-                                        onChange={handleLastName}
-                                        placeholder="Doe"
+                                        onChange={handlePassword}
+                                        placeholder="Minimum 8 characters"
                                         className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                     />
                                 </div>
-                            </div>
-                            <div>
-                                <label htmlFor="nic" className="block text-sm font-medium text-gray-700 mb-2">
-                                    NIC / Passport <span className="text-red-600">*</span>
-                                </label>
-                                <input
-                                    id="nic"
-                                    name="nic"
-                                    type="text"
-                                    value={nic}
-                                    required={true}
-                                    onChange={handleNic}
-                                    placeholder="123456789V or 123456789012"
-                                    className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
-                                />
-                            </div>
 
-                            <div>
-                                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Phone<span className="text-red-600">*</span>
-                                </label>
-                                <input
-                                    id="phone"
-                                    name="phone"
-                                    type="text"
-                                    value={phone}
-                                    required={true}
-                                    onChange={handlePhone}
-                                    placeholder="0771234567 or +94771234567"
-                                    className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
-                                />
-                            </div>
+                                <div>
+                                    <label htmlFor="confirm-pw"
+                                           className="block text-sm font-medium text-gray-700 mb-2">
+                                        Confirm Password <span className="text-red-600">*</span>
+                                    </label>
+                                    <input
+                                        id="confirm-pw"
+                                        name="confirm-pw"
+                                        type="password"
+                                        value={confirmPassword}
+                                        required={true}
+                                        onChange={handleConfirmPassword}
+                                        placeholder="Minimum 8 characters"
+                                        className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
+                                    />
+                                    <p className="mt-2 text-xs text-gray-500">
+                                        Password must contain at least one uppercase letter, one lowercase letter, and
+                                        one
+                                        number
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <button
+                                        type="submit"
+                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Save
+                                    </button>
+                                    <button
+                                        onClick={handleCancel}
+                                        className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Cancel
+                                    </button>
+                                </div>
 
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                    E Mail <span className="text-red-600">*</span>
-                                </label>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="text"
-                                    value={email}
-                                    required={true}
-                                    onChange={handleEmail}
-                                    placeholder="john.doe@example.com"
-                                    className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="Password" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Password <span className="text-red-600">*</span>
-                                </label>
-                                <input
-                                    id="Password"
-                                    name="Password"
-                                    type="password"
-                                    value={password}
-                                    required={true}
-                                    onChange={handlePassword}
-                                    placeholder="Minimum 8 characters"
-                                    className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="confirm-pw" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Confirm Password <span className="text-red-600">*</span>
-                                </label>
-                                <input
-                                    id="confirm-pw"
-                                    name="confirm-pw"
-                                    type="password"
-                                    value={confirmPassword}
-                                    required={true}
-                                    onChange={handleConfirmPassword}
-                                    placeholder="Minimum 8 characters"
-                                    className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
-                                />
-                                <p className="mt-2 text-xs text-gray-500">
-                                    Password must contain at least one uppercase letter, one lowercase letter, and one
-                                    number
-                                </p>
-                            </div>
-                            <div className="space-y-2">
-                                <button
-                                    type="submit"
-                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Save
-                                </button>
-                                <button
-                                    onClick={handleCancel}
-                                    className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Cancel
-                                </button>
-                            </div>
-
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </>
     )

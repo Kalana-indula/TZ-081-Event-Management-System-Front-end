@@ -34,6 +34,11 @@ const Page = () => {
         route.push(`/organizer/event/${eventId}/attendees`);
     }
 
+    //route to to revenue details
+    const routeToRevenue = (eventId:number)=>{
+        route.push(`/organizer/${eventId}/revenue`);
+    }
+
     return (
         <>
             {/*    header section*/}
@@ -193,7 +198,9 @@ const Page = () => {
 
                 {/*    buttons section*/}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2"
+                            onClick={() => routeToRevenue(1)}
+                    >
                         Check Revenue
                     </Button>
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2"

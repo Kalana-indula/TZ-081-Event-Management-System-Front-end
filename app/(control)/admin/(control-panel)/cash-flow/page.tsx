@@ -58,8 +58,7 @@ const CashFlow = () => {
             {/* Main Content */}
             <div className="p-3 sm:p-4 md:p-6 bg-white min-h-screen">
                 {/* Commission Section */}
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">COMMISSION DATA</h3>
                     </div>
