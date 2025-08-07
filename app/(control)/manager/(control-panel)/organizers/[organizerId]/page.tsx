@@ -94,7 +94,6 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                         </div>
 
                         {/* Desktop status display - positioned absolute top right */}
-                        {/* Desktop status display - positioned absolute top right */}
                         <div className="hidden sm:flex absolute top-4 right-4 flex-col items-center justify-center bg-gray-100 rounded-lg p-4 min-w-[120px]">
                             {approvalStates.map((approvalState) => {
                                 const isCurrentState = organizerApproval === approvalState.state;
