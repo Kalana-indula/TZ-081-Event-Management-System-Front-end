@@ -36,7 +36,7 @@ const Page = () => {
             setManagers(response.data);
 
             // console.log(managers);
-            toast.success("Successfully get all managers!");
+            // toast.success("Successfully get all managers!");
         } catch (err) {
             if (err instanceof AxiosError) {
                 // Check if it's a 404 (no assigned manager) vs actual error
@@ -52,7 +52,7 @@ const Page = () => {
                 }
             } else {
                 console.error("Unexpected error:", err);
-                toast.error('An unexpected error occurred');
+                // toast.error('An unexpected error occurred');
             }
         }
     }
@@ -63,7 +63,7 @@ const Page = () => {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers/assigned`);
 
             setAssignedManager(response.data);
-            toast.success("Successfully get assigned managers!");
+            // toast.success("Successfully get assigned managers!");
         } catch (err) {
             if (err instanceof AxiosError) {
 
@@ -79,7 +79,7 @@ const Page = () => {
                 }
             } else {
                 console.error("Unexpected error:", err);
-                toast.error('An unexpected error occurred');
+                // toast.error('An unexpected error occurred');
             }
         }
     }
@@ -89,14 +89,14 @@ const Page = () => {
         try {
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers/${managerId}/update-status`);
             console.log(response.data);
-            toast.success("Manager status updated!");
+            // toast.success("Manager status updated!");
 
             // Refresh data
             getAllManagers();
             getAssignedManager();
         } catch (err) {
             console.error(err);
-            toast.error("Failed to update manager status");
+            // toast.error("Failed to update manager status");
         }
     }
 
@@ -115,10 +115,11 @@ const Page = () => {
             </div>
 
             {/*currently assigned manager*/}
-            <div className="p-3 sm:p-6 bg-gray-50 h-full">
-                <div className="space-y-6 mb-6">
+            <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+
                     <div>
-                        <h2 className="text-xl sm:text-2xl text-center md:text-start font-semibold text-gray-800 mb-4">Currently Assigned</h2>
+                        <h3 className="text-gray-500 font-medium py-2">CURRENT MANAGER DETAILS</h3>
                     </div>
 
                     {/* Desktop Table View */}
@@ -189,9 +190,9 @@ const Page = () => {
                 </div>
 
                 {/*All managers table*/}
-                <div className="space-y-6">
+                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
-                        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">All Managers</h2>
+                        <h3 className="text-gray-500 font-medium py-2">CURRENT MANAGER DETAILS</h3>
                     </div>
 
                     {/* Desktop Table View */}
