@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
     Select,
     SelectContent,
@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import axios from "axios";
+
+
 
 interface EventDetails {
     eventId: number;
@@ -26,6 +29,22 @@ const Page = () => {
 
     //set event details state
     const [eventDetails, setEventDetails] = useState<EventDetails[]>([]);
+
+    useEffect(() => {
+        getEventDetails();
+    }, []);
+
+    //fetch event details
+    const getEventDetails = async (): Promise<void> => {
+
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/details`);
+            console.log(response.data.eventDetails);
+            setEventDetails(response.data.eventDetails);
+        }catch(error){
+            console.log(error);
+        }
+    }
 
     return (
         <>
@@ -71,40 +90,7 @@ const Page = () => {
 
                     {/*drop downs*/}
                     <div className="flex items-start flex-col sm:flex-row space-y-4 space-x-4">
-                        <div>
-                            <Select>
-                                <SelectTrigger className="w-[180px] bg-white shadow-lg">
-                                    <SelectValue placeholder="Select Year"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Fruits</SelectLabel>
-                                        <SelectItem value="apple">Apple</SelectItem>
-                                        <SelectItem value="banana">Banana</SelectItem>
-                                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                                        <SelectItem value="grapes">Grapes</SelectItem>
-                                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Select>
-                                <SelectTrigger className="w-[180px] bg-white shadow-lg">
-                                    <SelectValue placeholder="Select Month"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Fruits</SelectLabel>
-                                        <SelectItem value="apple">Apple</SelectItem>
-                                        <SelectItem value="banana">Banana</SelectItem>
-                                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                                        <SelectItem value="grapes">Grapes</SelectItem>
-                                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
+
                         <div>
                             <Select>
                                 <SelectTrigger className="w-[180px] bg-white shadow-lg">
@@ -163,12 +149,12 @@ const Page = () => {
                                     eventDetails.map((event: EventDetails) => (
                                         <tr className="hvoer:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={event.eventId}>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.eventId}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.eventName}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.eventType}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.organizer}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.dateAdded}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.status}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.eventId}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.eventName}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.eventType}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.organizer}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.dateAdded}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.status}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -201,10 +187,43 @@ const Page = () => {
                             {(()=>{
                                 return eventDetails && eventDetails.length > 0
                                 ? eventDetails.map((event: EventDetails) => (
-                                        <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                        key={event.eventId}>
-                                            <div>
-
+                                        <div
+                                            className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
+                                            key={event.eventId}>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-medium text-gray-900">ID:</span>
+                                                    <span
+                                                        className="text-sm text-gray-600 font-sm">{event.eventId}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-medium text-gray-900">Name:</span>
+                                                    <span
+                                                        className="text-sm text-gray-600 font-sm">{event.eventName}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-medium text-gray-900">Type:</span>
+                                                    <span
+                                                        className="text-sm text-gray-600 font-sm">{event.eventType}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span
+                                                        className="text-sm font-medium text-gray-900">Organizer:</span>
+                                                    <span
+                                                        className="text-sm text-gray-600 font-sm">{event.organizer}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span
+                                                        className="text-sm font-medium text-gray-900">Date Added:</span>
+                                                    <span
+                                                        className="text-sm text-gray-600 font-sm">{event.dateAdded}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span
+                                                        className="text-sm font-medium text-gray-900">Status:</span>
+                                                    <span
+                                                        className="text-sm text-gray-600 font-sm">{event.status}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     ))
