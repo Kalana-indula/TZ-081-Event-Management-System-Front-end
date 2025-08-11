@@ -1,11 +1,32 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import {CircleCheck} from "lucide-react";
 import { SlClose } from "react-icons/sl";
+import axios from "axios";
 
+interface EventDetails {
+    eventId: number;
+    eventName: string;
+    eventType: string;
+    organizer: string;
+    organizerId ?: number | null;
+    dateAdded: string;
+    startingDate ?: string | null;
+    coverImageLink ?: string | null;
+    eventDescription ?: string | null;
+    isApproved: boolean;
+    status: string;
+}
+
+interface EventStatus {
+    isApproved:boolean;
+    isDisapproved:boolean;
+    isStarted:boolean;
+    isCompleted:boolean;
+}
 
 interface SessionDetails {
     sessionId:number;
@@ -17,13 +38,15 @@ interface SessionDetails {
     status:string;
 }
 
-
 const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
 
     const {eventId} = React.use(params);
 
+    const [eventDetails,setEventDetails]=useState<EventDetails>();
     //approval state
-    const [eventApproval,setEventApproval]=useState<string>('disapproved')
+    const [eventApproval,setEventApproval]=useState<string>('');
+    const [isApproved,setIsApproved]=useState<boolean>(false);
+    const [isStarted,setIsStarted]=useState<boolean>(false);
 
     //session state
     const [sessionInfo,setSessionInfo]=useState<SessionDetails[]>([]);
@@ -31,21 +54,77 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
     //pending approval badge elements
     const approvalStates = [
         {
-            state:"pending",
+            state:"Pending Approval",
             src:"/pending-approval.png",
             message:"Pending Approval"
         },
         {
-            state:"approved",
+            state:"Approved",
             src:"/ok.png",
             message:"Approved"
         },
         {
-            state:"disapproved",
+            state:"Disapproved",
             src:"/disapproved-event.png",
             message:"Disapproved"
+        },
+        {
+            state:"Completed",
+            src:"/completed.png",
+            message:"Completed"
+        },
+        {
+            state:"On Going",
+            src:"/on-going.png",
+            message:"On Going"
         }
     ]
+
+    //approve event
+    const approveEvent = async ()=>{
+
+        const statusUpdate : EventStatus = {
+            isApproved:true,
+            isDisapproved:false,
+            isStarted:false,
+            isCompleted:false
+        }
+
+        try{
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/status`,statusUpdate);
+            console.log(response.data.updatedData.eventStatus.statusName);
+            setEventApproval(response.data.updatedData.status);
+            setIsApproved(true);
+        }catch (err){
+            console.log(err);
+        }
+    }
+
+    //fetch event details
+    const getEventDetailsById = async (eventId:number):Promise<void>=>{
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/details`);
+
+            // Debug: Log the entire response structure
+            // console.log('Full API response:', response.data);
+            // console.log('Entity data:', response.data.entityData);
+            // console.log('isApproved from API:', response.data.entityData.isApproved);
+            // console.log('isStarted from API:', response.data.entityData.isStarted);
+            // console.log('Type of isApproved:', typeof response.data.entityData.isApproved);
+
+            setEventDetails(response.data.entityData);
+            setEventApproval(response.data.entityData.status);
+            setIsApproved(response.data.entityData.isApproved);
+            setIsStarted(response.data.entityData.isStarted);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    useEffect(() => {
+        getEventDetailsById(eventId);
+    }, []);
+
 
     return (
         <>
@@ -71,26 +150,16 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                 <Image src="/calendar.png" alt="event" height={64} width={64}/>
                             </div>
                             <div className="sm:py-[20px] flex-1">
-                                <h2 className="text-lg sm:text-2xl font-semibold">Event Name</h2>
-                                <div className="break-words text-gray-700 text-sm sm:text-base">Organizer ID : xxxxxx
-                                    xxxx
+                                <h2 className="text-lg sm:text-2xl font-semibold">{eventDetails?.eventName}</h2>
+                                <div className="break-words text-gray-700 text-sm sm:text-base">Organizer ID : {eventDetails?.organizerId}
                                 </div>
                                 <div className="break-words text-gray-700 mt-2 text-sm sm:text-base">
                                     Event Description<br/>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non
-                                    nibh tortor. Mauris pharetra efficitur euismod. Aenean eu dui aliquet
-                                    rhetus interdum interdum. Proin lacinia faucibus est vitae viverra.
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non
-                                    nibh tortor. Mauris pharetra efficitur euismod. Aenean eu dui aliquet
-                                    rhetus interdum interdum. Proin lacinia faucibus est vitae viverra.Lorem ipsum dolor
-                                    sit amet, consectetur adipiscing elit. Mauris non
-                                    nibh tortor. Mauris pharetra efficitur euismod. Aenean eu dui aliquet
-                                    rhetus interdum interdum. Proin lacinia faucibus est vitae viverra.
+                                    {eventDetails?.eventDescription}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Desktop status display - positioned absolute top right */}
                         {/* Desktop status display - positioned absolute top right */}
                         <div className="hidden sm:flex absolute top-4 right-4 flex-col items-center justify-center bg-gray-100 rounded-lg p-4 min-w-[120px]">
                             {approvalStates.map((eventState) => {
@@ -131,12 +200,23 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
 
                         {/* Action buttons */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                            <Button className="rounded">
-                                <CircleCheck/> Approve Event
-                            </Button>
-                            <Button className="rounded">
-                                <SlClose /> Disapprove Event
-                            </Button>
+                            {!isApproved && (
+                                <Button className={`rounded hover:cursor-pointer`}
+                                        onClick={approveEvent}
+                                >
+                                    <div className="flex justify-center items-center gap-2 rounded hover:cursor-pointer">
+                                        <CircleCheck/> Approve Event
+                                    </div>
+                                </Button>
+                            )}
+                            {/*rounded hover:cursor-pointer*/}
+                            {!isStarted && (
+                                <Button className={`rounded hover:cursor-pointer`}>
+                                    <div className="flex justify-center items-center gap-2">
+                                        <SlClose /> Disapprove Event
+                                    </div>
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
