@@ -15,23 +15,11 @@ import {Input} from "@/components/ui/input";
 import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
 import {useRouter} from "next/navigation";
+import {EventDetails} from "@/types/entityTypes";
 
 interface EventStatus {
     id:number;
     statusName:string;
-}
-
-interface EventDetails {
-    eventId: number;
-    eventName: string;
-    eventType: string;
-    organizer: string;
-    organizerId ?: number | null;
-    dateAdded: string;
-    startingDate ?: string | null;
-    coverImageLink ?: string | null;
-    eventDescription ?: string | null;
-    status: string;
 }
 
 const Page = () => {

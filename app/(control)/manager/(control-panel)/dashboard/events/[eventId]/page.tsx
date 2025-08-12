@@ -4,104 +4,100 @@ import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import {CircleCheck} from "lucide-react";
-import { SlClose } from "react-icons/sl";
-import axios from "axios";
-
-interface EventDetails {
-    eventId: number;
-    eventName: string;
-    eventType: string;
-    organizer: string;
-    organizerId ?: number | null;
-    dateAdded: string;
-    startingDate ?: string | null;
-    coverImageLink ?: string | null;
-    eventDescription ?: string | null;
-    isApproved: boolean;
-    status: string;
-}
-
-interface EventStatus {
-    isApproved:boolean;
-    isDisapproved:boolean;
-    isStarted:boolean;
-    isCompleted:boolean;
-}
-
-interface SessionDetails {
-    sessionId:number;
-    sessionNumber:number;
-    venue:string;
-    date:string;
-    startingTime:string;
-    endingTime:string;
-    status:string;
-}
+import {SlClose} from "react-icons/sl";
+import axios, {AxiosError} from "axios";
+import {EventDetails, EventStatus, Session} from "@/types/entityTypes";
+import toast from "react-hot-toast";
 
 const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
 
     const {eventId} = React.use(params);
 
-    const [eventDetails,setEventDetails]=useState<EventDetails>();
+    const [eventDetails, setEventDetails] = useState<EventDetails>();
     //approval state
-    const [eventApproval,setEventApproval]=useState<string>('');
-    const [isApproved,setIsApproved]=useState<boolean>(false);
-    const [isStarted,setIsStarted]=useState<boolean>(false);
+    const [eventApproval, setEventApproval] = useState<string>('');
+    const [isApproved, setIsApproved] = useState<boolean>(false);
+    const [isDisapproved, setIsDisapproved] = useState<boolean>(false);
+    const [isStarted, setIsStarted] = useState<boolean>(false);
 
     //session state
-    const [sessionInfo,setSessionInfo]=useState<SessionDetails[]>([]);
+    const [sessionInfo, setSessionInfo] = useState<Session[]>([]);
 
     //pending approval badge elements
     const approvalStates = [
         {
-            state:"Pending Approval",
-            src:"/pending-approval.png",
-            message:"Pending Approval"
+            state: "Pending Approval",
+            src: "/pending-approval.png",
+            message: "Pending Approval"
         },
         {
-            state:"Approved",
-            src:"/ok.png",
-            message:"Approved"
+            state: "Approved",
+            src: "/ok.png",
+            message: "Approved"
         },
         {
-            state:"Disapproved",
-            src:"/disapproved-event.png",
-            message:"Disapproved"
+            state: "Disapproved",
+            src: "/disapproved-event.png",
+            message: "Disapproved"
         },
         {
-            state:"Completed",
-            src:"/completed.png",
-            message:"Completed"
+            state: "Completed",
+            src: "/completed.png",
+            message: "Completed"
         },
         {
-            state:"On Going",
-            src:"/on-going.png",
-            message:"On Going"
+            state: "On Going",
+            src: "/on-going.png",
+            message: "On Going"
         }
     ]
 
     //approve event
-    const approveEvent = async ()=>{
+    const approveEvent = async () => {
 
-        const statusUpdate : EventStatus = {
-            isApproved:true,
-            isDisapproved:false,
-            isStarted:false,
-            isCompleted:false
+        const statusUpdate: EventStatus = {
+            isApproved: true,
+            isDisapproved: false,
+            isStarted: false,
+            isCompleted: false
         }
 
-        try{
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/status`,statusUpdate);
+        try {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/status`, statusUpdate);
             console.log(response.data.updatedData.eventStatus.statusName);
             setEventApproval(response.data.updatedData.status);
             setIsApproved(true);
-        }catch (err){
+            setIsDisapproved(false);
+            window.location.reload();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    // disapprove event
+    const disapproveEvent = async () => {
+
+        const statusUpdate: EventStatus = {
+            isApproved: false,
+            isDisapproved: true,
+            isStarted: false,
+            isCompleted: false
+        }
+
+        try {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/status`, statusUpdate);
+            console.log(response.data.updatedData.eventStatus.statusName);
+            setEventApproval(response.data.updatedData.status);
+            setIsApproved(false);
+            setIsDisapproved(true);
+            window.location.reload();
+        } catch (err) {
             console.log(err);
         }
     }
 
     //fetch event details
-    const getEventDetailsById = async (eventId:number):Promise<void>=>{
+    const getEventDetailsById = async (eventId: number): Promise<void> => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/details`);
 
@@ -115,14 +111,42 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
             setEventDetails(response.data.entityData);
             setEventApproval(response.data.entityData.status);
             setIsApproved(response.data.entityData.isApproved);
+            setIsDisapproved(response.data.entityData.isDisapproved);
             setIsStarted(response.data.entityData.isStarted);
         } catch (err) {
             console.log(err);
         }
     }
 
+    //fetch session details
+    const getSessionDetailsByEvent = async (eventId: number): Promise<void> => {
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/sessions`);
+
+            setSessionInfo(response.data.sessionList);
+            console.log(response.data.sessionList);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Check if it's a 404 (no assigned manager) vs actual error
+                if (err.response?.status === 404) {
+                    // 404 means no manager assigned - this is normal
+                    console.log("No session was found");
+                } else {
+                    // Actual error (500, network issues, etc.)
+                    console.error("Error fetching session:", err);
+                    const errorMessage = err.response?.data?.message || 'Failed to find session';
+                    toast.error(errorMessage);
+                }
+            } else {
+                console.error("Unexpected error:", err);
+                toast.error('An unexpected error occurred');
+            }
+        }
+    }
+
     useEffect(() => {
         getEventDetailsById(eventId);
+        getSessionDetailsByEvent(eventId);
     }, []);
 
 
@@ -139,7 +163,8 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
             {/*scrollable content*/}
             <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
                 {/*event details section*/}
-                <div className="display-event bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-event bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">EVENT DETAILS</h3>
                     </div>
@@ -151,7 +176,8 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                             </div>
                             <div className="sm:py-[20px] flex-1">
                                 <h2 className="text-lg sm:text-2xl font-semibold">{eventDetails?.eventName}</h2>
-                                <div className="break-words text-gray-700 text-sm sm:text-base">Organizer ID : {eventDetails?.organizerId}
+                                <div className="break-words text-gray-700 text-sm sm:text-base">Organizer ID
+                                    : {eventDetails?.organizerId}
                                 </div>
                                 <div className="break-words text-gray-700 mt-2 text-sm sm:text-base">
                                     Event Description<br/>
@@ -161,7 +187,8 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                         </div>
 
                         {/* Desktop status display - positioned absolute top right */}
-                        <div className="hidden sm:flex absolute top-4 right-4 flex-col items-center justify-center bg-gray-100 rounded-lg p-4 min-w-[120px]">
+                        <div
+                            className="hidden sm:flex absolute top-4 right-4 flex-col items-center justify-center bg-gray-100 rounded-lg p-4 min-w-[120px]">
                             {approvalStates.map((eventState) => {
                                 const isCurrentState = eventApproval === eventState.state;
 
@@ -170,7 +197,8 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
 
                                 return (
                                     <React.Fragment key={eventState.state}>
-                                        <div className="flex justify-center items-center w-12 h-12 bg-white rounded-full mb-2 shadow-lg">
+                                        <div
+                                            className="flex justify-center items-center w-12 h-12 bg-white rounded-full mb-2 shadow-lg">
                                             <Image src={eventState.src} alt={eventState.state} height={24} width={24}/>
                                         </div>
                                         <div className="text-center text-sm font-medium">{eventState.message}</div>
@@ -189,7 +217,8 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
 
                                 return (
                                     <React.Fragment key={eventState.state}>
-                                        <div className="flex justify-center items-center w-8 h-8 bg-white rounded-full mr-2 shadow-lg">
+                                        <div
+                                            className="flex justify-center items-center w-8 h-8 bg-white rounded-full mr-2 shadow-lg">
                                             <Image src={eventState.src} alt={eventState.state} height={16} width={16}/>
                                         </div>
                                         <div className="text-sm font-medium">{eventState.message}</div>
@@ -204,24 +233,29 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                 <Button className={`rounded hover:cursor-pointer`}
                                         onClick={approveEvent}
                                 >
-                                    <div className="flex justify-center items-center gap-2 rounded hover:cursor-pointer">
+                                    <div
+                                        className="flex justify-center items-center gap-2 rounded hover:cursor-pointer">
                                         <CircleCheck/> Approve Event
                                     </div>
                                 </Button>
                             )}
                             {/*rounded hover:cursor-pointer*/}
-                            {!isStarted && (
-                                <Button className={`rounded hover:cursor-pointer`}>
+                            {!isDisapproved && (
+                                <Button className={`rounded hover:cursor-pointer ${isStarted ? `hidden`:`block`}`}
+                                        onClick={disapproveEvent}
+                                >
                                     <div className="flex justify-center items-center gap-2">
-                                        <SlClose /> Disapprove Event
+                                        <SlClose/> Disapprove Event
                                     </div>
                                 </Button>
                             )}
+
                         </div>
                     </div>
                 </div>
                 {/*sessions table section*/}
-                <div className="display-sessions bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-sessions bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">SESSIONS</h3>
                     </div>
@@ -247,22 +281,18 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
                                         Ending Time
                                     </th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Status
-                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
                                 {sessionInfo && sessionInfo.length > 0 ? (
-                                    sessionInfo.map((session: SessionDetails) => (
+                                    sessionInfo.map((session: Session) => (
                                         <tr className="hvoer:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
-                                            key={session.sessionId}>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{session.sessionNumber}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{session.venue}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{session.date}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{session.startingTime}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{session.endingTime}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{session.status}</td>
+                                            key={session.id}>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{session.id}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{session.venue}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{session.date}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{session.startTime}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{session.endTime}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -278,8 +308,10 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                     </svg>
                                                 </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions available</h3>
-                                                <p className="text-sm text-gray-500">There are currently no sessions to display.</p>
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
+                                                    available</h3>
+                                                <p className="text-sm text-gray-500">There are currently no sessions to
+                                                    display.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -292,11 +324,42 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                         <div className="md:hidden space-y-4">
                             {(() => {
                                 return sessionInfo && sessionInfo.length > 0
-                                    ? sessionInfo.map((session: SessionDetails) => (
+                                    ? sessionInfo.map((session: Session) => (
                                         <div
                                             className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                            key={session.sessionId}>
+                                            key={session.id}>
                                             <div>
+
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-sm font-medium text-gray-900">Session Number:</span>
+                                                        <span
+                                                            className="text-sm text-gray-600 font-sm">{session.id}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span
+                                                            className="text-sm font-medium text-gray-900">Venue:</span>
+                                                        <span
+                                                            className="text-sm text-gray-600 font-sm">{session.venue}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-sm font-medium text-gray-900">Date:</span>
+                                                        <span
+                                                            className="text-sm text-gray-600 font-sm">{session.date}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                    <span
+                                                        className="text-sm font-medium text-gray-900">Starting Time:</span>
+                                                        <span
+                                                            className="text-sm text-gray-600 font-sm">{session.startTime}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                    <span
+                                                        className="text-sm font-medium text-gray-900">Ending Time:</span>
+                                                        <span
+                                                            className="text-sm text-gray-600 font-sm">{session.endTime}</span>
+                                                    </div>
+                                                </div>
 
                                             </div>
                                         </div>
@@ -313,8 +376,10 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                     </svg>
                                                 </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions available</h3>
-                                                <p className="text-sm text-gray-500 text-center">There are currently no sessions to display.</p>
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
+                                                    available</h3>
+                                                <p className="text-sm text-gray-500 text-center">There are currently no
+                                                    sessions to display.</p>
                                             </div>
                                         </div>
                                     )
