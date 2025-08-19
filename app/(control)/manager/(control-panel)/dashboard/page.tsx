@@ -294,7 +294,9 @@ const Page = () => {
                                     ? eventDetails.map((event: EventDetails) => (
                                         <div
                                             className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                            key={event.eventId}>
+                                            key={event.eventId}
+                                            onClick={()=>routeToEvent(event.eventId)}
+                                        >
                                             <div className="space-y-2">
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-sm font-medium text-gray-900">ID:</span>
