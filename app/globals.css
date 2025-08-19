@@ -119,3 +119,20 @@
   }
 }
 
+.bg-picture {
+  background-image: url('/hero-image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative; /* so ::before overlay works */
+}
+
+.bg-picture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* dark overlay */
+  backdrop-filter: blur(4px); /* blur effect */
+  z-index: 1; /* sits above background but below content */
+}
+

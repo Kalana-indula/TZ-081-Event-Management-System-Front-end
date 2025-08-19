@@ -1,42 +1,73 @@
 'use client'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useRouter} from "next/navigation";
+import axios from "axios";
+import {OrganizerDetails} from "@/types/entityTypes";
 
-interface Organizers {
-    organizerId: number;
-    organizerName: string;
-    dateRegistered: string;
-}
 
 const Page = () => {
-    const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
-
+    const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'disapproved'>('pending');
     const router = useRouter();
 
     // Sample data for demonstration
-    const [pendingOrganizers] = useState<Organizers[]>([
-        {organizerId: 1, organizerName: 'O Name', dateRegistered: '22/03/2025'},
-        {organizerId: 2, organizerName: 'O Name', dateRegistered: '22/03/2025'},
-        {organizerId: 3, organizerName: 'O Name', dateRegistered: '22/03/2025'},
-        {organizerId: 4, organizerName: 'O Name', dateRegistered: '23/03/2025'},
-        {organizerId: 5, organizerName: 'O Name', dateRegistered: '23/03/2025'},
-        {organizerId: 6, organizerName: 'O Name', dateRegistered: '23/03/2025'},
-        {organizerId: 7, organizerName: 'O Name', dateRegistered: '23/03/2025'},
-        {organizerId: 8, organizerName: 'O Name', dateRegistered: '23/03/2025'},
-    ]);
+    const [pendingOrganizers,setPendingOrganizers] = useState<OrganizerDetails[]>([]);
 
-    const [approvedOrganizers] = useState<Organizers[]>([]);
+    const [approvedOrganizers,setApprovedOrganizers] = useState<OrganizerDetails[]>([]);
 
-    const currentData = activeTab === 'pending' ? pendingOrganizers : approvedOrganizers;
+    const [disapprovedOrganizers,setDisapprovedOrganizers] = useState<OrganizerDetails[]>([]);
 
-    //route to organizer
+    const currentData =
+        activeTab === 'pending' ? pendingOrganizers :
+            activeTab === 'approved' ? approvedOrganizers :
+                disapprovedOrganizers;
+
     const routeToOrganizer = (id: number) => {
         router.push(`/manager/organizers/${id}`);
     }
 
+    //fetch all pending accounts
+    const getPendingAccounts = async (): Promise<void> => {
+        try{
+            const response= await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/pending`);
+            setPendingOrganizers(response.data.entityList);
+            console.log(response.data.entityList);
+        }catch (err){
+            console.log(err);
+        }
+    }
+
+    //fetch all approved accounts
+    const getApprovedAccounts = async (): Promise<void> => {
+        try{
+            const response= await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/approved`);
+            setApprovedOrganizers(response.data.entityList);
+            console.log(response.data.entityList);
+        }catch (err){
+            console.log(err);
+        }
+    }
+
+    //fetch all disapproved accounts
+    const getDisapprovedAccounts = async (): Promise<void> => {
+        try{
+            const response= await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/disapproved`);
+            setDisapprovedOrganizers(response.data.entityList);
+            console.log(response.data.entityList);
+        }catch (err){
+            console.log(err);
+        }
+    }
+
+    //load data at page loading
+    useEffect(() => {
+        getPendingAccounts();
+        getApprovedAccounts()
+        getDisapprovedAccounts()
+    }, []);
+
     return (
         <>
-            {/*Header section*/}
+            {/* Header section */}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="text-center mb-[10px] p-[10px]">
                     <h1 className="text-2xl font-semibold text-gray-900">Organizers</h1>
@@ -44,14 +75,14 @@ const Page = () => {
                 </div>
             </div>
 
-            {/*main content*/}
+            {/* main content */}
             <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
                 <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">ORGANIZER DETAILS</h3>
                     </div>
 
-                    {/*Tab Navigation*/}
+                    {/* Tab Navigation */}
                     <div className="mb-4">
                         <div className="flex border-b border-gray-300">
                             <button
@@ -74,10 +105,20 @@ const Page = () => {
                             >
                                 Approved Accounts
                             </button>
+                            <button
+                                onClick={() => setActiveTab('disapproved')}
+                                className={`px-6 py-3 text-sm font-medium transition-colors duration-200 border-b-2 ${
+                                    activeTab === 'disapproved'
+                                        ? 'border-blue-500 text-blue-600 bg-white'
+                                        : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                                }`}
+                            >
+                                Disapproved Accounts
+                            </button>
                         </div>
                     </div>
 
-                    {/*desktop table view*/}
+                    {/* desktop table view */}
                     <div className="hidden md:block overflow-x-auto shadow-lg">
                         <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                             <thead className="bg-gray-300">
@@ -95,13 +136,13 @@ const Page = () => {
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                             {currentData && currentData.length > 0 ? (
-                                currentData.map((organizer: Organizers, index: number) => (
+                                currentData.map((organizer: OrganizerDetails) => (
                                     <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
-                                        key={`${organizer.organizerId}-${index}`}
-                                        onClick={() => routeToOrganizer(organizer.organizerId)}>
-                                        <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.organizerId}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.organizerName}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.dateRegistered}</td>
+                                        key={organizer.id}
+                                        onClick={() => routeToOrganizer(organizer.id)}>
+                                        <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.id}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.name}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.nic}</td>
                                     </tr>
                                 ))
                             ) : (
@@ -131,30 +172,30 @@ const Page = () => {
                         </table>
                     </div>
 
-                    {/*mobile view*/}
+                    {/* mobile view */}
                     <div className="md:hidden space-y-4">
                         {(() => {
                             return currentData && currentData.length > 0
-                                ? currentData.map((organizer: Organizers, index: number) => (
+                                ? currentData.map((organizer: OrganizerDetails, index: number) => (
                                     <div
                                         className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                        key={`${organizer.organizerId}-${index}`}
-                                        onClick={() => routeToOrganizer(organizer.organizerId)}>
+                                        key={`${organizer.id}-${index}`}
+                                        onClick={() => routeToOrganizer(organizer.id)}>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center">
                                                 <span className="text-sm font-medium text-gray-500">ID:</span>
                                                 <span
-                                                    className="text-sm text-gray-900 font-medium">{organizer.organizerId}</span>
+                                                    className="text-sm text-gray-900 font-medium">{organizer.id}</span>
                                             </div>
                                             <div className="flex justify-between items-center">
                                                 <span className="text-sm font-medium text-gray-500">Name:</span>
                                                 <span
-                                                    className="text-sm text-gray-900 font-medium">{organizer.organizerName}</span>
+                                                    className="text-sm text-gray-900 font-medium">{organizer.name}</span>
                                             </div>
                                             <div className="flex justify-between items-center">
                                                 <span className="text-sm font-medium text-gray-500">Date:</span>
                                                 <span
-                                                    className="text-sm text-gray-900 font-medium">{organizer.dateRegistered}</span>
+                                                    className="text-sm text-gray-900 font-medium">{organizer.nic}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -187,4 +228,4 @@ const Page = () => {
         </>
     )
 }
-export default Page
+export default Page;

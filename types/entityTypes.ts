@@ -37,4 +37,23 @@ export interface Session {
     endTime:string;
 }
 
+export interface OrganizerDetails {
+    id: number;
+    name: string;
+    nic: string;
+    companyName ?:string;
+    email: string;
+    password ?: string;
+    phone: string;
+    pendingApproval: boolean;
+    isApproved: boolean;
+    isDisapproved: boolean;
+}
+
+export interface OrganizerStatus {
+    pendingApproval:boolean;
+    isApproved:boolean;
+    isDisapproved:boolean;
+}
+
 
