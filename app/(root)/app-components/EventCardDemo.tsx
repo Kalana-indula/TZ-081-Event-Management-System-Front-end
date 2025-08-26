@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React from 'react';
 
 interface Event {
     id?: number;
@@ -19,7 +19,7 @@ interface EventCardProps {
     event: Event;
 }
 
-const EventCardDemo: React.FC<EventCardProps> = ({ event }) => {
+const EventCardDemo = ({ event }:EventCardProps) => {
     return (
         <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full">
             {/* Event Image */}

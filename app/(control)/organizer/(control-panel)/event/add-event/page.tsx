@@ -1,93 +1,180 @@
 'use client'
 
-import React, { useState } from 'react'
-import {useRouter} from "next/navigation";
+import React, { useEffect, useState } from 'react'
+import { useRouter } from "next/navigation";
+import {CategoryDetails, CreateEventBody, TicketDetails} from "@/types/entityTypes";
+import axios from "axios";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
+import {handleApiError} from "@/lib/utils";
+import {mediaUpload} from "@/lib/mediaUpload";
+import {toast} from "react-hot-toast";
 
 const Page = () => {
     // State for form fields
     const [eventName, setEventName] = useState('')
     const [startingDate, setStartingDate] = useState('')
-    const [eventType, setEventType] = useState('Conference')
-    const [bannerImage, setBannerImage] = useState('')
+    const [eventCategories, setEventCategories] = useState<CategoryDetails[]>([]);
+    const [eventCategoryId, setEventCategoryId] = useState<number>(0);
+    const [bannerImage, setBannerImage] = useState<File | null>(null);
+    const [bannerImageUrl, setBannerImageUrl] = useState<string | null>(null);
     const [enableVipTickets, setEnableVipTickets] = useState(false)
     const [description, setDescription] = useState('')
-    const [ticketTypes, setTicketTypes] = useState([
-        { type: '', price: '', count: '' }
+    const [ticketTypes, setTicketTypes] = useState<TicketDetails[]>([
+        { ticketType: '', price: 0, ticketCount: 0 }
     ])
 
+    useEffect(() => {
+        getCategories();
+    }, []);
+
     //configure navigation
-    const route=useRouter();
+    const route = useRouter();
+
+    //fetch category
+    const getCategories = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/categories`);
+            setEventCategories(response.data);
+        } catch (err) {
+            handleApiError(err,"Failed to load categories");
+        }
+    }
 
     //handle routing
-    const routeToDashboard = (eventId:number)=>{
+    const routeToDashboard = (eventId: number) => {
         route.push(`/organizer/event/${eventId}/dashboard`);
     }
 
     // Handle input changes
-    const handleEventName = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const handleEventName = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEventName(e.target.value)
     }
 
-    const handleStartingDate = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const handleStartingDate = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStartingDate(e.target.value)
     }
 
-    const handleEventType = (e:React.ChangeEvent<HTMLSelectElement>) => {
-        setEventType(e.target.value)
+
+    const handleEventCategory = (value: string) => {
+        setEventCategoryId(parseInt(value, 10));
     }
 
-    const handleBannerImage = (e:React.ChangeEvent<HTMLInputElement>) => {
-        setBannerImage(e.target.value)
+    const handleBannerImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+        if(e.target.files && e.target.files[0]) {
+            console.log(e.target.files[0]);
+            setBannerImage(e.target.files[0]);
+        }
+        // setBannerImage(e.target.value)
     }
 
-    const handleDescription = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+    //handle file image upload
+    const handleUpload = async ()=>{
+        try{
+            console.log(bannerImage);
+
+            //fetch image url
+            const url =await mediaUpload(bannerImage);
+            setBannerImageUrl(url);
+            console.log(url);
+        }catch (e){
+            console.log(e);
+        }
+    }
+
+    const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setDescription(e.target.value)
     }
 
     // Handle ticket type changes
     const handleTicketTypeChange = (
-        index:number,
-        field:`type`|`price`|`count`,
-        value:string) => {
-        const updatedTicketTypes = ticketTypes.map((ticket, i) =>
-            i === index ? { ...ticket, [field]: value } : ticket
-        )
+        index: number,
+        field: keyof Omit<TicketDetails, 'ticketId'>,
+        value: string
+    ) => {
+        const updatedTicketTypes = ticketTypes.map((ticket, i) => {
+            if (i === index) {
+                if (field === 'ticketType') {
+                    return { ...ticket, [field]: value }
+                } else {
+                    // For price and ticketCount, convert string to number
+                    const numericValue = value === '' ? 0 : Number(value)
+                    return { ...ticket, [field]: numericValue }
+                }
+            }
+            return ticket
+        })
         setTicketTypes(updatedTicketTypes)
     }
 
     const addTicketType = () => {
-        setTicketTypes([...ticketTypes, { type: '', price: '', count: '' }])
+        setTicketTypes([...ticketTypes, { ticketType: '', price: 0, ticketCount: 0 }])
     }
 
-    const removeTicketType = (index:number) => {
+    const removeTicketType = (index: number) => {
         if (ticketTypes.length > 1) {
             setTicketTypes(ticketTypes.filter((_, i) => i !== index))
         }
     }
 
     // Handle form submission
-    const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        console.log('Event data:', {
-            eventName,
-            startingDate,
-            eventType,
-            bannerImage,
-            enableVipTickets,
-            description,
-            ticketTypes
-        })
+
+        const eventData:CreateEventBody= {
+            eventName:eventName,
+            startingDate:startingDate,
+            coverImageLink:bannerImageUrl,
+            description:description,
+            eventCategoryId:eventCategoryId,
+            organizerId:4,
+            tickets:ticketTypes
+        }
+
+        try{
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,eventData,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+            toast.success("Successfully added the event!");
+
+            setEventName('');
+            setStartingDate('');
+            setBannerImageUrl('');
+            setBannerImageUrl('');
+            setEnableVipTickets(false);
+            setDescription('')
+            setEventCategoryId(0);
+            setTicketTypes([{ ticketType: '', price: 0, ticketCount: 0 }])
+
+            console.log(response.data);
+        }catch (err){
+            handleApiError(err,"Failed to load categories");
+            toast.error('Failed to create event');
+        }
+
+
         // Add your submission logic here
+        handleUpload();
     }
 
     const handleCancel = () => {
         setEventName('')
         setStartingDate('')
-        setEventType('Conference')
-        setBannerImage('')
         setEnableVipTickets(false)
         setDescription('')
-        setTicketTypes([{ type: '', price: '', count: '' }])
+        setTicketTypes([{ ticketType: '', price: 0, ticketCount: 0 }])
     }
 
     return (
@@ -128,7 +215,8 @@ const Page = () => {
 
                                 {/*Starting date*/}
                                 <div>
-                                    <label htmlFor="startingDate" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="startingDate"
+                                           className="block text-sm font-medium text-gray-700 mb-2">
                                         Starting date
                                     </label>
                                     <input
@@ -141,37 +229,36 @@ const Page = () => {
                                     />
                                 </div>
 
-                                {/*Event type*/}
+                                {/*Event Category*/}
                                 <div>
-                                    <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Event type
+                                    <label htmlFor="eventCategory"
+                                           className="block text-sm font-medium text-gray-700 mb-2">
+                                        Event Category
                                     </label>
-                                    <div className="relative">
-                                        <select
-                                            id="eventType"
-                                            name="eventType"
-                                            value={eventType}
-                                            onChange={handleEventType}
-                                            className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400 appearance-none bg-white"
-                                        >
-                                            <option value="Conference">Conference</option>
-                                            <option value="Workshop">Workshop</option>
-                                            <option value="Seminar">Seminar</option>
-                                            <option value="Webinar">Webinar</option>
-                                            <option value="Concert">Concert</option>
-                                            <option value="Exhibition">Exhibition</option>
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
+                                    <Select
+                                        value={eventCategoryId?.toString()}
+                                        onValueChange={handleEventCategory}
+                                    >
+                                        <SelectTrigger
+                                            className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400 appearance-none bg-white">
+                                            <SelectValue placeholder="Select Category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {eventCategories.map((category) => (
+                                                    <SelectItem key={category.id} value={category.id.toString()}>
+                                                        {category.category}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 {/*Banner Image*/}
                                 <div>
-                                    <label htmlFor="bannerImage" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="bannerImage"
+                                           className="block text-sm font-medium text-gray-700 mb-2">
                                         Banner Image
                                     </label>
                                     <div className="flex items-center space-x-3">
@@ -202,15 +289,16 @@ const Page = () => {
                                     </div>
 
                                     {ticketTypes.map((ticket, index) => (
-                                        <div key={index} className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 border border-gray-200 rounded-lg">
+                                        <div key={index}
+                                             className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 border border-gray-200 rounded-lg">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                                     Ticket Type
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    value={ticket.type}
-                                                    onChange={(e) => handleTicketTypeChange(index, 'type', e.target.value)}
+                                                    value={ticket.ticketType}
+                                                    onChange={(e) => handleTicketTypeChange(index, 'ticketType', e.target.value)}
                                                     className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                                 />
                                             </div>
@@ -234,8 +322,8 @@ const Page = () => {
                                                 </label>
                                                 <input
                                                     type="number"
-                                                    value={ticket.count}
-                                                    onChange={(e) => handleTicketTypeChange(index, 'count', e.target.value)}
+                                                    value={ticket.ticketCount}
+                                                    onChange={(e) => handleTicketTypeChange(index, 'ticketCount', e.target.value)}
                                                     className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                                 />
                                             </div>
@@ -264,7 +352,8 @@ const Page = () => {
 
                                 {/*Description*/}
                                 <div>
-                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="description"
+                                           className="block text-sm font-medium text-gray-700 mb-2">
                                         Description
                                     </label>
                                     <textarea
