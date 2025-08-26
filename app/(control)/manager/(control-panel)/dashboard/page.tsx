@@ -138,8 +138,6 @@ const Page = () => {
             }
         }
     };
-
-
     return (
         <>
             {/*Header section*/}
