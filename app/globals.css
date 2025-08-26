@@ -136,3 +136,27 @@
   z-index: 1; /* sits above background but below content */
 }
 
+
+.event-banner {
+  background-image: url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative; /* so ::before overlay works */
+}
+
+.event-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2); /* dark overlay */
+  backdrop-filter: blur(4px); /* blur effect */
+  z-index: 1; /* sits above background but below content */
+}
+
+.event-banner > * {
+  position: relative;
+  z-index: 2; /* sits above the blur overlay */
+  backdrop-filter: none; /* removes any inherited blur effects */
+}
+

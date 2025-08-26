@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import EventCardDemo from "@/app/(root)/app-components/EventCardDemo";
+import {useRouter} from "next/navigation";
 
 interface Event {
   id?: number;
@@ -29,7 +30,7 @@ const Page = () => {
       type: "Conference",
       ticketPrice: "199.99",
       currency: "USD",
-      onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+      onBookNow: ()=>routeToBooking(1)
     },
     {
       id: 2,
@@ -92,7 +93,7 @@ const Page = () => {
       type: "Conference",
       ticketPrice: "199.99",
       currency: "USD",
-      onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+      onBookNow: ()=>routeToBooking(6)
     }
   ];
 
@@ -107,7 +108,7 @@ const Page = () => {
       type: "Conference",
       ticketPrice: "199.99",
       currency: "USD",
-      onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+      onBookNow: ()=>routeToBooking(7)
     },
     {
       id: 8,
@@ -119,7 +120,7 @@ const Page = () => {
       type: "Conference",
       ticketPrice: "199.99",
       currency: "USD",
-      onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+      onBookNow:()=>routeToBooking(8)
     },
     {
       id: 9,
@@ -131,9 +132,17 @@ const Page = () => {
       type: "Conference",
       ticketPrice: "199.99",
       currency: "USD",
-      onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+      onBookNow: ()=>routeToBooking(9)
     }
   ];
+
+  //configure routing
+  const router=useRouter();
+
+  //route to booking page
+  const routeToBooking = (eventId:number)=>{
+    router.push(`/event/${eventId}/booking`);
+  }
 
   return (
       <>

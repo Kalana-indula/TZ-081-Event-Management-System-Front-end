@@ -56,4 +56,33 @@ export interface OrganizerStatus {
     isDisapproved:boolean;
 }
 
+export interface SessionCardDetails {
+    sessionId:number;
+    sessionName:string;
+    date:string;
+    time:string;
+    location:string;
+    onBookNow:()=>void;
+}
 
+export interface CategoryDetails {
+    id: number;
+    category: string;
+}
+
+export interface TicketDetails {
+    ticketId?: number;
+    ticketType:string;
+    price:number;
+    ticketCount:number;
+}
+
+export interface CreateEventBody {
+    eventName: string;
+    startingDate: string;
+    coverImageLink: string|null;
+    description: string;
+    eventCategoryId: number;
+    organizerId: number;
+    tickets: TicketDetails[];
+}
