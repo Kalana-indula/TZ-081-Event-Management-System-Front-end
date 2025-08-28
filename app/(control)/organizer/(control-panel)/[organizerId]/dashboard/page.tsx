@@ -1,24 +1,20 @@
 // organizer dashboard
 'use client'
 
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {Button} from "@/components/ui/button";
 import {IoDocumentTextOutline} from "react-icons/io5";
 import {useParams, useRouter} from "next/navigation";
+import axios from "axios";
+import {handleApiError} from "@/lib/utils";
+import {EventDetails} from "@/types/entityTypes";
 
 interface StatData {
     name: string;
     uv: number;
     pv: number;
     amt: number;
-}
-
-interface EventData {
-    eventId: string;
-    eventName: string;
-    eventType: string;
-    dateCompleted: string;
 }
 
 const data: StatData[] = [
@@ -96,35 +92,11 @@ const data: StatData[] = [
     }
 ]
 
-const eventsData: EventData[] = [
-    {
-        eventId: "Ev1",
-        eventName: "Annual Tech Conference",
-        eventType: "Conference",
-        dateCompleted: "22/03/2025"
-    },
-    {
-        eventId: "Ev2",
-        eventName: "Music Festival 2025",
-        eventType: "Conference",
-        dateCompleted: "22/03/2025"
-    },
-    {
-        eventId: "Ev3",
-        eventName: "Business Summit",
-        eventType: "Conference",
-        dateCompleted: "22/03/2025"
-    },
-    {
-        eventId: "Ev4",
-        eventName: "Art Exhibition",
-        eventType: "Exhibition",
-        dateCompleted: "23/03/2025"
-    }
-]
-
 const Page = () => {
-    const [events] = useState<EventData[]>(eventsData);
+    //get event count
+    const [totalEvents,setTotalEvents]=useState<number>(0);
+    const [scheduledEvents,setScheduledEvents]=useState<number>(0);
+    const [onGoingEvents,setOnGoingEvents]=useState<EventDetails[]>([]);
 
     //get user id from params
     const params=useParams();
@@ -133,6 +105,39 @@ const Page = () => {
 
     //configure navigation
    const route=useRouter();
+
+    useEffect(() => {
+    //     load all events at page reload
+    //     getEventsList();
+        getEventCounts();
+        getEventsByOrganizer();
+    }, []);
+
+    //fetch event counts
+    const getEventCounts = async ()=>{
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizer/${organizerId}/events/counts`);
+            console.log(response.data);
+            console.log(response.data.allEventsCount);
+            setTotalEvents(response.data.allEventsCount);
+            setScheduledEvents(response.data.approvedEventsCount);
+        }catch (err){
+            handleApiError(err,"Failed to load events");
+        }
+    }
+
+    //fetch events by organizer
+    const getEventsByOrganizer = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
+            console.log(response.data.onGoingEvents);
+            setOnGoingEvents(response.data.onGoingEvents);
+            console.log(response.data.approvedEvents);
+
+        }catch (err){
+            handleApiError(err,"Failed to load events");
+        }
+    }
 
    //route to all events
     const routeToAllEvents =(id:string)=>{
@@ -166,7 +171,7 @@ const Page = () => {
                                 <p className="text-sm opacity-90">Scheduled Events</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xl font-semibold">34</p>
+                                <p className="text-xl font-semibold">{scheduledEvents}</p>
                             </div>
                         </div>
                     </div>
@@ -178,7 +183,7 @@ const Page = () => {
                                 <p className="text-sm opacity-90">Total Events</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xl font-semibold">34</p>
+                                <p className="text-xl font-semibold">{totalEvents}</p>
                             </div>
                         </div>
                     </div>
@@ -271,7 +276,7 @@ const Page = () => {
                     <div className="flex justify-between items-center py-2">
                         <h3 className="text-gray-500 font-medium">Ongoing Events</h3>
                         <Button
-                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1"
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 hover:cursor-pointer"
                             onClick={routeToAddEvent}
                         >
                             + Create New Event
@@ -294,19 +299,19 @@ const Page = () => {
                                         Event Type
                                     </th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Date Completed
+                                        Date Started
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                {events && events.length > 0 ? (
-                                    events.map((event: EventData) => (
+                                {onGoingEvents && onGoingEvents.length > 0 ? (
+                                    onGoingEvents.map((event: EventDetails) => (
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={event.eventId}>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-medium">{event.eventId}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-medium">{event.eventName}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-medium">{event.eventType}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-medium">{event.dateCompleted}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventId}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventName}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventType}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.startingDate}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -333,14 +338,14 @@ const Page = () => {
 
                         {/*mobile card view*/}
                         <div className="md:hidden space-y-4">
-                            {events && events.length > 0 ? (
-                                events.map((event: EventData) => (
+                            {onGoingEvents && onGoingEvents.length > 0 ? (
+                                onGoingEvents.map((event: EventDetails) => (
                                     <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
                                          key={event.eventId}>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-start">
                                                 <h4 className="font-semibold text-gray-900 text-sm">Event ID: {event.eventId}</h4>
-                                                <span className="text-xs text-gray-500">{event.dateCompleted}</span>
+                                                <span className="text-xs text-gray-500">{event.startingDate}</span>
                                             </div>
                                             <div>
                                                 <p className="text-sm font-medium text-gray-900">{event.eventName}</p>
@@ -369,7 +374,7 @@ const Page = () => {
 
                         {/* All Events Button */}
                         <div className="mt-4 flex justify-center">
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white"
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
                                 onClick={()=>routeToAllEvents(organizerId)}
                             >
                                 All Events

@@ -8,8 +8,8 @@ export interface EventDetails {
     startingDate?: string | null;
     coverImageLink?: string | null;
     eventDescription?: string | null;
-    isApproved: boolean;
-    status: string;
+    isApproved?: boolean;
+    status?: string;
 }
 
 export interface EventStatus {
