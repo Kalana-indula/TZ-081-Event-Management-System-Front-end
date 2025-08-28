@@ -3,16 +3,11 @@
 'use client'
 
 import React, {useEffect, useState} from 'react';
-import eventData from "@/data/OrganizerEventDetails";
+import {EventDetails} from "@/types/entityTypes";
+import {useParams} from "next/navigation";
+import axios from "axios";
+import {handleApiError} from "@/lib/utils";
 
-interface EventDetails {
-    eventId:number;
-    eventName:string;
-    eventType:string;
-    dateRequested:string;
-    dateStarted:string;
-    dateCompleted:string;
-}
 
 const Page = () => {
 
@@ -22,10 +17,15 @@ const Page = () => {
     const [isCompleted,setIsCompleted] = useState<boolean>(false);
 
     //event details state
-    const [eventDetails, setEventDetails] = useState<EventDetails[]>([]);
+    const [tableData,setTableData] = useState<EventDetails[]>([]);
+
+    const params = useParams();
+    const organizerId = params.organizerId;
 
     useEffect(() => {
-        setEventDetails(eventData);
+
+        console.log(organizerId);
+        getOnGoingEvents();
         setIsOngoing(true);
     }, []);
 
@@ -33,18 +33,57 @@ const Page = () => {
         setIsOngoing(true);
         setIsPendingApproval(false);
         setIsCompleted(false);
+        getOnGoingEvents();
     }
 
     const handlePendingApprovalTab = ()=>{
         setIsOngoing(false);
         setIsPendingApproval(true);
         setIsCompleted(false);
+        getPendingApprovals();
     }
 
     const handleCompletedTab = ()=>{
         setIsOngoing(false);
         setIsPendingApproval(false);
         setIsCompleted(true);
+        getCompletedEvents();
+    }
+
+    //fetch event details
+    const getOnGoingEvents = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
+            console.log(response.data.onGoingEvents);
+            setTableData(response.data.onGoingEvents);
+
+        }catch (err){
+            handleApiError(err,"Failed to load events");
+        }
+    }
+
+    //pending approvals
+    const getPendingApprovals = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
+            console.log(response.data.pendingApprovalEvents);
+            setTableData(response.data.pendingApprovalEvents);
+
+        }catch (err){
+            handleApiError(err,"Failed to load events");
+        }
+    }
+
+    //completed events
+    const getCompletedEvents = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
+            console.log(response.data.completedEvents);
+            setTableData(response.data.completedEvents);
+
+        }catch (err){
+            handleApiError(err,"Failed to load events");
+        }
     }
 
     return (
@@ -115,17 +154,17 @@ const Page = () => {
                             </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {eventDetails.length > 0 ? (
-                                eventDetails.map((event) => (
+                            {tableData.length > 0 ? (
+                                tableData.map((event) => (
                                     <tr
                                         className="hover:bg-gray-50 transition-colors duration-200"
                                         key={event.eventId}
                                     >
-                                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.eventId}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.eventName}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">{event.eventType}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">
-                                            {isOngoing ? `${event.dateStarted}`: isPendingApproval ? `${event.dateRequested}`:`${event.dateCompleted}`}
+                                        <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventId}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventName}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventType}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900 font-sm">
+                                            {isOngoing ? `${event.startingDate}`: isPendingApproval ? `${event.dateAdded}`:`${event.startingDate}`}
                                         </td>
                                     </tr>
                                 ))
@@ -154,8 +193,8 @@ const Page = () => {
 
                     {/*mobile view*/}
                     <div className="md:hidden space-y-4">
-                        {eventDetails.length > 0 ? (
-                            eventDetails.map((event) => (
+                        {tableData.length > 0 ? (
+                            tableData.map((event) => (
                                 <div
                                     className="bg-white rounded-lg shadow-md p-4 border border-gray-200"
                                     key={event.eventId}
@@ -163,20 +202,20 @@ const Page = () => {
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">ID:</span>
-                                            <span className="text-sm text-gray-900 font-medium">{event.eventId}</span>
+                                            <span className="text-sm text-gray-900 font-sm">{event.eventId}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">Name:</span>
-                                            <span className="text-sm text-gray-900 font-medium">{event.eventName}</span>
+                                            <span className="text-sm text-gray-900 font-sm">{event.eventName}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">Type:</span>
-                                            <span className="text-sm text-gray-900 font-medium">{event.eventType}</span>
+                                            <span className="text-sm text-gray-900 font-sm">{event.eventType}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">Started:</span>
-                                            <span className="text-sm text-gray-900 font-medium">
-                                                {isOngoing ? `${event.dateStarted}`: isPendingApproval ? `${event.dateRequested}`:`${event.dateCompleted}`}
+                                            <span className="text-sm text-gray-900 font-sm">
+                                                {isOngoing ? `${event.startingDate}`: isPendingApproval ? `${event.dateAdded}`:`${event.startingDate}`}
                                             </span>
                                         </div>
                                     </div>
