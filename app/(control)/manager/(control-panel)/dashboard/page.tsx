@@ -47,6 +47,7 @@ const Page = () => {
 
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/details`);
+            console.log(response.data.eventDetails);
             setEventDetails(response.data.eventDetails);
         }catch(error){
             console.log(error);

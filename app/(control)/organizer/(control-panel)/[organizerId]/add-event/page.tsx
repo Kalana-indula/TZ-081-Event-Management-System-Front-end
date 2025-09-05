@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter } from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {CategoryDetails, CreateEventBody, TicketDetails} from "@/types/entityTypes";
 import axios from "axios";
 import {
@@ -29,6 +29,11 @@ const Page = () => {
     const [ticketTypes, setTicketTypes] = useState<TicketDetails[]>([
         { ticketType: '', price: 0, ticketCount: 0 }
     ])
+
+    //get organizer id
+    const params=useParams();
+
+    const organizerId = params.organizerId;
 
     useEffect(() => {
         getCategories();
@@ -134,7 +139,7 @@ const Page = () => {
             coverImageLink:bannerImageUrl,
             description:description,
             eventCategoryId:eventCategoryId,
-            organizerId:4,
+            organizerId:Number(organizerId),
             tickets:ticketTypes
         }
 
@@ -159,11 +164,11 @@ const Page = () => {
             setTicketTypes([{ ticketType: '', price: 0, ticketCount: 0 }])
 
             console.log(response.data);
+            routeToDashboard(response.data.event.id);
         }catch (err){
             handleApiError(err,"Failed to load categories");
             toast.error('Failed to create event');
         }
-
 
         // Add your submission logic here
         handleUpload();
