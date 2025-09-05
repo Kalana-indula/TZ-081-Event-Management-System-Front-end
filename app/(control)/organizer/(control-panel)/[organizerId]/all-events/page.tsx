@@ -4,7 +4,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {EventDetails} from "@/types/entityTypes";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import axios from "axios";
 import {handleApiError} from "@/lib/utils";
 
@@ -13,8 +13,9 @@ const Page = () => {
 
     //event states
     const [isOngoing,setIsOngoing] = useState<boolean>(false);
-    const [isPendingApproval,setIsPendingApproval] = useState<boolean>(false);
+    const [isPending,setIsPending] = useState<boolean>(false);
     const [isCompleted,setIsCompleted] = useState<boolean>(false);
+    const [isPendingApproval,setIsPendingApproval]=useState<boolean>(false);
 
     //event details state
     const [tableData,setTableData] = useState<EventDetails[]>([]);
@@ -22,40 +23,57 @@ const Page = () => {
     const params = useParams();
     const organizerId = params.organizerId;
 
-    useEffect(() => {
+    //configure navigation
+    const route=useRouter();
 
-        console.log(organizerId);
+    useEffect(() => {
         getOnGoingEvents();
         setIsOngoing(true);
     }, []);
 
     const handleOngoingTab = ()=>{
         setIsOngoing(true);
-        setIsPendingApproval(false);
+        setIsPending(false);
         setIsCompleted(false);
+        setIsPendingApproval(false);
         getOnGoingEvents();
     }
 
-    const handlePendingApprovalTab = ()=>{
+    const handlePendingTab = ()=>{
         setIsOngoing(false);
-        setIsPendingApproval(true);
+        setIsPending(true);
         setIsCompleted(false);
-        getPendingApprovals();
+        setIsPendingApproval(false);
+        getPendingEvents();
     }
 
     const handleCompletedTab = ()=>{
         setIsOngoing(false);
-        setIsPendingApproval(false);
+        setIsPending(false);
         setIsCompleted(true);
+        setIsPendingApproval(false);
         getCompletedEvents();
+    }
+
+    const handlePendingApprovalTab = ()=>{
+        setIsOngoing(false);
+        setIsPending(false);
+        setIsCompleted(false);
+        setIsPendingApproval(true);
+        getPendingApprovalEvents()
+    }
+
+    //route to event dashboard
+    const routeToEventDashboard =(eventId:number)=>{
+        route.push(`/organizer/event/${eventId}/dashboard`);
     }
 
     //fetch event details
     const getOnGoingEvents = async ()=>{
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
-            console.log(response.data.onGoingEvents);
             setTableData(response.data.onGoingEvents);
+            console.log(response.data);
 
         }catch (err){
             handleApiError(err,"Failed to load events");
@@ -63,10 +81,19 @@ const Page = () => {
     }
 
     //pending approvals
-    const getPendingApprovals = async ()=>{
+    const getPendingEvents = async ()=>{
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
-            console.log(response.data.pendingApprovalEvents);
+            setTableData(response.data.approvedEvents);
+
+        }catch (err){
+            handleApiError(err,"Failed to load events");
+        }
+    }
+
+    const getPendingApprovalEvents = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
             setTableData(response.data.pendingApprovalEvents);
 
         }catch (err){
@@ -78,7 +105,6 @@ const Page = () => {
     const getCompletedEvents = async ()=>{
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
-            console.log(response.data.completedEvents);
             setTableData(response.data.completedEvents);
 
         }catch (err){
@@ -109,27 +135,35 @@ const Page = () => {
                         <div className="flex border-b border-gray-300">
                             <button
                                 onClick={handleOngoingTab}
-                                className={`px-6 py-3 text-sm font-medium transition-colors duration-200 border-b-2 ${
+                                className={`px-6 py-3 text-sm font-medium transition-colors hover:cursor-pointer duration-200 border-b-2 ${
                                     isOngoing ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                                 }`}
                             >
                                 Ongoing Events
                             </button>
                             <button
-                                onClick={handlePendingApprovalTab}
-                                className={`px-6 py-3 text-sm font-medium transition-colors duration-200 border-b-2 ${
-                                    isPendingApproval ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                                onClick={handlePendingTab}
+                                className={`px-6 py-3 text-sm font-medium transition-colors hover:cursor-pointer duration-200 border-b-2 ${
+                                    isPending ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                                 }`}
                             >
-                                Pending Approval
+                                Pending Events
                             </button>
                             <button
                                 onClick={handleCompletedTab}
-                                className={`px-6 py-3 text-sm font-medium transition-colors duration-200 border-b-2 ${
+                                className={`px-6 py-3 text-sm font-medium transition-colors hover:cursor-pointer duration-200 border-b-2 ${
                                     isCompleted ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                                 }`}
                             >
                                 Completed Events
+                            </button>
+                            <button
+                                onClick={handlePendingApprovalTab}
+                                className={`px-6 py-3 text-sm font-medium transition-colors hover:cursor-pointer duration-200 border-b-2 ${
+                                    isPendingApproval ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                                }`}
+                            >
+                                Pending Approvals
                             </button>
                         </div>
                     </div>
@@ -149,7 +183,7 @@ const Page = () => {
                                     Event Type
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                    { isOngoing ?  'Date Started' : isPendingApproval ? 'Date Requested' :  'Date Completed'}
+                                    { isOngoing ?  'Date Started' : isPending ? 'Date Requested' :  'Date Completed'}
                                 </th>
                             </tr>
                             </thead>
@@ -157,14 +191,15 @@ const Page = () => {
                             {tableData.length > 0 ? (
                                 tableData.map((event) => (
                                     <tr
-                                        className="hover:bg-gray-50 transition-colors duration-200"
+                                        className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                         key={event.eventId}
+                                        onClick={()=>routeToEventDashboard(event.eventId)}
                                     >
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventId}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventName}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventType}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">
-                                            {isOngoing ? `${event.startingDate}`: isPendingApproval ? `${event.dateAdded}`:`${event.startingDate}`}
+                                            {isOngoing ? `${event.startingDate}`: isPending ? `${event.dateAdded}`:`${event.startingDate}`}
                                         </td>
                                     </tr>
                                 ))
@@ -196,8 +231,9 @@ const Page = () => {
                         {tableData.length > 0 ? (
                             tableData.map((event) => (
                                 <div
-                                    className="bg-white rounded-lg shadow-md p-4 border border-gray-200"
+                                    className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
                                     key={event.eventId}
+                                    onClick={()=>routeToEventDashboard(event.eventId)}
                                 >
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
@@ -215,7 +251,7 @@ const Page = () => {
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">Started:</span>
                                             <span className="text-sm text-gray-900 font-sm">
-                                                {isOngoing ? `${event.startingDate}`: isPendingApproval ? `${event.dateAdded}`:`${event.startingDate}`}
+                                                {isOngoing ? `${event.startingDate}`: isPending ? `${event.dateAdded}`:`${event.dateCompleted}`}
                                             </span>
                                         </div>
                                     </div>

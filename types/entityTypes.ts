@@ -6,6 +6,7 @@ export interface EventDetails {
     organizerId?: number | null;
     dateAdded: string;
     startingDate?: string | null;
+    dateCompleted?: string | null;
     coverImageLink?: string | null;
     eventDescription?: string | null;
     isApproved?: boolean;
@@ -31,10 +32,14 @@ export interface SessionDetails {
 
 export interface Session {
     id:number;
+    sessionNumber:string;
     venue:string;
     date:string;
     startTime:string;
     endTime:string;
+    attendees:number;
+    revenue:number;
+    profit:number;
 }
 
 export interface OrganizerDetails {
@@ -71,10 +76,11 @@ export interface CategoryDetails {
 }
 
 export interface TicketDetails {
-    ticketId?: number;
+    id?: number;
     ticketType:string;
-    price:number;
+    ticketPrice:number;
     ticketCount:number;
+    soldCount?:number;
 }
 
 export interface CreateEventBody {
@@ -86,3 +92,12 @@ export interface CreateEventBody {
     organizerId: number;
     tickets: TicketDetails[];
 }
+
+export interface CreateSessionBody {
+    venue:string;
+    date:string;
+    startTime:string;
+    endTime:string;
+    eventId:number;
+}
+

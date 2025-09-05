@@ -95,6 +95,7 @@ const data: StatData[] = [
 const Page = () => {
     //get event count
     const [totalEvents,setTotalEvents]=useState<number>(0);
+    const [totalEarnings,setTotalEarnings]=useState<number>(0);
     const [scheduledEvents,setScheduledEvents]=useState<number>(0);
     const [onGoingEvents,setOnGoingEvents]=useState<EventDetails[]>([]);
 
@@ -117,8 +118,6 @@ const Page = () => {
     const getEventCounts = async ()=>{
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizer/${organizerId}/events/counts`);
-            console.log(response.data);
-            console.log(response.data.allEventsCount);
             setTotalEvents(response.data.allEventsCount);
             setScheduledEvents(response.data.approvedEventsCount);
         }catch (err){
@@ -130,9 +129,8 @@ const Page = () => {
     const getEventsByOrganizer = async ()=>{
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
-            console.log(response.data.onGoingEvents);
             setOnGoingEvents(response.data.onGoingEvents);
-            console.log(response.data.approvedEvents);
+            setTotalEarnings(response.data.totalEarnings);
 
         }catch (err){
             handleApiError(err,"Failed to load events");
@@ -146,7 +144,12 @@ const Page = () => {
 
     //route to add event
     const routeToAddEvent =()=>{
-        route.push(`/organizer/event/add-event`);
+        route.push(`/organizer/${organizerId}/add-event`);
+    }
+
+    //route to event dashboard
+    const routeToEventDashboard =(eventId:number)=>{
+        route.push(`/organizer/event/${eventId}/dashboard`);
     }
 
     return (
@@ -196,7 +199,7 @@ const Page = () => {
                                 <p className="text-xs opacity-75">(LKR)</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xl font-semibold">34,000</p>
+                                <p className="text-xl font-semibold">{totalEarnings}</p>
                             </div>
                         </div>
                     </div>
@@ -256,7 +259,6 @@ const Page = () => {
                                         wrapperStyle={{fontSize: '12px'}}
                                     />
                                     <Line type="monotone" dataKey="pv" stroke="#8884d8" strokeWidth={2}/>
-                                    <Line type="monotone" dataKey="uv" stroke="#82ca9d" strokeWidth={2}/>
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -307,7 +309,8 @@ const Page = () => {
                                 {onGoingEvents && onGoingEvents.length > 0 ? (
                                     onGoingEvents.map((event: EventDetails) => (
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
-                                            key={event.eventId}>
+                                            key={event.eventId}
+                                            onClick={()=>routeToEventDashboard(event.eventId)}>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventId}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventName}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventType}</td>
@@ -341,7 +344,8 @@ const Page = () => {
                             {onGoingEvents && onGoingEvents.length > 0 ? (
                                 onGoingEvents.map((event: EventDetails) => (
                                     <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                         key={event.eventId}>
+                                         key={event.eventId}
+                                         onClick={()=>routeToEventDashboard(event.eventId)}>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-start">
                                                 <h4 className="font-semibold text-gray-900 text-sm">Event ID: {event.eventId}</h4>
