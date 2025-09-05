@@ -1,38 +1,85 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { Button } from "@/components/ui/button";
+import {useParams, useRouter} from "next/navigation";
+import {CreateSessionBody} from "@/types/entityTypes";
+import {handleApiError} from "@/lib/utils";
+import {toast} from "react-hot-toast";
+import axios from "axios";
 
 const Page = () => {
-    const [formData, setFormData] = useState({
-        venue: '',
-        date: '',
-        startTime: '',
-        endTime: ''
-    });
+    const [venue, setVenue] = useState<string>('');
+    const [date, setDate] = useState<string>('');
+    const [startingTime, setStartingTime] = useState<string>('');
+    const [endingTime, setEndingTime] = useState<string>('');
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const params=useParams();
+
+    const eventId = params.eventId;
+
+    //configure routing
+    const router=useRouter();
+
+    const routeToEventDashboard = ()=>{
+        router.push(`/organizer/event/${eventId}/dashboard`);
+    }
+
+    useEffect(() => {
+        console.log(eventId);
+    }, []);
+
+    const handleVenue = (e:React.ChangeEvent<HTMLInputElement>)=>{
+        setVenue(e.target.value);
+    }
+
+    const handleDate = (e:React.ChangeEvent<HTMLInputElement>)=>{
+        setDate(e.target.value);
+    }
+
+    const handleStartingTime = (e:React.ChangeEvent<HTMLInputElement>)=>{
+        setStartingTime(e.target.value);
+    }
+
+    const handleEndingTime = (e:React.ChangeEvent<HTMLInputElement>)=>{
+        setEndingTime(e.target.value);
+    }
 
     const handleCancel = () => {
-        // Reset form or navigate back
-        setFormData({
-            venue: '',
-            date: '',
-            startTime: '',
-            endTime: ''
-        });
+        setVenue('');
+        setDate('');
+        setStartingTime('');
+        setEndingTime('');
     };
 
-    const handleSaveEvent = () => {
-        // Handle save logic here
-        console.log('Saving event:', formData);
-    };
+    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
+
+        const sessionData :CreateSessionBody = {
+            venue:venue,
+            date:date,
+            startTime:startingTime,
+            endTime:endingTime,
+            eventId:Number(eventId),
+        }
+
+        try{
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/sessions`,sessionData,
+                {
+                    headers:{
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+            toast.success("Session added successfully");
+            routeToEventDashboard();
+            console.log(response.data);
+        }catch (err){
+            handleApiError(err,"Failed to load categories");
+            toast.error('Failed to create event');
+        }
+    }
 
     return (
         <>
@@ -53,7 +100,7 @@ const Page = () => {
                     </div>
 
                     <div className="bg-white p-4 sm:p-6 rounded-md">
-                        <div className="max-w-md mx-auto space-y-4">
+                        <form className="max-w-md mx-auto space-y-4" onSubmit={handleSubmit}>
 
                             {/* Venue Field */}
                             <div className="space-y-2">
@@ -64,8 +111,8 @@ const Page = () => {
                                     type="text"
                                     id="venue"
                                     name="venue"
-                                    value={formData.venue}
-                                    onChange={handleInputChange}
+                                    value={venue}
+                                    onChange={handleVenue}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                     placeholder="Enter venue name"
                                 />
@@ -80,8 +127,8 @@ const Page = () => {
                                     type="date"
                                     id="date"
                                     name="date"
-                                    value={formData.date}
-                                    onChange={handleInputChange}
+                                    value={date}
+                                    onChange={handleDate}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 />
                             </div>
@@ -95,8 +142,8 @@ const Page = () => {
                                     type="time"
                                     id="startTime"
                                     name="startTime"
-                                    value={formData.startTime}
-                                    onChange={handleInputChange}
+                                    value={startingTime}
+                                    onChange={handleStartingTime}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 />
                             </div>
@@ -110,8 +157,8 @@ const Page = () => {
                                     type="time"
                                     id="endTime"
                                     name="endTime"
-                                    value={formData.endTime}
-                                    onChange={handleInputChange}
+                                    value={endingTime}
+                                    onChange={handleEndingTime}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 />
                             </div>
@@ -121,18 +168,17 @@ const Page = () => {
                                 <Button
                                     onClick={handleCancel}
                                     variant="outline"
-                                    className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
+                                    className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:cursor-pointer"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
-                                    onClick={handleSaveEvent}
-                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
                                 >
                                     Save Event
                                 </Button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
