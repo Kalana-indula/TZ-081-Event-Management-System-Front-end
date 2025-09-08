@@ -30,6 +30,7 @@ const Page = () => {
     const params=useParams();
 
     const eventId=params.eventId;
+    const organizerId=params.organizerId;
 
     //load the data at page loading
     useEffect(() => {
@@ -64,11 +65,11 @@ const Page = () => {
 
     //route to create new session
     const routeToCreateSession = () => {
-        route.push(`/organizer/event/${eventId}/add-session`);
+        route.push(`/organizer/${organizerId}/event/${eventId}/add-session`);
     }
 
     const routeToEventStats = (eventId:number)=>{
-        route.push(`/organizer/event/${eventId}/statistics`);
+        route.push(`/organizer/${organizerId}/event/${eventId}/statistics`);
     }
 
     //get event details

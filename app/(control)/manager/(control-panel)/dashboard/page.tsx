@@ -47,7 +47,7 @@ const Page = () => {
 
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/details`);
-            console.log(response.data.eventDetails);
+            console.log(response.data);
             setEventDetails(response.data.eventDetails);
         }catch(error){
             console.log(error);
@@ -55,12 +55,23 @@ const Page = () => {
     }
 
     // Fetch events by status
+// Updated getEventsByStatus function
     const getEventsByStatus = async (statusId: number): Promise<void> => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/status/${statusId}`);
-            setEventDetails(response.data.eventDetails);
+
+            // Check if response data exists and has events
+            if (response.data && response.data.entityList && response.data.entityList.length > 0) {
+                setEventDetails(response.data.entityList);
+            } else {
+                // Set empty array to trigger the "No events available" message in the table
+                setEventDetails([]);
+                toast.error("No events found for the selected status");
+            }
         } catch (error) {
             console.log(error);
+            setEventDetails([]);
+            toast.error("Failed to fetch events by status");
         }
     };
 
@@ -166,7 +177,7 @@ const Page = () => {
                             />
                             <Button type="submit"
                                     variant="outline"
-                                    className="bg-black text-white w-full sm:w-1/5 active:bg-black active:text-white shadow-lg"
+                                    className="bg-black text-white w-full sm:w-1/5 active:bg-black active:text-white shadow-lg hover:cursor-pointer"
                                     onClick={()=>getEventById(searchedId)}
                             >
                                 Search

@@ -11,6 +11,10 @@ export interface EventDetails {
     eventDescription?: string | null;
     isApproved?: boolean;
     status?: string;
+    earningsByEvent ?:number;
+    totalProfit ?:number;
+    commission ?:number;
+    totalAttendeesCount ?:number;
 }
 
 export interface EventStatus {
@@ -100,4 +104,24 @@ export interface CreateSessionBody {
     endTime:string;
     eventId:number;
 }
+
+export interface EarningDetails {
+    totalEarnings:number;
+    totalWithdrawals:number;
+    currentBalance:number;
+}
+
+export interface CreateTransactionRequest {
+    amount:number;
+    organizerId:number;
+}
+
+export interface BookingDetails {
+    bookingId:string;
+    name:string;
+    email:string;
+    phone:string;
+    nic:string;
+}
+
 

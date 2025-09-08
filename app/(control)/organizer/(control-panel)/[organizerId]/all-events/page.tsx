@@ -65,7 +65,7 @@ const Page = () => {
 
     //route to event dashboard
     const routeToEventDashboard =(eventId:number)=>{
-        route.push(`/organizer/event/${eventId}/dashboard`);
+        route.push(`/organizer/${organizerId}/event/${eventId}/dashboard`);
     }
 
     //fetch event details

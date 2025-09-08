@@ -1,13 +1,17 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import {Trash2} from "lucide-react";
-import { RxUpdate } from "react-icons/rx";
 import {useRouter} from "next/navigation";
+import {OrganizerDetails} from "@/types/entityTypes";
+import axios from "axios";
 
 const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
+
+    //states
+    const [organizerDetails,setOrganizerDetails] = useState<OrganizerDetails>();
 
     const {organizerId} = React.use(params);
 
@@ -29,6 +33,22 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
     const routeToDeleteAccount = ()=>{
         router.push(`/organizer/${organizerId}/settings/delete-account`);
+    }
+
+    //load organizer data at page loading
+    useEffect(() => {
+        getOrganizerDetails();
+    }, [organizerId]);
+
+    //fetch organizer details
+    const getOrganizerDetails = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}`);
+            console.log('Organizer details:', response.data.entityData);
+            setOrganizerDetails(response.data.entityData);
+        } catch (err) {
+            console.error('Error fetching organizer details:', err);
+        }
     }
 
     return (
@@ -56,8 +76,8 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                 <Image src="/organizer.png" alt="event" height={64} width={64}/>
                             </div>
                             <div className="sm:py-[20px] flex-1">
-                                <h2 className="text-lg sm:text-2xl font-semibold">Organizer Name</h2>
-                                <div className="break-words text-gray-700 text-sm sm:text-base">Company Name : xxxxxx
+                                <h2 className="text-lg sm:text-2xl font-semibold">{organizerDetails?.name}</h2>
+                                <div className="break-words text-gray-700 text-sm sm:text-base">Company Name : {organizerDetails?.companyName}
                                     xxxx
                                 </div>
                                 <div className="break-words text-gray-700 mt-2 text-sm sm:text-base space-y-2">
@@ -66,7 +86,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                             <Image src="/organizer-id.png" alt="event" height={32} width={32}/>
                                         </div>
                                         <div>
-                                            Organizer {organizerId}
+                                            Organizer {organizerDetails?.id}
                                         </div>
                                     </div>
 
@@ -75,7 +95,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                             <Image src="/email.png" alt="event" height={32} width={32}/>
                                         </div>
                                         <div>
-                                            Organizer Email
+                                            {organizerDetails?.email}
                                         </div>
                                     </div>
 
@@ -84,7 +104,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                             <Image src="/contact.png" alt="event" height={32} width={32}/>
                                         </div>
                                         <div>
-                                            Phone
+                                            {organizerDetails?.phone}
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +114,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                         {/* Action buttons */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4">
                             <Button
-                                className={` bg-gray-700 hover:bg-gray-800 text-white border-gray-700`}
+                                className={` bg-gray-700 hover:bg-gray-800 text-white border-gray-700 hover:cursor-pointer`}
                                 onClick={routeToDeleteAccount}
                             >
                                 <div className="flex items-center justify-center">

@@ -1,12 +1,11 @@
 'use client'
 
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
-
-interface RevenueDetails {
-    totalEarnings: number;
-}
+import axios from "axios";
+import {CreateTransactionRequest} from "@/types/entityTypes";
+import {useParams} from "next/navigation";
 
 interface BankDetails {
     bankName: string;
@@ -17,19 +16,47 @@ interface BankDetails {
 const Page = () => {
 
     //states
-    const [earnings, setEarnings] = useState<RevenueDetails>({
-        totalEarnings: 35000000
-    });
+    const [totalEarnings, setTotalEarnings] = useState<number>(0);
+    const [totalWithdrawals, setTotalWithdrawals] = useState<number>(0);
+    const [currentBalance, setCurrentBalance] = useState<number>(0);
+
+    //get params
+    const params = useParams();
+
+    const organizerId = params.organizerId;
+
     const [bankDetails, setBankDetails] = useState<BankDetails>({
         bankName: "Some bank",
         branchCode: "ZZZ525",
         accountNumber: "xxx xxx xxx"
     });
 
-    const handleWithdraw = () => {
-        // Handle withdraw logic
-        console.log('Withdrawing funds...');
+    //load data at page loading
+    useEffect(() => {
+        getTotalEarnings();
+    }, []);
+
+    const handleWithdraw = async () => {
+        try {
+            const transactionData: CreateTransactionRequest = {
+                amount: currentBalance,
+                organizerId: Number(organizerId),
+            };
+
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/transactions`,
+                transactionData
+            );
+
+            console.log("Transaction successful:", response.data);
+
+            // After a successful withdrawal, refresh earnings
+            getTotalEarnings();
+
+        } catch (err) {
+            console.error("Error during withdrawal:", err);
+        }
     };
+
 
     const handleChangeBank = () => {
         // Handle change bank logic
@@ -40,6 +67,21 @@ const Page = () => {
         // Handle add bank logic
         console.log('Adding new bank...');
     };
+
+    //fetch earnings by organizer
+    const getTotalEarnings =async () => {
+
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/earnings`);
+            console.log(response.data.entityData);
+            setTotalEarnings(response.data.entityData.totalEarnings);
+            setTotalWithdrawals(response.data.entityData.totalWithdrawals);
+            setCurrentBalance(response.data.entityData.currentBalance);
+        }catch (err){
+            console.log(err);
+        }
+
+    }
 
     return (
         <>
@@ -55,21 +97,41 @@ const Page = () => {
             <div className="p-3 sm:p-4 md:p-6 bg-white min-h-screen">
 
                 {/*  Total revenue section  */}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
-                        <h3 className="text-gray-500 font-medium">TOTAL REVENUE</h3>
+                        <h3 className="text-gray-500 font-medium">REVENUE DETAILS</h3>
                     </div>
                     <div
                         className="bg-white p-3 sm:p-4 rounded-lg my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-lg">
                         <div className="flex items-center gap-2 sm:gap-4">
                             <span className="text-gray-700 font-medium text-sm sm:text-base">
-                                Total Revenue - {earnings?.totalEarnings.toLocaleString()} LKR
+                                Total Earnings - {totalEarnings} LKR
                             </span>
                         </div>
+                    </div>
+
+                    <div
+                        className="bg-white p-3 sm:p-4 rounded-lg my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-lg">
+                        <div className="flex items-center gap-2 sm:gap-4">
+                            <span className="text-gray-700 font-medium text-sm sm:text-base">
+                                Total Withdrawals - {totalWithdrawals} LKR
+                            </span>
+                        </div>
+                    </div>
+
+                    <div
+                        className="bg-white p-3 sm:p-4 rounded-lg my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-lg">
+                        <div className="flex items-center gap-2 sm:gap-4">
+                            <span className="text-gray-700 font-medium text-sm sm:text-base">
+                                Current Balance - {currentBalance} LKR
+                            </span>
+                        </div>
+
                         <div className="flex gap-2">
                             <Button
                                 onClick={handleWithdraw}
-                                className="bg-white border border-black text-black hover:bg-black hover:text-white active:bg-gray-800 px-2 sm:px-3 py-1 text-xs sm:text-sm w-full sm:w-auto"
+                                className="bg-white border border-black text-black hover:bg-black hover:text-white active:bg-gray-800 px-2 sm:px-3 py-1 text-xs sm:text-sm w-full sm:w-auto hover:cursor-pointer"
                             >
                                 Withdraw
                             </Button>
@@ -78,13 +140,15 @@ const Page = () => {
                 </div>
 
                 {/*    Bank details section*/}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">YOUR BANK</h3>
                     </div>
                     <div className="bg-white shadow-xl text-black p-4 sm:p-6 rounded-lg my-[10px] relative">
                         <div className="flex items-center gap-3">
-                            <div className="flex justify-center items-center sm:h-32 sm:w-32 p-[18px] sm:p-[20px] mx-[10px] bg-gray-300 rounded-full">
+                            <div
+                                className="flex justify-center items-center sm:h-32 sm:w-32 p-[18px] sm:p-[20px] mx-[10px] bg-gray-300 rounded-full">
                                 <Image src="/bank.png" alt="bank" height={64} width={64}/>
                             </div>
                             <div className="sm:py-[20px] flex-1">
