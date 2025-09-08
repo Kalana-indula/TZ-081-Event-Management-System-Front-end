@@ -17,6 +17,7 @@ const Page = () => {
     const params = useParams();
 
     const eventId = params.eventId;
+    const organizerId = params.organizerId;
 
     useEffect(() => {
         getEventDetails();
@@ -24,30 +25,24 @@ const Page = () => {
         getSessionDetails();
     }, []);
 
-    const totalStats = {
-        attendees: 99,
-        revenue: "74,750.00",
-        profit: "37,375.00"
-    };
-
     //configure routes
     const route = useRouter();
 
     //route to attendees details
-    const routeToAttendees = (eventId: number) => {
-        route.push(`/organizer/event/${eventId}/attendees`);
+    const routeToAttendees = () => {
+        route.push(`/organizer/${organizerId}/event/${eventId}/attendees`);
     }
 
     //route to revenue details
-    const routeToRevenue = (eventId:number)=>{
-        route.push(`/organizer/${eventId}/revenue`);
+    const routeToRevenue = ()=>{
+        route.push(`/organizer/${organizerId}/revenue`);
     }
 
     //fetch event details
     const getEventDetails = async ()=>{
         try {
             const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/details`);
-            console.log(response.data.entityData.eventName);
+            // console.log(response.data.entityData);
             setEventDetails(response.data.entityData);
         }catch (err){
             console.log(err);
@@ -152,7 +147,7 @@ const Page = () => {
                             <tbody className="divide-y divide-gray-200">
                             {sessionDetails.length > 0 ? (
                                 <>
-                                    {sessionDetails.map((session, index) => (
+                                    {sessionDetails.map((session:Session, index) => (
                                         <tr key={index} className="hover:bg-gray-50">
                                             <td className="px-6 py-3 text-sm font-medium text-gray-900">{session.sessionNumber}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900">{session.attendees}</td>
@@ -162,9 +157,9 @@ const Page = () => {
                                     ))}
                                     <tr className="bg-gray-100 font-semibold">
                                         <td className="px-6 py-3 text-sm text-gray-900">Total</td>
-                                        <td className="px-6 py-3 text-sm text-gray-900">{totalStats.attendees}</td>
-                                        <td className="px-6 py-3 text-sm text-gray-900">{totalStats.revenue}.LKR</td>
-                                        <td className="px-6 py-3 text-sm text-gray-900">{totalStats.profit}.LKR</td>
+                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.totalAttendeesCount}</td>
+                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.earningsByEvent}.LKR</td>
+                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.totalProfit}.LKR</td>
                                     </tr>
                                 </>
                             ) : (
@@ -195,7 +190,7 @@ const Page = () => {
                     <div className="md:hidden space-y-4">
                         {sessionDetails.length > 0 ? (
                             <>
-                                {sessionDetails.map((session, index) => (
+                                {sessionDetails.map((session:Session, index) => (
                                     <div key={index}
                                          className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
                                         <div className="space-y-2">
@@ -224,15 +219,15 @@ const Page = () => {
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
                                             <p className="text-xs text-gray-500">Total Attendees</p>
-                                            <p className="text-sm text-gray-900">{totalStats.attendees}</p>
+                                            <p className="text-sm text-gray-900">{eventDetails?.totalAttendeesCount}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500">Total Revenue</p>
-                                            <p className="text-sm text-gray-900">{totalStats.revenue}.LKR</p>
+                                            <p className="text-sm text-gray-900">{eventDetails?.earningsByEvent}.LKR</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500">Total Profit</p>
-                                            <p className="text-sm text-gray-900">{totalStats.profit}.LKR</p>
+                                            <p className="text-sm text-gray-900">{eventDetails?.totalProfit}.LKR</p>
                                         </div>
                                     </div>
                                 </div>
@@ -260,12 +255,12 @@ const Page = () => {
                 {/*    buttons section*/}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 hover:cursor-pointer"
-                            onClick={() => routeToRevenue(1)}
+                            onClick={routeToRevenue}
                     >
                         Check Revenue
                     </Button>
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 hover:cursor-pointer"
-                            onClick={() => routeToAttendees(1)}
+                            onClick={routeToAttendees}
                     >
                         Attendee Details
                     </Button>

@@ -23,7 +23,6 @@ const Page = () => {
     const [eventCategories, setEventCategories] = useState<CategoryDetails[]>([]);
     const [eventCategoryId, setEventCategoryId] = useState<number>(0);
     const [bannerImage, setBannerImage] = useState<File | null>(null);
-    const [bannerImageUrl, setBannerImageUrl] = useState<string | null>(null);
     const [enableVipTickets, setEnableVipTickets] = useState(false)
     const [description, setDescription] = useState('')
     const [ticketTypes, setTicketTypes] = useState<TicketDetails[]>([
@@ -54,7 +53,7 @@ const Page = () => {
 
     //handle routing
     const routeToDashboard = (eventId: number) => {
-        route.push(`/organizer/event/${eventId}/dashboard`);
+        route.push(`/organizer/${organizerId}/event/${eventId}/dashboard`);
     }
 
     // Handle input changes
@@ -78,20 +77,6 @@ const Page = () => {
             setBannerImage(e.target.files[0]);
         }
         // setBannerImage(e.target.value)
-    }
-
-    //handle file image upload
-    const handleUpload = async ()=>{
-        try{
-            console.log(bannerImage);
-
-            //fetch image url
-            const url =await mediaUpload(bannerImage);
-            setBannerImageUrl(url);
-            console.log(url);
-        }catch (e){
-            console.log(e);
-        }
     }
 
     const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -131,55 +116,63 @@ const Page = () => {
 
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        const eventData:CreateEventBody= {
-            eventName:eventName,
-            startingDate:startingDate,
-            coverImageLink:bannerImageUrl,
-            description:description,
-            eventCategoryId:eventCategoryId,
-            organizerId:Number(organizerId),
-            tickets:ticketTypes
-        }
+        try {
+            // Upload image first (if one exists)
+            let uploadedUrl: string | null = null;
+            if (bannerImage) {
+                uploadedUrl = await mediaUpload(bannerImage);
+            }
 
-        try{
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,eventData,
+            //Build event data with the uploaded image url
+            const eventData: CreateEventBody = {
+                eventName:eventName,
+                startingDate:startingDate,
+                coverImageLink: uploadedUrl,
+                description:description,
+                eventCategoryId:eventCategoryId,
+                organizerId: Number(organizerId),
+                tickets: ticketTypes,
+            };
+
+            //Post event
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,
+                eventData,
                 {
                     headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             toast.success("Successfully added the event!");
-
-            setEventName('');
-            setStartingDate('');
-            setBannerImageUrl('');
-            setBannerImageUrl('');
-            setEnableVipTickets(false);
-            setDescription('')
-            setEventCategoryId(0);
-            setTicketTypes([{ ticketType: '', price: 0, ticketCount: 0 }])
-
-            console.log(response.data);
             routeToDashboard(response.data.event.id);
-        }catch (err){
-            handleApiError(err,"Failed to load categories");
-            toast.error('Failed to create event');
-        }
 
-        // Add your submission logic here
-        handleUpload();
-    }
+            // Reset form
+            setEventName("");
+            setStartingDate("");
+            setBannerImage(null);
+            setEnableVipTickets(false);
+            setDescription("");
+            setEventCategoryId(0);
+            setTicketTypes([{ ticketType: "", price: 0, ticketCount: 0 }]);
+
+        } catch (err) {
+            handleApiError(err, "Failed to create event");
+            toast.error("Failed to create event");
+        }
+    };
+
 
     const handleCancel = () => {
         setEventName('')
         setStartingDate('')
         setEnableVipTickets(false)
         setDescription('')
-        setTicketTypes([{ ticketType: '', price: 0, ticketCount: 0 }])
+        setTicketTypes([{ ticketType: '', price: '', ticketCount: 0 }])
     }
 
     return (
@@ -315,7 +308,7 @@ const Page = () => {
                                                     <span className="text-sm text-gray-500 mr-2">LKR</span>
                                                     <input
                                                         type="number"
-                                                        value={ticket.price}
+                                                        value={ticket.ticketPrice}
                                                         onChange={(e) => handleTicketTypeChange(index, 'price', e.target.value)}
                                                         className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                                     />
@@ -375,14 +368,14 @@ const Page = () => {
                                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                                     <button
                                         type="submit"
-                                        className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer"
                                     >
                                         Save Event
                                     </button>
                                     <button
                                         type="button"
                                         onClick={handleCancel}
-                                        className="flex-1 flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        className="flex-1 flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer"
                                     >
                                         Cancel
                                     </button>
