@@ -124,4 +124,9 @@ export interface BookingDetails {
     nic:string;
 }
 
+export interface EventCategoryDetails {
+    id:number;
+    category:string;
+}
+
 
