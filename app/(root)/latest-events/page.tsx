@@ -2,8 +2,6 @@
 
 import React from 'react'
 import {useRouter} from "next/navigation";
-import Image from "next/image";
-import {Button} from "@/components/ui/button";
 import EventCardDemo from "@/app/(root)/app-components/EventCardDemo";
 
 interface Event {
@@ -108,8 +106,8 @@ const Page = () => {
             {/* Header section */}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Featured Events</h1>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">Discover amazing events happening around you</p>
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Latest Events</h1>
+                    <p className="mt-1 text-sm sm:text-base text-gray-600">Newly launched events waiting for you to explore</p>
                 </div>
             </div>
 
