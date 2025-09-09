@@ -19,6 +19,10 @@ Developed using React.js for the frontend, Node.js for the backend, and MySQL fo
 <img width="1899" height="891" alt="image" src="https://github.com/user-attachments/assets/df078a83-c450-40dc-84f0-d3d88a609077" />
 <img width="1906" height="832" alt="image" src="https://github.com/user-attachments/assets/d1fefe3c-eae3-40dc-a366-394033a1b129" />
 
+## UI walkthrough video
+https://youtu.be/SEDoVyToiVs
+
+
 
 
 
