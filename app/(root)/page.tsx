@@ -23,7 +23,7 @@ const Page = () => {
         {
             id: 1,
             image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop",
-            date: "20 March 0000",
+            date: "20 March 2025",
             time: "09:00 AM",
             title: "Tech Innovators Summit 2025",
             venue: "Convention Center, San Francisco",
@@ -35,63 +35,135 @@ const Page = () => {
         {
             id: 2,
             image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=250&fit=crop",
-            date: "20 March 0000",
+            date: "25 March 2025",
             time: "10:00 AM",
             title: "Global Sustainability Forum",
             venue: "Eco Hall, New York",
             type: "Forum",
             ticketPrice: "149.99",
             currency: "USD",
-            onBookNow: () => console.log("Booking Global Sustainability Forum")
+            onBookNow: () => routeToBooking(2)
         },
         {
             id: 3,
             image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
-            date: "20 March 0000",
+            date: "28 March 2025",
             time: "11:00 AM",
             title: "Crafting Compelling Stories",
             venue: "Writers Guild, Los Angeles",
             type: "Workshop",
             ticketPrice: "99.99",
             currency: "USD",
-            onBookNow: () => console.log("Booking Crafting Compelling Stories")
+            onBookNow: () => routeToBooking(3)
+        },
+        {
+            id: 4,
+            image: "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400&h=250&fit=crop",
+            date: "30 March 2025",
+            time: "02:00 PM",
+            title: "Digital Marketing Masterclass",
+            venue: "Business Center, Chicago",
+            type: "Masterclass",
+            ticketPrice: "299.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(4)
+        },
+        {
+            id: 5,
+            image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=250&fit=crop",
+            date: "05 April 2025",
+            time: "06:00 PM",
+            title: "Jazz Under The Stars",
+            venue: "Central Park, New York",
+            type: "Concert",
+            ticketPrice: "75.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(5)
+        },
+        {
+            id: 6,
+            image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=250&fit=crop",
+            date: "10 April 2025",
+            time: "09:30 AM",
+            title: "Health & Wellness Expo",
+            venue: "Community Center, Miami",
+            type: "Expo",
+            ticketPrice: "45.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(6)
         }
     ];
 
     const popularEvents: Event[] = [
         {
-            id: 4,
-            image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=250&fit=crop",
-            date: "20 March 0000",
-            time: "01:00 PM",
+            id: 1,
+            image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop",
+            date: "20 March 2025",
+            time: "09:00 AM",
             title: "Tech Innovators Summit 2025",
-            venue: "Tech Hub, Seattle",
+            venue: "Convention Center, San Francisco",
             type: "Conference",
             ticketPrice: "199.99",
             currency: "USD",
-            onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+            onBookNow: () => routeToBooking(1)
+        },
+        {
+            id: 2,
+            image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=250&fit=crop",
+            date: "25 March 2025",
+            time: "10:00 AM",
+            title: "Global Sustainability Forum",
+            venue: "Eco Hall, New York",
+            type: "Forum",
+            ticketPrice: "149.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(2)
+        },
+        {
+            id: 3,
+            image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
+            date: "28 March 2025",
+            time: "11:00 AM",
+            title: "Crafting Compelling Stories",
+            venue: "Writers Guild, Los Angeles",
+            type: "Workshop",
+            ticketPrice: "99.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(3)
+        },
+        {
+            id: 4,
+            image: "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400&h=250&fit=crop",
+            date: "30 March 2025",
+            time: "02:00 PM",
+            title: "Digital Marketing Masterclass",
+            venue: "Business Center, Chicago",
+            type: "Masterclass",
+            ticketPrice: "299.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(4)
         },
         {
             id: 5,
-            image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=250&fit=crop",
-            date: "20 March 0000",
-            time: "02:00 PM",
-            title: "Tech Innovators Summit 2025",
-            venue: "Innovation Center, Boston",
-            type: "Conference",
-            ticketPrice: "199.99",
+            image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=250&fit=crop",
+            date: "05 April 2025",
+            time: "06:00 PM",
+            title: "Jazz Under The Stars",
+            venue: "Central Park, New York",
+            type: "Concert",
+            ticketPrice: "75.99",
             currency: "USD",
-            onBookNow: () => console.log("Booking Tech Innovators Summit 2025")
+            onBookNow: () => routeToBooking(5)
         },
         {
             id: 6,
-            image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop",
-            date: "20 March 0000",
-            time: "03:00 PM",
-            title: "Tech Innovators Summit 2025",
-            venue: "Tech Park, Austin",
-            type: "Conference",
-            ticketPrice: "199.99",
+            image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=250&fit=crop",
+            date: "10 April 2025",
+            time: "09:30 AM",
+            title: "Health & Wellness Expo",
+            venue: "Community Center, Miami",
+            type: "Expo",
+            ticketPrice: "45.99",
             currency: "USD",
             onBookNow: () => routeToBooking(6)
         }
@@ -99,40 +171,76 @@ const Page = () => {
 
     const latestEvents: Event[] = [
         {
-            id: 7,
-            image: "https://images.unsplash.com/photo-1559223607-b4d0555ae227?w=400&h=250&fit=crop",
-            date: "20 March 0000",
-            time: "04:00 PM",
+            id: 1,
+            image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop",
+            date: "20 March 2025",
+            time: "09:00 AM",
             title: "Tech Innovators Summit 2025",
-            venue: "Summit Arena, Chicago",
+            venue: "Convention Center, San Francisco",
             type: "Conference",
             ticketPrice: "199.99",
             currency: "USD",
-            onBookNow: () => routeToBooking(7)
+            onBookNow: () => routeToBooking(1)
         },
         {
-            id: 8,
-            image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=250&fit=crop",
-            date: "20 March 0000",
-            time: "05:00 PM",
-            title: "Tech Innovators Summit 2025",
-            venue: "Tech Forum, Miami",
-            type: "Conference",
-            ticketPrice: "199.99",
+            id: 2,
+            image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=250&fit=crop",
+            date: "25 March 2025",
+            time: "10:00 AM",
+            title: "Global Sustainability Forum",
+            venue: "Eco Hall, New York",
+            type: "Forum",
+            ticketPrice: "149.99",
             currency: "USD",
-            onBookNow: () => routeToBooking(8)
+            onBookNow: () => routeToBooking(2)
         },
         {
-            id: 9,
-            image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=250&fit=crop",
-            date: "20 March 0000",
+            id: 3,
+            image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
+            date: "28 March 2025",
+            time: "11:00 AM",
+            title: "Crafting Compelling Stories",
+            venue: "Writers Guild, Los Angeles",
+            type: "Workshop",
+            ticketPrice: "99.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(3)
+        },
+        {
+            id: 4,
+            image: "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400&h=250&fit=crop",
+            date: "30 March 2025",
+            time: "02:00 PM",
+            title: "Digital Marketing Masterclass",
+            venue: "Business Center, Chicago",
+            type: "Masterclass",
+            ticketPrice: "299.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(4)
+        },
+        {
+            id: 5,
+            image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=250&fit=crop",
+            date: "05 April 2025",
             time: "06:00 PM",
-            title: "Tech Innovators Summit 2025",
-            venue: "Innovation Hub, Denver",
-            type: "Conference",
-            ticketPrice: "199.99",
+            title: "Jazz Under The Stars",
+            venue: "Central Park, New York",
+            type: "Concert",
+            ticketPrice: "75.99",
             currency: "USD",
-            onBookNow: () => routeToBooking(9)
+            onBookNow: () => routeToBooking(5)
+        },
+        {
+            id: 6,
+            image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=250&fit=crop",
+            date: "10 April 2025",
+            time: "09:30 AM",
+            title: "Health & Wellness Expo",
+            venue: "Community Center, Miami",
+            type: "Expo",
+            ticketPrice: "45.99",
+            currency: "USD",
+            onBookNow: () => routeToBooking(6)
         }
     ];
 
@@ -147,6 +255,16 @@ const Page = () => {
     //route to featured events
     const routeToFeaturedEvents = () => {
         router.push(`/featured-events`);
+    }
+
+    //route to popular events
+    const routeToPopularEvents = () =>{
+        router.push(`/popular-events`);
+    }
+
+    //route to latest events
+    const routeToLatestEvents = ()=>{
+        router.push(`/latest-events`);
     }
 
     return (
@@ -187,19 +305,18 @@ const Page = () => {
                 </div>
 
                 {/* Card sections */}
-                <div className="bg-gray-50 py-12">
+                <div className="bg-gray-50 py-5">
                     {/* Featured Events */}
-                    <div className="px-3 py-8 sm:px-4 sm:py-10 md:px-6 lg:px-8 max-w-7xl mx-auto">
+                    <div className="px-3 py-1 sm:px-4 sm:py-5 md:px-8 bg-white">
                         <div className="flex justify-between items-center mb-8">
                             <h2 className="text-3xl font-bold text-gray-900">FEATURED EVENTS</h2>
-                            <button
-                                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:cursor-pointer"
+                            <button className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:cursor-pointer"
                                 onClick={routeToFeaturedEvents}
                             >
                                 VIEW ALL
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {featuredEvents.map((event) => (
                                 <div key={event.id} className="flex justify-center">
                                     <EventCardDemo event={event}/>
@@ -209,15 +326,16 @@ const Page = () => {
                     </div>
 
                     {/* Popular Events */}
-                    <div className="px-3 py-8 sm:px-4 sm:py-10 md:px-6 lg:px-8 max-w-7xl mx-auto">
+                    <div className="px-3 py-1 sm:px-4 sm:py-5 md:px-8 bg-white">
                         <div className="flex justify-between items-center mb-8">
                             <h2 className="text-3xl font-bold text-gray-900">POPULAR EVENTS</h2>
-                            <button
-                                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                            <button className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:cursor-pointer"
+                                onClick={routeToPopularEvents}
+                            >
                                 VIEW ALL
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {popularEvents.map((event) => (
                                 <div key={event.id} className="flex justify-center">
                                     <EventCardDemo event={event}/>
@@ -227,15 +345,17 @@ const Page = () => {
                     </div>
 
                     {/*Latest Events */}
-                    <div className="px-3 py-8 sm:px-4 sm:py-10 md:px-6 lg:px-8 max-w-7xl mx-auto">
+                    <div className="px-3 py-1 sm:px-4 sm:py-5 md:px-8 bg-white">
                         <div className="flex justify-between items-center mb-8">
                             <h2 className="text-3xl font-bold text-gray-900">LATEST EVENTS</h2>
                             <button
-                                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:cursor-pointer"
+                                onClick={routeToLatestEvents}
+                            >
                                 VIEW ALL
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {latestEvents.map((event) => (
                                 <div key={event.id} className="flex justify-center">
                                     <EventCardDemo event={event}/>
