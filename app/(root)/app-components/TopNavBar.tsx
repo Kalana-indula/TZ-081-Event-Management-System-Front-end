@@ -1,10 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Link from "next/link";
 import {IoIosMenu} from "react-icons/io";
 import {useRouter} from "next/navigation";
 import { House} from "lucide-react";
+import {EventCategoryDetails} from "@/types/entityTypes";
+import axios from "axios";
 
 interface OrganizerHeaderProps {
     isNavBarOpen: boolean;
@@ -12,6 +14,8 @@ interface OrganizerHeaderProps {
 }
 
 const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
+
+    const [categories, setCategories] = useState<EventCategoryDetails[]>([]);
 
     const router = useRouter();
 
@@ -21,6 +25,20 @@ const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
 
     const navigateToLogin = () => {
         router.push("/login");
+    }
+
+    useEffect(() => {
+        getCategories();
+    }, []);
+
+    //fetch all category details
+    const getCategories = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/categories`);
+            setCategories(response.data.entityList || response.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
     }
 
     return (
@@ -39,22 +57,38 @@ const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
                                 </div>
                             </Link>
                         </div>
+
+                        {/*categories*/}
                         <div className="flex items-center gap-3">
-                            <Link className="hover:cursor-pointer" href="/">
-                                <div className="text-[18px] text-white font-semibold">
-                                    Entertainment
-                                </div>
-                            </Link>
-                            <Link className="hover:cursor-pointer" href="/">
-                                <div className="text-[18px] text-white font-semibold">
-                                    Educational
-                                </div>
-                            </Link>
-                            <Link className="hover:cursor-pointer" href="/">
-                                <div className="text-[18px] text-white font-medium">
-                                    Business & Tech
-                                </div>
-                            </Link>
+                            {categories && categories.length > 0 ? (
+                                categories.map((category, index) => (
+                                    <Link key={category.id || index} className="hover:cursor-pointer" href={`/categories/${category.category}`}>
+                                        <div className="text-[18px] text-white font-semibold hover:text-gray-200 transition-colors duration-200">
+                                            {category.category}
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+
+                                // Fallback categories while loading or if API fails
+                                <>
+                                    <Link className="hover:cursor-pointer" href="/">
+                                        <div className="text-[18px] text-white font-semibold">
+                                            Entertainment
+                                        </div>
+                                    </Link>
+                                    <Link className="hover:cursor-pointer" href="/">
+                                        <div className="text-[18px] text-white font-semibold">
+                                            Educational
+                                        </div>
+                                    </Link>
+                                    <Link className="hover:cursor-pointer" href="/">
+                                        <div className="text-[18px] text-white font-medium">
+                                            Business & Tech
+                                        </div>
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

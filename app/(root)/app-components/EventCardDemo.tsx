@@ -1,32 +1,29 @@
 'use client'
 
 import React from 'react';
-
-interface Event {
-    id?: number;
-    date?: string;
-    time?: string;
-    title?: string;
-    venue?: string;
-    type?: string;
-    ticketPrice?: string;
-    currency?: string;
-    image?: string;
-    onBookNow?: () => void;
-}
+import {useRouter} from "next/navigation";
+import {EventDetails} from "@/types/entityTypes";
 
 interface EventCardProps {
-    event: Event;
+    event: EventDetails;
 }
 
 const EventCardDemo = ({ event }:EventCardProps) => {
+
+    const router=useRouter();
+
+    //route to booking page
+    const routeToBooking = ()=>{
+        router.push(`/event/${event.eventId}/booking`);
+    }
+
     return (
         <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full">
             {/* Event Image */}
             <div className="relative h-48 overflow-hidden">
                 <img
-                    src={event.image}
-                    alt={event.title}
+                    src={event.coverImageLink || '/default-event-image.jpg'} // Fallback image
+                    alt={event.eventName || 'Event'}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                 />
                 {/* Crown/Premium Badge */}
@@ -42,28 +39,28 @@ const EventCardDemo = ({ event }:EventCardProps) => {
                 {/* Date and Time */}
                 <div className="flex items-center justify-between mb-3">
                     <div className="text-blue-600 font-semibold text-sm">
-                        {event.date}
+                        {event.startingDate || 'Date TBD'}
                     </div>
                     <div className="text-gray-600 text-sm">
-                        {event.time}
+                        {event.startingDate || 'Time TBD'}
                     </div>
                 </div>
 
                 {/* Event Title */}
                 <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">
-                    {event.title}
+                    {event.eventName || 'Event Name'}
                 </h3>
 
-                {/* Venue */}
+                {/* Venue - Using eventDescription as venue since venue isn't in interface */}
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {event.venue}
+                    {event.eventDescription || 'Event description not available'}
                 </p>
 
                 {/* Event Type and Tickets */}
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <span className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium">
-                            {event.type}
+                            {event.eventType || 'Event'}
                         </span>
                     </div>
 
@@ -71,7 +68,7 @@ const EventCardDemo = ({ event }:EventCardProps) => {
                         <div className="text-sm text-gray-600">
                             <span className="text-gray-500">Tickets</span>
                             <div className="font-semibold text-gray-900">
-                                {event.ticketPrice} {event.currency} <span className="text-xs text-gray-500">Upwards</span>
+                                1000 LKR. <span className="text-xs text-gray-500">Upwards</span>
                             </div>
                         </div>
                     </div>
@@ -79,7 +76,7 @@ const EventCardDemo = ({ event }:EventCardProps) => {
 
                 {/* Book Now Button */}
                 <button
-                    onClick={event.onBookNow}
+                    onClick={routeToBooking}
                     className="w-full mt-4 bg-blue-900 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:cursor-pointer hover:scale-105 shadow-md hover:shadow-lg"
                 >
                     Book Now ≫

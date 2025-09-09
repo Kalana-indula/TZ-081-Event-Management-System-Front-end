@@ -1,123 +1,79 @@
 'use client'
 
-import React from 'react'
-import {useRouter} from "next/navigation";
+import React, {useEffect, useState} from 'react'
+import {useParams} from "next/navigation";
+import {EventDetails} from "@/types/entityTypes";
+import axios, {AxiosError} from "axios";
 import EventCardDemo from "@/app/(root)/app-components/EventCardDemo";
 
-interface Event {
-    id: number;
-    image: string;
-    date: string;
-    time: string;
-    title: string;
-    venue: string;
-    type: string;
-    ticketPrice: string;
-    currency: string;
-    onBookNow: () => void;
-}
-
 const Page = () => {
-    //configure routing
-    const router = useRouter();
 
-    //route to booking page
-    const routeToBooking = (eventId: number) => {
-        router.push(`/event/${eventId}/booking`);
+    //states
+    const [events, setEvents] = useState<EventDetails[]>([])
+
+    //get params
+    const params=useParams();
+
+    //get category id
+    const categoryName=params.categoryName;
+
+    useEffect(() => {
+        console.log("categoryName: "+categoryName);
+        if (categoryName) {
+            getEventsByCategory();
+        }
+    }, [categoryName]);
+
+    //get event details
+    const getEventsByCategory = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/categories/${categoryName}`);
+            console.log('Events by category:', response.data);
+            setEvents(response.data.entityList || response.data.events || response.data);
+        } catch (error) {
+            console.error('Error fetching events by category:', error);
+
+            // Check if it's an AxiosError (HTTP error)
+            if (error instanceof AxiosError) {
+                console.log('This is an AxiosError');
+                console.log('Status:', error.response?.status);
+                console.log('Status Text:', error.response?.statusText);
+                console.log('Response Data:', error.response?.data);
+
+                if (error.response?.status === 404) {
+                    // 404 means no events found for this category - this is normal
+                    console.log("No events found for category:", categoryName);
+                } else {
+                    // Other HTTP errors (500, network issues, etc.)
+                    console.error("HTTP Error:", error.response?.status, error.response?.data);
+                }
+            } else {
+                // Non-HTTP errors (network timeout, etc.)
+                console.error("Network or other error:", error);
+            }
+
+            // Always set empty array for any error
+            setEvents([]);
+        }
     }
 
-    const featuredEvents: Event[] = [
-        {
-            id: 1,
-            image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop",
-            date: "20 March 2025",
-            time: "09:00 AM",
-            title: "Tech Innovators Summit 2025",
-            venue: "Convention Center, San Francisco",
-            type: "Conference",
-            ticketPrice: "199.99",
-            currency: "USD",
-            onBookNow: () => routeToBooking(1)
-        },
-        {
-            id: 2,
-            image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=250&fit=crop",
-            date: "25 March 2025",
-            time: "10:00 AM",
-            title: "Global Sustainability Forum",
-            venue: "Eco Hall, New York",
-            type: "Forum",
-            ticketPrice: "149.99",
-            currency: "USD",
-            onBookNow: () => routeToBooking(2)
-        },
-        {
-            id: 3,
-            image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
-            date: "28 March 2025",
-            time: "11:00 AM",
-            title: "Crafting Compelling Stories",
-            venue: "Writers Guild, Los Angeles",
-            type: "Workshop",
-            ticketPrice: "99.99",
-            currency: "USD",
-            onBookNow: () => routeToBooking(3)
-        },
-        {
-            id: 4,
-            image: "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400&h=250&fit=crop",
-            date: "30 March 2025",
-            time: "02:00 PM",
-            title: "Digital Marketing Masterclass",
-            venue: "Business Center, Chicago",
-            type: "Masterclass",
-            ticketPrice: "299.99",
-            currency: "USD",
-            onBookNow: () => routeToBooking(4)
-        },
-        {
-            id: 5,
-            image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=250&fit=crop",
-            date: "05 April 2025",
-            time: "06:00 PM",
-            title: "Jazz Under The Stars",
-            venue: "Central Park, New York",
-            type: "Concert",
-            ticketPrice: "75.99",
-            currency: "USD",
-            onBookNow: () => routeToBooking(5)
-        },
-        {
-            id: 6,
-            image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=250&fit=crop",
-            date: "10 April 2025",
-            time: "09:30 AM",
-            title: "Health & Wellness Expo",
-            venue: "Community Center, Miami",
-            type: "Expo",
-            ticketPrice: "45.99",
-            currency: "USD",
-            onBookNow: () => routeToBooking(6)
-        }
-    ];
-
     return (
-        <>
+        <div className="min-h-screen flex flex-col">
             {/* Header section */}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Featured Events</h1>
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">{categoryName}</h1>
                     <p className="mt-1 text-sm sm:text-base text-gray-600">Discover amazing events happening around you</p>
                 </div>
             </div>
 
             {/* Main content */}
-            <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-8 bg-white">
+            <div className="flex-1 px-3 py-1 sm:px-4 sm:py-2 md:px-8 bg-white">
                 {/* Events grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {featuredEvents && featuredEvents.length > 0 ? (
-                        featuredEvents.map((event) => (
-                            <div key={event.id} className="flex justify-center">
+                    {events && events.length > 0 ? (
+                        events.map((event:EventDetails) => (
+                            <div key={event.eventId} className="flex justify-center">
                                 <EventCardDemo event={event}/>
                             </div>
                         ))
@@ -138,11 +94,10 @@ const Page = () => {
                         </div>
                     )}
                 </div>
-
             </div>
 
             {/*Footer section*/}
-            <footer className="bg-gray-700 text-white py-12">
+            <footer className="bg-gray-700 text-white py-12 mt-auto">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div className="col-span-1 lg:col-span-2">
@@ -187,8 +142,7 @@ const Page = () => {
                     </div>
                 </div>
             </footer>
-        </>
+        </div>
     )
 }
-
 export default Page
