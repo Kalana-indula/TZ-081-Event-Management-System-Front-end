@@ -6,10 +6,12 @@ import {Switch} from "@/components/ui/switch";
 import {useParams, useRouter} from "next/navigation";
 import axios from "axios";
 import {handleApiError} from "@/lib/utils";
-import {EventDetails, Session, TicketDetails} from "@/types/entityTypes";
+import {EventDetails, EventStatus, Session, TicketDetails} from "@/types/entityTypes";
 import Image from "next/image";
 import approvalStates from "@/data/EventStatusDetails";
-
+import {Clock, Eye, EyeOff} from "lucide-react";
+import {toast} from "react-hot-toast";
+import PublishEventSwitch from "@/app/(control)/organizer/organizer-components/PublishEventSwitch";
 
 const Page = () => {
     //states
@@ -24,17 +26,19 @@ const Page = () => {
     //event status
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
     const [status, setStatus] = useState<string>('On Going');
-    const [eventDetails,setEventDetails]=useState<EventDetails>();
-    const [ticketDetails,setTicketDetails]=useState<TicketDetails[]>([]);
+    const [eventDetails, setEventDetails] = useState<EventDetails>();
+    const [ticketDetails, setTicketDetails] = useState<TicketDetails[]>([]);
+    const [isPublished, setIsPublished] = useState<boolean>(false);
+    const [startingDate, setStartingDate] = useState<string>("");
+    const [startingTime, setStartingTime] = useState<string>("");
 
-    const params=useParams();
+    const params = useParams();
 
-    const eventId=params.eventId;
-    const organizerId=params.organizerId;
+    const eventId = params.eventId;
+    const organizerId = params.organizerId;
 
     //load the data at page loading
     useEffect(() => {
-        console.log(eventId);
         getSessionDetails();
         getEventDetails();
         getTicketDetails();
@@ -42,23 +46,66 @@ const Page = () => {
 
     // Countdown timer effect
     useEffect(() => {
+        if (!startingDate) return; // exit if no date is set
+
+        const targetTime = new Date(startingDate).getTime();
+        if (isNaN(targetTime)) return; // exit if date is invalid
+
         const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev.seconds > 0) {
-                    return {...prev, seconds: prev.seconds - 1};
-                } else if (prev.minutes > 0) {
-                    return {...prev, minutes: prev.minutes - 1, seconds: 59};
-                } else if (prev.hours > 0) {
-                    return {...prev, hours: prev.hours - 1, minutes: 59, seconds: 59};
-                } else if (prev.days > 0) {
-                    return {...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59};
-                }
-                return prev;
-            });
+            const now = new Date().getTime();
+            const diff = targetTime - now;
+
+            if (diff <= 0) {
+                clearInterval(timer);
+                setTimeLeft({
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                });
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            setTimeLeft({days, hours, minutes, seconds});
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [startingDate]);
+
+    //format time
+    const formatToAmPm = (timeString: string) => {
+        return new Date(`1970-01-01T${timeString}Z`).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
+
+
+    // Auto start event when conditions are met
+    useEffect(() => {
+        if (!startingDate || !startingTime || isCompleted || status === "On Going" || status === "Completed") return;
+
+        const checkStart = () => {
+            const now = new Date();
+            const eventStart = new Date(`${startingDate}T${startingTime}`);
+
+            if (now >= eventStart && status !== "On Going" && status !== "Completed") {
+                startEvent();
+            }
+        };
+
+        checkStart();
+
+        const interval = setInterval(checkStart, 10000);
+        return () => clearInterval(interval);
+    }, [startingDate, startingTime, isCompleted, status]);
+
 
     //configure routing
     const route = useRouter();
@@ -68,43 +115,105 @@ const Page = () => {
         route.push(`/organizer/${organizerId}/event/${eventId}/add-session`);
     }
 
-    const routeToEventStats = (eventId:number)=>{
+    const routeToEventStats = (eventId: number) => {
         route.push(`/organizer/${organizerId}/event/${eventId}/statistics`);
     }
 
     //get event details
-    const getEventDetails = async ()=>{
+    const getEventDetails = async () => {
         try {
-            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/details`);
-            console.log(response.data.entityData.status);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/details`);
             //set event state
             setIsCompleted(response.data.entityData.isCompleted);
+            setIsPublished(response.data.entityData.isPublished);
             setEventDetails(response.data.entityData);
             setStatus(response.data.entityData.status);
-        }catch (err){
-            handleApiError(err,"Failed to load events");
+        } catch (err) {
+            handleApiError(err, "Failed to load events");
         }
     }
 
     //get session details
-    const getSessionDetails = async ()=>{
-        try{
-            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/sessions`);
-            console.log(response.data.sessionList);
-            setSessionDetails(response.data.sessionList);
+    const getSessionDetails = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/sessions`);
 
-        }catch(err){
-            handleApiError(err,"No sessions available");
+            if (response.data.sessionList.length > 0) {
+                setSessionDetails(response.data.sessionList);
+                setStartingTime(response.data.sessionList[0].startTime);
+                setStartingDate(response.data.sessionList[0].date);
+            } else {
+                setStartingDate("");
+            }
+
+        } catch (err) {
+            handleApiError(err, "Failed to load events");
         }
     }
 
     //get ticket details
-    const getTicketDetails = async ()=>{
-        try{
-            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/tickets`);
-            console.log(response.data.entityList);
+    const getTicketDetails = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/tickets`);
             setTicketDetails(response.data.entityList);
-        }catch (err){
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    //publish event
+    const publishEvent = async () => {
+        try {
+            const response = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/publish`
+            );
+
+            if (response.status === 200) {
+                // Update local state to reflect the published status
+                setIsPublished(response.data.entityData.isPublished);
+
+                // Optionally show a success message
+                toast.success("Event published successfully");
+                // You might want to refresh event details to get the latest data
+                getEventDetails();
+            }
+        } catch (err) {
+            handleApiError(err, "Failed to publish event");
+        }
+    }
+
+    //mark event as completed
+    const completeEvent = async () => {
+        const statusUpdate: EventStatus = {
+            isApproved: true,
+            isDisapproved: false,
+            isStarted: true,
+            isCompleted: true
+        }
+
+        try {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/status`, statusUpdate);
+            setStatus(response.data.updatedData.eventStatus.statusName);
+            setIsCompleted(response.data.updatedData.isCompleted);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    //mark event as ongoing
+    const startEvent = async () => {
+        const statusUpdate: EventStatus = {
+            isApproved: true,
+            isDisapproved: false,
+            isStarted: true,
+            isCompleted: false
+        }
+
+        try {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/status`, statusUpdate);
+            setStatus(response.data.updatedData.eventStatus.statusName);
+            setIsCompleted(response.data.updatedData.isCompleted);
+        } catch (err) {
             console.log(err);
         }
     }
@@ -143,8 +252,9 @@ const Page = () => {
                 <div
                     className="display-event bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
-                        <h3 className="text-gray-500 font-medium">EVENT DETAILS</h3>
+                        <h3 className="text-gray-500 font-medium">EVENT DETAILS {startingDate}</h3>
                     </div>
+
                     <div className="bg-white shadow-xl text-black p-4 sm:p-6 rounded-lg my-[10px] relative">
                         <div className="flex items-center gap-3">
                             <div
@@ -200,62 +310,118 @@ const Page = () => {
                                 );
                             })}
                         </div>
+                        <div className="flex justify-center mt-2 space-x-1 text-sm text-gray-500 items-center">
+                            <div>
+                                <Eye className={`${isPublished ? 'block' : 'hidden'}`}
+                                     strokeWidth={0.75}
+                                />
+                            </div>
+                            <div>
+                                <EyeOff className={`${isPublished ? 'hidden' : 'block'}`}
+                                        strokeWidth={0.75}
+                                />
+                            </div>
+                            <div>
+                                {isPublished ? 'Your event is visible to the audience' : 'Your event is not public. It is not visible to the audience'}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/*count down section*/}
-                <div
-                    className={`display-countdown bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm 
+                <div className={`display-countdown bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm 
                     ${status === 'Pending Approval' || status === 'Completed' || status === 'On Going' ? 'hidden' : ''}`}>
                     <div>
-                        <h3 className="text-gray-500 font-medium py-2">EVENT STARTS ON</h3>
+                        <h3 className="text-gray-500 font-medium py-2">EVENT WILL START IN</h3>
                     </div>
 
-                    <div className="bg-white p-4 sm:p-6 rounded-md">
-                        <div className="flex justify-center items-center space-x-2 sm:space-x-4 md:space-x-6">
-                            {/* Days */}
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
-                                    {String(timeLeft.days).padStart(2, '0')}
-                                </div>
-                                <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">DAYS</span>
-                            </div>
+                    <div className="bg-white p-4 rounded-md">
+                        {/*clock*/}
+                        {isPublished ? (
+                            <>
+                                <div className={`flex justify-center items-center space-x-2 sm:space-x-4 md:space-x-6 ${timeLeft.days === 0 ? 'hidden' : 'block'}`}>
+                                    {/* Days */}
+                                    <div className="flex flex-col items-center">
+                                        <div
+                                            className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
+                                            {String(timeLeft.days).padStart(2, '0')}
+                                        </div>
+                                        <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">DAYS</span>
+                                    </div>
 
-                            {/* Hours */}
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
-                                    {String(timeLeft.hours).padStart(2, '0')}
-                                </div>
-                                <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">HOURS</span>
-                            </div>
+                                    {/* Hours */}
+                                    <div className="flex flex-col items-center">
+                                        <div
+                                            className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
+                                            {String(timeLeft.hours).padStart(2, '0')}
+                                        </div>
+                                        <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">HOURS</span>
+                                    </div>
 
-                            {/* Minutes */}
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
-                                    {String(timeLeft.minutes).padStart(2, '0')}
-                                </div>
-                                <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">MINS</span>
-                            </div>
+                                    {/* Minutes */}
+                                    <div className="flex flex-col items-center">
+                                        <div
+                                            className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
+                                            {String(timeLeft.minutes).padStart(2, '0')}
+                                        </div>
+                                        <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">MINS</span>
+                                    </div>
 
-                            {/* Seconds */}
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
-                                    {String(timeLeft.seconds).padStart(2, '0')}
+                                    {/* Seconds */}
+                                    <div className="flex flex-col items-center">
+                                        <div
+                                            className="bg-blue-600 text-white text-2xl sm:text-3xl md:text-4xl font-bold px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-md min-w-[60px] sm:min-w-[70px] md:min-w-[80px] text-center">
+                                            {String(timeLeft.seconds).padStart(2, '0')}
+                                        </div>
+                                        <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">SECS</span>
+                                    </div>
                                 </div>
-                                <span className="text-xs sm:text-sm font-medium text-gray-600 mt-2">SECS</span>
+
+                                {/*message*/}
+                                <div className={`flex flex-col items-center space-y-2 ${timeLeft.days !== 0 ? 'hidden' : 'block'}`}>
+                                    <div className="font-semibold text-xl">
+                                        Your Event Is Happening Today
+                                    </div>
+                                    <div className="flex flex-col items-center text-[15px] text-gray-500 p-2 bg-gray-200 rounded-lg">
+                                        <div>
+                                            Will Start On:
+                                        </div>
+                                        <div className="flex justify-center items-center text-[22px] gap-1">
+                                            <div>
+                                                <Clock strokeWidth={1.5} size={22} />
+                                            </div>
+                                            <div>
+                                                {startingTime ? formatToAmPm(startingTime) : "N/A"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-2">
+                                <div
+                                    className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">Event Not Published</h3>
+                                <p className="text-sm text-gray-500 text-center">Publish your event to make it visible
+                                    to audience</p>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
                 {/*table section*/}
 
                 {/*Ticket data*/}
-                <div className="display-sessions bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-sessions bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">TICKET DETAILS</h3>
                     </div>
@@ -481,11 +647,24 @@ const Page = () => {
                     <label className="text-sm sm:text-base font-medium text-gray-700">Mark Event Has Completed</label>
                     <Switch
                         checked={isCompleted}
-                        onCheckedChange={setIsCompleted}
+                        onCheckedChange={completeEvent}
                         disabled={isCompleted}
                     />
                 </div>
+
+                {/*mark event as published*/}
+                <div>
+                    <PublishEventSwitch
+                        isPublished={isPublished}
+                        status={status}
+                        sessionDetails={sessionDetails}
+                        onPublish={publishEvent}
+                    />
+
+                </div>
             </div>
+
+
         </>
     )
 }

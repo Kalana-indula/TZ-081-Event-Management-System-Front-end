@@ -18,11 +18,13 @@ const Page = () => {
 
     const eventId = params.eventId;
 
+    const organizerId=params.organizerId;
+
     //configure routing
     const router=useRouter();
 
     const routeToEventDashboard = ()=>{
-        router.push(`/organizer/event/${eventId}/dashboard`);
+        router.push(`/organizer/${organizerId}/event/${eventId}/dashboard`);
     }
 
     useEffect(() => {
