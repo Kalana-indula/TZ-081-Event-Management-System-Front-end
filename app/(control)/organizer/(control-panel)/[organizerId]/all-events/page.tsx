@@ -73,7 +73,6 @@ const Page = () => {
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
             setTableData(response.data.onGoingEvents);
-            console.log(response.data);
 
         }catch (err){
             handleApiError(err,"Failed to load events");
@@ -147,7 +146,7 @@ const Page = () => {
                                     isPending ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                                 }`}
                             >
-                                Pending Events
+                                Up Coming Events
                             </button>
                             <button
                                 onClick={handleCompletedTab}

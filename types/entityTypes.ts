@@ -10,6 +10,7 @@ export interface EventDetails {
     coverImageLink?: string | null;
     eventDescription?: string | null;
     isApproved?: boolean;
+    isPublished?:boolean;
     status?: string;
     earningsByEvent ?:number;
     totalProfit ?:number;

@@ -307,23 +307,23 @@ const Page = () => {
                 {/* Card sections */}
                 <div className="bg-gray-50 py-5">
                     {/* Featured Events */}
-                    <div className="px-3 py-1 sm:px-4 sm:py-5 md:px-8 bg-white">
-                        <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-3xl font-bold text-gray-900">FEATURED EVENTS</h2>
-                            <button className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:cursor-pointer"
-                                onClick={routeToFeaturedEvents}
-                            >
-                                VIEW ALL
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {featuredEvents.map((event) => (
-                                <div key={event.id} className="flex justify-center">
-                                    <EventCardDemo event={event}/>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    {/*<div className="px-3 py-1 sm:px-4 sm:py-5 md:px-8 bg-white">*/}
+                    {/*    <div className="flex justify-between items-center mb-8">*/}
+                    {/*        <h2 className="text-3xl font-bold text-gray-900">FEATURED EVENTS</h2>*/}
+                    {/*        <button className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:cursor-pointer"*/}
+                    {/*            onClick={routeToFeaturedEvents}*/}
+                    {/*        >*/}
+                    {/*            VIEW ALL*/}
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">*/}
+                    {/*        {featuredEvents.map((event) => (*/}
+                    {/*            <div key={event.id} className="flex justify-center">*/}
+                    {/*                <EventCardDemo event={event}/>*/}
+                    {/*            </div>*/}
+                    {/*        ))}*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
 
                     {/* Popular Events */}
                     <div className="px-3 py-1 sm:px-4 sm:py-5 md:px-8 bg-white">
