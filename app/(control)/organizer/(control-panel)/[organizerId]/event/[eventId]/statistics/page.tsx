@@ -19,6 +19,12 @@ const Page = () => {
     const eventId = params.eventId;
     const organizerId = params.organizerId;
 
+    //convert value to meaningful financial values
+    const getValueString=(value:number):string =>{
+
+        return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     useEffect(() => {
         getEventDetails();
         getTicketDetails();
@@ -151,15 +157,15 @@ const Page = () => {
                                         <tr key={index} className="hover:bg-gray-50">
                                             <td className="px-6 py-3 text-sm font-medium text-gray-900">{session.sessionNumber}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900">{session.attendees}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900">{session.revenue}.LKR</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900">{session.profit}.LKR</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900">{getValueString(session.revenue)}.LKR</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900">{getValueString(session.profit)}.LKR</td>
                                         </tr>
                                     ))}
                                     <tr className="bg-gray-100 font-semibold">
                                         <td className="px-6 py-3 text-sm text-gray-900">Total</td>
                                         <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.totalAttendeesCount}</td>
-                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.earningsByEvent}.LKR</td>
-                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.totalProfit}.LKR</td>
+                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.earningsByEvent ? getValueString(eventDetails.earningsByEvent) : '0.00'}.LKR</td>
+                                        <td className="px-6 py-3 text-sm text-gray-900">{eventDetails?.totalProfit ? getValueString(eventDetails.totalProfit) : '0.00'}.LKR</td>
                                     </tr>
                                 </>
                             ) : (

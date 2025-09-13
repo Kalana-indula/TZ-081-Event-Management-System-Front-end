@@ -31,6 +31,11 @@ const Page = () => {
         accountNumber: "xxx xxx xxx"
     });
 
+    //convert value to meaningful financial values
+    const getValueString=(value:number):string =>{
+        return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     //load data at page loading
     useEffect(() => {
         getTotalEarnings();
@@ -80,7 +85,6 @@ const Page = () => {
         }catch (err){
             console.log(err);
         }
-
     }
 
     return (
@@ -106,7 +110,7 @@ const Page = () => {
                         className="bg-white p-3 sm:p-4 rounded-lg my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-lg">
                         <div className="flex items-center gap-2 sm:gap-4">
                             <span className="text-gray-700 font-medium text-sm sm:text-base">
-                                Total Earnings - {totalEarnings} LKR
+                                Total Earnings - {getValueString(totalEarnings)} LKR
                             </span>
                         </div>
                     </div>
@@ -115,7 +119,7 @@ const Page = () => {
                         className="bg-white p-3 sm:p-4 rounded-lg my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-lg">
                         <div className="flex items-center gap-2 sm:gap-4">
                             <span className="text-gray-700 font-medium text-sm sm:text-base">
-                                Total Withdrawals - {totalWithdrawals} LKR
+                                Total Withdrawals - {getValueString(totalWithdrawals)} LKR
                             </span>
                         </div>
                     </div>
@@ -124,7 +128,7 @@ const Page = () => {
                         className="bg-white p-3 sm:p-4 rounded-lg my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-lg">
                         <div className="flex items-center gap-2 sm:gap-4">
                             <span className="text-gray-700 font-medium text-sm sm:text-base">
-                                Current Balance - {currentBalance} LKR
+                                Current Balance - {getValueString(currentBalance)} LKR
                             </span>
                         </div>
 

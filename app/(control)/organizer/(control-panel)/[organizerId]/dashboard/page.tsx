@@ -94,61 +94,67 @@ const data: StatData[] = [
 
 const Page = () => {
     //get event count
-    const [totalEvents,setTotalEvents]=useState<number>(0);
-    const [totalEarnings,setTotalEarnings]=useState<number>(0);
-    const [scheduledEvents,setScheduledEvents]=useState<number>(0);
-    const [onGoingEvents,setOnGoingEvents]=useState<EventDetails[]>([]);
+    const [totalEvents, setTotalEvents] = useState<number>(0);
+    const [totalEarnings, setTotalEarnings] = useState<number|string>(0);
+    const [scheduledEvents, setScheduledEvents] = useState<number>(0);
+    const [onGoingEvents, setOnGoingEvents] = useState<EventDetails[]>([]);
 
     //get user id from params
-    const params=useParams();
+    const params = useParams();
 
     const organizerId = params.organizerId as string;
 
     //configure navigation
-   const route=useRouter();
+    const route = useRouter();
 
     useEffect(() => {
-    //     load all events at page reload
-    //     getEventsList();
+        //     load all events at page reload
+        //     getEventsList();
         getEventCounts();
         getEventsByOrganizer();
     }, []);
 
+    //format financial metrics
+    const formatFinancialValues = (value: number) => {
+
+        setTotalEarnings(value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+
     //fetch event counts
-    const getEventCounts = async ()=>{
+    const getEventCounts = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizer/${organizerId}/events/counts`);
             setTotalEvents(response.data.allEventsCount);
             setScheduledEvents(response.data.approvedEventsCount);
-        }catch (err){
-            handleApiError(err,"Failed to load events");
+        } catch (err) {
+            handleApiError(err, "Failed to load events");
         }
     }
 
     //fetch events by organizer
-    const getEventsByOrganizer = async ()=>{
-        try{
+    const getEventsByOrganizer = async () => {
+        try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
             setOnGoingEvents(response.data.onGoingEvents);
-            setTotalEarnings(response.data.totalEarnings);
+            formatFinancialValues(response.data.totalEarnings);
 
-        }catch (err){
-            handleApiError(err,"Failed to load events");
+        } catch (err) {
+            handleApiError(err, "Failed to load events");
         }
     }
 
-   //route to all events
-    const routeToAllEvents =(id:string)=>{
+    //route to all events
+    const routeToAllEvents = (id: string) => {
         route.push(`/organizer/${id}/all-events`);
     }
 
     //route to add event
-    const routeToAddEvent =()=>{
+    const routeToAddEvent = () => {
         route.push(`/organizer/${organizerId}/add-event`);
     }
 
     //route to event dashboard
-    const routeToEventDashboard =(eventId:number)=>{
+    const routeToEventDashboard = (eventId: number) => {
         route.push(`/organizer/event/${eventId}/dashboard`);
     }
 
@@ -206,7 +212,8 @@ const Page = () => {
                 </div>
 
                 {/*    chart section*/}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium py-2">ANNUAL FINANCIAL DATA</h3>
                     </div>
@@ -274,7 +281,8 @@ const Page = () => {
                 </div>
 
                 {/*    table section*/}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div className="flex justify-between items-center py-2">
                         <h3 className="text-gray-500 font-medium">Ongoing Events</h3>
                         <Button
@@ -310,7 +318,7 @@ const Page = () => {
                                     onGoingEvents.map((event: EventDetails) => (
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={event.eventId}
-                                            onClick={()=>routeToEventDashboard(event.eventId)}>
+                                            onClick={() => routeToEventDashboard(event.eventId)}>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventId}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventName}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{event.eventType}</td>
@@ -321,7 +329,8 @@ const Page = () => {
                                     <tr>
                                         <td colSpan={4} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center justify-center">
-                                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                                <div
+                                                    className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                                     <svg className="w-8 h-8 text-gray-400" fill="none"
                                                          stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round"
@@ -329,8 +338,10 @@ const Page = () => {
                                                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                     </svg>
                                                 </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No events available</h3>
-                                                <p className="text-sm text-gray-500">There are currently no event records to display.</p>
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No events
+                                                    available</h3>
+                                                <p className="text-sm text-gray-500">There are currently no event
+                                                    records to display.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -343,12 +354,14 @@ const Page = () => {
                         <div className="md:hidden space-y-4">
                             {onGoingEvents && onGoingEvents.length > 0 ? (
                                 onGoingEvents.map((event: EventDetails) => (
-                                    <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                         key={event.eventId}
-                                         onClick={()=>routeToEventDashboard(event.eventId)}>
+                                    <div
+                                        className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
+                                        key={event.eventId}
+                                        onClick={() => routeToEventDashboard(event.eventId)}>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-start">
-                                                <h4 className="font-semibold text-gray-900 text-sm">Event ID: {event.eventId}</h4>
+                                                <h4 className="font-semibold text-gray-900 text-sm">Event
+                                                    ID: {event.eventId}</h4>
                                                 <span className="text-xs text-gray-500">{event.startingDate}</span>
                                             </div>
                                             <div>
@@ -361,7 +374,8 @@ const Page = () => {
                             ) : (
                                 <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
                                     <div className="flex flex-col items-center justify-center">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <div
+                                            className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                             <svg className="w-8 h-8 text-gray-400" fill="none"
                                                  stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round"
@@ -370,7 +384,8 @@ const Page = () => {
                                             </svg>
                                         </div>
                                         <h3 className="text-lg font-medium text-gray-900 mb-2">No events available</h3>
-                                        <p className="text-sm text-gray-500 text-center">There are currently no event records to display.</p>
+                                        <p className="text-sm text-gray-500 text-center">There are currently no event
+                                            records to display.</p>
                                     </div>
                                 </div>
                             )}
@@ -379,7 +394,7 @@ const Page = () => {
                         {/* All Events Button */}
                         <div className="mt-4 flex justify-center">
                             <Button className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
-                                onClick={()=>routeToAllEvents(organizerId)}
+                                    onClick={() => routeToAllEvents(organizerId)}
                             >
                                 All Events
                             </Button>

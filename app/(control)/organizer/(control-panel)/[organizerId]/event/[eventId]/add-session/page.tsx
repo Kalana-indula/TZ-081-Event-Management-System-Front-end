@@ -110,6 +110,7 @@ const Page = () => {
                                     Venue
                                 </label>
                                 <input
+                                    required={true}
                                     type="text"
                                     id="venue"
                                     name="venue"
@@ -126,6 +127,7 @@ const Page = () => {
                                     Date
                                 </label>
                                 <input
+                                    required={true}
                                     type="date"
                                     id="date"
                                     name="date"
@@ -141,6 +143,7 @@ const Page = () => {
                                     Start Time
                                 </label>
                                 <input
+                                    required={true}
                                     type="time"
                                     id="startTime"
                                     name="startTime"
@@ -156,6 +159,7 @@ const Page = () => {
                                     End Time
                                 </label>
                                 <input
+                                    required={true}
                                     type="time"
                                     id="endTime"
                                     name="endTime"
@@ -168,6 +172,7 @@ const Page = () => {
                             {/* Action Buttons */}
                             <div className="flex flex-col sm:flex-row gap-3 pt-6">
                                 <Button
+                                    type="button"
                                     onClick={handleCancel}
                                     variant="outline"
                                     className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:cursor-pointer"

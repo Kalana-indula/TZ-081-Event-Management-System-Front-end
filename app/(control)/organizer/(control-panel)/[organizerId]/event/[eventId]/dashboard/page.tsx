@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {Switch} from "@/components/ui/switch";
 import {useParams, useRouter} from "next/navigation";
 import axios from "axios";
-import {handleApiError} from "@/lib/utils";
+import {getValueString, handleApiError} from "@/lib/utils";
 import {EventDetails, EventStatus, Session, TicketDetails} from "@/types/entityTypes";
 import Image from "next/image";
 import approvalStates from "@/data/EventStatusDetails";
@@ -452,7 +452,7 @@ const Page = () => {
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={index}>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.ticketType}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.ticketPrice}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{getValueString(ticket.ticketPrice)} LKR.</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.ticketCount}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.soldCount}</td>
                                         </tr>
@@ -484,21 +484,30 @@ const Page = () => {
 
                         {/*mobile card view*/}
                         <div className="md:hidden space-y-4">
-                            {sessionDetails && sessionDetails.length > 0 ? (
-                                sessionDetails.map((session: Session, index) => (
+                            {ticketDetails && ticketDetails.length > 0 ? (
+                                ticketDetails.map((ticket: TicketDetails, index) => (
                                     <div
                                         className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
                                         key={index}>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-start">
-                                                <h4 className="font-semibold text-gray-900 text-sm">{session.sessionNumber}</h4>
-                                                <span className="text-xs text-gray-500">{session.date}</span>
+                                                <h4 className="font-semibold text-gray-900 text-lg">{ticket.ticketType}</h4>
+                                                <span></span>
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-gray-900">{session.venue}</p>
-                                                <div className="flex justify-between items-center mt-2">
-                                                    <p className="text-sm text-gray-600">Start: {session.startTime}</p>
-                                                    <p className="text-sm text-gray-600">End: {session.endTime}</p>
+                                                <div className="flex  items-center space-x-2">
+                                                    <div className="text-sm font-medium text-gray-900">Price :</div>
+                                                    <div
+                                                        className="text-sm text-gray-500">{getValueString(ticket.ticketPrice)} LKR.
+                                                    </div>
+                                                </div>
+                                                <div className="flex  items-center space-x-2">
+                                                    <div className="text-sm font-medium text-gray-900">Count :</div>
+                                                    <div className="text-sm text-gray-500">{ticket.ticketCount}</div>
+                                                </div>
+                                                <div className="flex  items-center space-x-2">
+                                                    <div className="text-sm font-medium text-gray-900">Sold :</div>
+                                                    <div className="text-sm text-gray-500">{ticket.soldCount}</div>
                                                 </div>
                                             </div>
                                         </div>

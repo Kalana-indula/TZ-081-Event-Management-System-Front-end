@@ -2,7 +2,7 @@
 
 import React from 'react'
 import {useRouter} from "next/navigation";
-import EventCardDemo from "@/app/(root)/app-components/EventCardDemo";
+import EventCard from "@/app/(root)/app-components/EventCard";
 
 interface Event {
     id: number;
@@ -118,7 +118,7 @@ const Page = () => {
                     {featuredEvents && featuredEvents.length > 0 ? (
                         featuredEvents.map((event) => (
                             <div key={event.id} className="flex justify-center">
-                                <EventCardDemo event={event}/>
+                                <EventCard event={event}/>
                             </div>
                         ))
                     ) : (
