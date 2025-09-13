@@ -159,4 +159,3 @@
   z-index: 2; /* sits above the blur overlay */
   backdrop-filter: none; /* removes any inherited blur effects */
 }
-

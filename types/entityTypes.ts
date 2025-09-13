@@ -130,4 +130,17 @@ export interface EventCategoryDetails {
     category:string;
 }
 
+export interface SessionCardDetails {
+    id: number;
+    eventName: string;
+    eventId: number;
+    startingDate: string;
+    eventAddedDate: string;
+    startingTime: string;
+    coverImageLink: string;
+    location: string;
+    categoryName: string;
+    minTicketPrice: number;
+}
+
 

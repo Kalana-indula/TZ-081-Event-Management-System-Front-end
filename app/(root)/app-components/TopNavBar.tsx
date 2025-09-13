@@ -59,7 +59,7 @@ const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
                         </div>
 
                         {/*categories*/}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-6">
                             {categories && categories.length > 0 ? (
                                 categories.map((category, index) => (
                                     <Link key={category.id || index} className="hover:cursor-pointer" href={`/categories/${category.category}`}>
@@ -72,17 +72,17 @@ const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
 
                                 // Fallback categories while loading or if API fails
                                 <>
-                                    <Link className="hover:cursor-pointer" href="/">
+                                    <Link className="hover:cursor-pointer" href="/categories/entertainment">
                                         <div className="text-[18px] text-white font-semibold">
                                             Entertainment
                                         </div>
                                     </Link>
-                                    <Link className="hover:cursor-pointer" href="/">
+                                    <Link className="hover:cursor-pointer" href="/categories/educational">
                                         <div className="text-[18px] text-white font-semibold">
                                             Educational
                                         </div>
                                     </Link>
-                                    <Link className="hover:cursor-pointer" href="/">
+                                    <Link className="hover:cursor-pointer" href="/categories/business & tech">
                                         <div className="text-[18px] text-white font-medium">
                                             Business & Tech
                                         </div>
