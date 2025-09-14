@@ -19,11 +19,6 @@ const SessionCard = ({session,eventId}:SessionCardProps) => {
     return (
         <>
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-8">
-                {/*title*/}
-                <div>
-                    <h3 className="text-lg font-semibold mb-4">{session.sessionName}</h3>
-                </div>
-
                 {/*card*/}
                 <div className="relative bg-muted rounded-lg p-[20px] text-gray-950 w-full sm:w-[500px]">
                     <div className="flex items-center gap-4">

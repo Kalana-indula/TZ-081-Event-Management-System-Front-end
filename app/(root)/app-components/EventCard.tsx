@@ -16,7 +16,7 @@ const EventCard = ({ session }:EventCardProps) => {
 
     //route to booking page
     const routeToBooking = ()=>{
-        router.push(`/event/${session.eventId}/booking`);
+        router.push(`/event/${session.eventId}/session/${session.sessionId}/booking`);
     }
 
     return (
