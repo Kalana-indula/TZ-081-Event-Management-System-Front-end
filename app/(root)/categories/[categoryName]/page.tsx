@@ -76,7 +76,7 @@ const Page = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {sessions && sessions.length > 0 ? (
                         sessions.map((session:SessionCardDetails) => (
-                            <div key={session.id} className="flex justify-center">
+                            <div key={session.sessionId} className="flex justify-center">
                                 <EventCard session={session}/>
                             </div>
                         ))
@@ -100,7 +100,7 @@ const Page = () => {
             </div>
 
             {/*Footer section*/}
-            <footer className="bg-gray-700 text-white py-12 mt-auto">
+            <footer>
                 <MainFooter/>
             </footer>
         </div>

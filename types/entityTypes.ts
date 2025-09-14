@@ -131,7 +131,7 @@ export interface EventCategoryDetails {
 }
 
 export interface SessionCardDetails {
-    id: number;
+    sessionId: number;
     eventName: string;
     eventId: number;
     startingDate: string;

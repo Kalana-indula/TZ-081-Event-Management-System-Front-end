@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react'
 import {SessionCardDetails} from "@/types/entityTypes";
 import EventCard from "@/app/(root)/app-components/EventCard";
 import axios from "axios";
-import Link from "next/link";
 import MainFooter from "@/app/(root)/app-components/MainFooter";
 
 const Page = () => {
@@ -38,7 +37,7 @@ const Page = () => {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {sessions.map((session: SessionCardDetails) => (
-                                <div key={session.id} className="flex justify-center">
+                                <div key={session.sessionId} className="flex justify-center">
                                     <EventCard session={session}/>
                                 </div>
                             ))}
@@ -47,7 +46,7 @@ const Page = () => {
                 </div>
 
                 {/* Footer section */}
-                <footer className="bg-gray-700 text-white py-12">
+                <footer>
                     <MainFooter/>
                 </footer>
             </div>

@@ -9,7 +9,7 @@ import {FaLocationDot} from "react-icons/fa6";
 const MainFooter = () => {
     return (
         <>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-gray-700 text-white py-12">
 
                 {/*details section*/}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
