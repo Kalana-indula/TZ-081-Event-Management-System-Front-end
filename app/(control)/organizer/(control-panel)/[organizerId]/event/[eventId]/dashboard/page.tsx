@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {Switch} from "@/components/ui/switch";
 import {useParams, useRouter} from "next/navigation";
 import axios from "axios";
-import {getValueString, handleApiError} from "@/lib/utils";
+import {formatDate, formatTime, getValueString, handleApiError} from "@/lib/utils";
 import {EventDetails, EventStatus, Session, TicketDetails} from "@/types/entityTypes";
 import Image from "next/image";
 import approvalStates from "@/data/EventStatusDetails";
@@ -441,9 +441,6 @@ const Page = () => {
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
                                         Count
                                     </th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Sold
-                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
@@ -454,7 +451,6 @@ const Page = () => {
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.ticketType}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{getValueString(ticket.ticketPrice)} LKR.</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.ticketCount}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{ticket.soldCount}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -504,10 +500,6 @@ const Page = () => {
                                                 <div className="flex  items-center space-x-2">
                                                     <div className="text-sm font-medium text-gray-900">Count :</div>
                                                     <div className="text-sm text-gray-500">{ticket.ticketCount}</div>
-                                                </div>
-                                                <div className="flex  items-center space-x-2">
-                                                    <div className="text-sm font-medium text-gray-900">Sold :</div>
-                                                    <div className="text-sm text-gray-500">{ticket.soldCount}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -573,9 +565,9 @@ const Page = () => {
                                             key={index}>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{session.sessionNumber}</td>
                                             <td className="px-6 py-3 text-sm text-gray-900 font-sm">{session.venue}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{session.date}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{session.startTime}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{session.endTime}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{formatDate(session.date)}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{formatTime(session.startTime)}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-900 font-sm">{formatTime(session.endTime)}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -613,13 +605,13 @@ const Page = () => {
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-start">
                                                 <h4 className="font-semibold text-gray-900 text-sm">{session.sessionNumber}</h4>
-                                                <span className="text-xs text-gray-500">{session.date}</span>
+                                                <span className="text-xs text-gray-500">{formatDate(session.date)}</span>
                                             </div>
                                             <div>
                                                 <p className="text-sm font-medium text-gray-900">{session.venue}</p>
                                                 <div className="flex justify-between items-center mt-2">
-                                                    <p className="text-sm text-gray-600">Start: {session.startTime}</p>
-                                                    <p className="text-sm text-gray-600">End: {session.endTime}</p>
+                                                    <p className="text-sm text-gray-600">Start: {formatTime(session.startTime)}</p>
+                                                    <p className="text-sm text-gray-600">End: {formatTime(session.endTime)}</p>
                                                 </div>
                                             </div>
                                         </div>

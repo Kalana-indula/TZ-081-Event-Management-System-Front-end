@@ -143,4 +143,19 @@ export interface SessionCardDetails {
     minTicketPrice: number;
 }
 
+export interface SessionTicketDetails {
+    ticketId: number;
+    sessionId: number;
+    eventId: number;
+    ticketType: string;
+    initialTicketCount: number;
+    remainingTicketCount: number;
+    soldTicketCount: number;
+}
+
+export interface EventParticipationDetails{
+    sessionId:number;
+    sessionNumber:string;
+    ticketDetails:SessionTicketDetails[];
+}
 

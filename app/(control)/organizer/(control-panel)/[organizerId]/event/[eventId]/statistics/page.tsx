@@ -3,16 +3,20 @@
 import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import {useParams, useRouter} from "next/navigation";
-import {EventDetails, Session, TicketDetails} from "@/types/entityTypes";
+import {
+    EventDetails,
+    EventParticipationDetails,
+    Session,
+} from "@/types/entityTypes";
 import axios from "axios";
 import {handleApiError} from "@/lib/utils";
 
 const Page = () => {
 
     //states
-    const [ticketDetails, setTicketDetails] = useState<TicketDetails[]>([]);
     const [eventDetails, setEventDetails] = useState<EventDetails>();
     const [sessionDetails, setSessionDetails] = useState<Session[]>([]);
+    const [eventTicketDetails, setEventTicketDetails] = useState<EventParticipationDetails[]>([]);
 
     const params = useParams();
 
@@ -59,7 +63,7 @@ const Page = () => {
     const getSessionDetails = async ()=>{
         try{
             const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/sessions`);
-            console.log(response.data.sessionList);
+            // console.log(response.data.sessionList);
             setSessionDetails(response.data.sessionList);
         }catch(err){
             handleApiError(err,"No sessions available");
@@ -69,13 +73,15 @@ const Page = () => {
     //fetch ticket details
     const getTicketDetails = async ()=>{
         try{
-            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/tickets`);
+            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}/ticket-sales`);
             console.log(response.data.entityList);
-            setTicketDetails(response.data.entityList);
+            setEventTicketDetails(response.data.entityList);
         }catch (err){
             console.log(err);
         }
     }
+
+    //get ticketing details per event
 
     return (
         <>
@@ -94,42 +100,70 @@ const Page = () => {
                 <div className="bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <h3 className="text-gray-500 font-medium py-2">TICKETS SOLD</h3>
                     <div className="bg-white p-4 rounded-md">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">{eventDetails?.eventName}</h2>
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                            {eventDetails?.eventName}
+                        </h2>
 
-                        {/*cards section*/}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {ticketDetails && ticketDetails.length > 0 ? (
-                                ticketDetails.map((ticket, index) => (
-                                    <div key={ticket.id || index} className="bg-blue-50 p-3 rounded-md">
-                                        <h4 className="text-sm font-medium text-gray-500 mb-1">{ticket.ticketType}</h4>
-                                        <div className="space-y-1">
-                                            <p className="text-xl font-semibold text-gray-900">
-                                                {ticket.soldCount !== undefined ? ticket.soldCount : 0}
-                                            </p>
-                                            <p className="text-xs text-gray-600">
-                                                Sold / Total: {ticket.soldCount !== undefined ? ticket.soldCount : 0} / {ticket.ticketCount}
-                                            </p>
-                                            <p className="text-xs text-gray-600">
-                                                Price: LKR {ticket.ticketPrice.toLocaleString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="col-span-full bg-gray-50 p-8 rounded-md text-center">
-                                    <div className="flex flex-col items-center justify-center">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-                                            </svg>
-                                        </div>
-                                        <h3 className="text-lg font-medium text-gray-900 mb-2">No ticket data available</h3>
-                                        <p className="text-sm text-gray-500">There are currently no ticket records to display.</p>
+                        {eventTicketDetails && eventTicketDetails.length > 0 ? (
+                            eventTicketDetails.map((session) => (
+                                <div key={session.sessionId} className="mb-6">
+                                    <h3 className="text-md font-semibold text-gray-800 mb-3">
+                                        {session.sessionNumber}
+                                    </h3>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                        {session.ticketDetails.map((ticket) => (
+                                            <div
+                                                key={ticket.ticketId}
+                                                className="bg-blue-50 p-4 rounded-md shadow-sm"
+                                            >
+                                                <h4 className="text-sm font-medium text-gray-600 mb-1">
+                                                    {ticket.ticketType}
+                                                </h4>
+                                                <div className="space-y-1">
+                                                    <p className="text-xl font-bold text-gray-900">
+                                                        {ticket.soldTicketCount}
+                                                    </p>
+                                                    <p className="text-xs text-gray-600">
+                                                        Sold / Total: {ticket.soldTicketCount} /{" "}
+                                                        {ticket.initialTicketCount}
+                                                    </p>
+                                                    <p className="text-xs text-gray-600">
+                                                        Remaining: {ticket.remainingTicketCount}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                            ))
+                        ) : (
+                            <div className="col-span-full bg-gray-50 p-8 rounded-md text-center">
+                                <div className="flex flex-col items-center justify-center">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <svg
+                                            className="w-8 h-8 text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                        No ticket data available
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                        There are currently no ticket records to display.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
