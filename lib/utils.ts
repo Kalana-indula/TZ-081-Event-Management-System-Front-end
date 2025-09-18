@@ -25,7 +25,7 @@ export function handleApiError(err: unknown, fallbackMessage = "Something went w
 }
 
 //format time into readable time
-export const formatTime = (timeString: string): string => {
+export const formatTime = (timeString: string|undefined): string => {
     if (!timeString) return "";
 
     // Parse the time string (assuming format: HH:MM:SS or HH:MM)
@@ -43,7 +43,7 @@ export const formatTime = (timeString: string): string => {
 
 
 //format date into readable day
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string|undefined): string => {
     if (!dateString) return "";
 
     // Create a Date object from the ISO date string
@@ -62,6 +62,7 @@ export const formatDate = (dateString: string): string => {
 
 
 //convert value to meaningful financial values
-export const getValueString = (value: number): string => {
-    return value.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-}
+export const getValueString = (value?: number | null): string => {
+    if (typeof value !== "number") return "0.00";
+    return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
