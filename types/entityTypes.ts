@@ -117,13 +117,7 @@ export interface CreateTransactionRequest {
     organizerId:number;
 }
 
-export interface BookingDetails {
-    bookingId:string;
-    name:string;
-    email:string;
-    phone:string;
-    nic:string;
-}
+
 
 export interface EventCategoryDetails {
     id:number;
@@ -148,6 +142,7 @@ export interface SessionTicketDetails {
     sessionId: number;
     eventId: number;
     ticketType: string;
+    ticketPrice:number;
     initialTicketCount: number;
     remainingTicketCount: number;
     soldTicketCount: number;
@@ -159,3 +154,29 @@ export interface EventParticipationDetails{
     ticketDetails:SessionTicketDetails[];
 }
 
+export interface TimeCountDown {
+    days:number;
+    hours:number;
+    minutes:number;
+    seconds:number;
+}
+
+export interface BookingDetails {
+    bookingId:string;
+    name:string;
+    email:string;
+    phone:string;
+    nic:string;
+}
+
+export interface BookedTicketDetails {
+    ticketId:number;
+    ticketType:string;
+    price:number;
+    count:number;
+}
+
+export interface BookingData {
+    ticketDetails:BookedTicketDetails[];
+    totalPrice:number;
+}

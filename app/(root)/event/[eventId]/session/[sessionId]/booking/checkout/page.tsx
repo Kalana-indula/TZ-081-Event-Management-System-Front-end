@@ -1,8 +1,27 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
+import {useSearchParams} from "next/navigation";
+import {BookedTicketDetails} from "@/types/entityTypes";
+import {getValueString} from "@/lib/utils";
 
 const Page = () => {
+
+    //get search params
+    const searchParams=useSearchParams();
+
+    //store the fetched data from parameters
+    const tickets = JSON.parse(searchParams.get("tickets") || "[]");
+    const bookedTicketDetails = JSON.parse(searchParams.get("bookedTickets") || "{}");
+
+    console.log("Tickets:", tickets);
+    console.log("Booked Details:", bookedTicketDetails);
+
+    //states
+    const [selectedTicketDetails, setSelectedTicketDetails] = useState<BookedTicketDetails[]>([]);
+    const [totalTicketPrice, setTotalTicketPrice] = useState<number>(0);
+
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -13,15 +32,11 @@ const Page = () => {
 
     const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-    // Sample booking data (in real app, this would come from props/context/state)
-    const bookingData = {
-        vipTickets: 1,
-        vvipTickets: 1,
-        vipPrice: 2000.00,
-        vvipPrice: 4000.00
-    };
+    useEffect(() => {
+        setSelectedTicketDetails(bookedTicketDetails.ticketDetails);
+        setTotalTicketPrice(bookedTicketDetails.totalPrice);
+    }, []);
 
-    const total = (bookingData.vipTickets * bookingData.vipPrice) + (bookingData.vvipTickets * bookingData.vvipPrice);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -153,43 +168,27 @@ const Page = () => {
 
                             {/* Ticket Items */}
                             <div className="space-y-4 mb-6">
-                                {bookingData.vipTickets > 0 && (
-                                    <div className="bg-gray-50 rounded-xl p-4">
+                                {selectedTicketDetails.map((ticket) => (
+                                    <div key={ticket.ticketId} className="bg-gray-50 rounded-xl p-4">
                                         <div className="flex justify-between items-center">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#193cb8' }}></div>
-                                                    <span className="font-semibold text-gray-900">VIP Tickets</span>
+                                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#193cb8' }}>
+                                                    </div>
+                                                    <span className="font-semibold text-gray-900">
+                                                        {ticket.ticketType} Tickets
+                                                    </span>
                                                 </div>
                                                 <span className="text-sm text-gray-600">
-                                                    {bookingData.vipTickets} × LKR {bookingData.vipPrice.toLocaleString()}
+                                                    {ticket.count} × LKR {getValueString(ticket.price)}
                                                 </span>
                                             </div>
                                             <span className="font-bold text-gray-900">
-                                                LKR {(bookingData.vipTickets * bookingData.vipPrice).toLocaleString()}
+                                                LKR {(getValueString(ticket.count * ticket.price))}
                                             </span>
                                         </div>
                                     </div>
-                                )}
-
-                                {bookingData.vvipTickets > 0 && (
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#193cb8' }}></div>
-                                                    <span className="font-semibold text-gray-900">VVIP Tickets</span>
-                                                </div>
-                                                <span className="text-sm text-gray-600">
-                                                    {bookingData.vvipTickets} × LKR {bookingData.vvipPrice.toLocaleString()}
-                                                </span>
-                                            </div>
-                                            <span className="font-bold text-gray-900">
-                                                LKR {(bookingData.vvipTickets * bookingData.vvipPrice).toLocaleString()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
+                                ))}
                             </div>
 
                             {/* Total */}
@@ -197,7 +196,7 @@ const Page = () => {
                                 <div className="flex justify-between items-center">
                                     <span className="text-lg font-bold text-gray-900">Grand Total</span>
                                     <span className="text-2xl font-bold" style={{ color: '#193cb8' }}>
-                                        LKR {total.toLocaleString()}
+                                        LKR {getValueString(totalTicketPrice)}
                                     </span>
                                 </div>
                             </div>
