@@ -14,6 +14,7 @@ import {
 import MainFooter from "@/app/(root)/app-components/MainFooter";
 import axios from "axios";
 import {formatDate, formatTime, getValueString} from "@/lib/utils";
+import {CalendarMinus2, Clock11, MapPin} from "lucide-react";
 
 
 const Page = () => {
@@ -120,6 +121,7 @@ const Page = () => {
         if (details.length > 0) {
             setBookedTicketDetails({
                 ticketDetails: details,
+                eventName:eventDetails?.eventName ?? "",
                 totalPrice: details.reduce((sum, t) => sum + t.price * t.count, 0),
             });
         } else {
@@ -164,6 +166,7 @@ const Page = () => {
         const query=new URLSearchParams({
             tickets:JSON.stringify(ticketIdList),
             bookedTickets:JSON.stringify(bookedTicketDetails),
+            eventName: eventDetails?.eventName || "",
         }).toString();
 
         routeToCheckout(Number(sessionId),query);
@@ -211,24 +214,42 @@ const Page = () => {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
 
             {/* Banner section - unchanged as requested */}
-            <div className="event-banner flex justify-center h-[300px] w-full bg-cover bg-center bg-no-repeat">
+            <div
+                className="event-banner relative h-[400px] w-full bg-cover bg-center bg-no-repeat"
+                style={{
+                    backgroundImage: `url(${eventDetails?.coverImageLink || "/fallback.jpg"})`,
+                }}
+            >
+                {/* Gradient overlay for readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"/>
+
+                {/* Content */}
                 <div
-                    className="w-full relative pt-[20px] flex flex-col items-center gap-4 px-[40px] sm:flex-row sm:items-center sm:justify-start sm:pt-8">
-                    <div className="event-image h-[200px] w-[180px] z-50 flex justify-center border-2 border-white">
+                    className="relative z-10 h-full flex flex-col sm:flex-row items-center sm:items-end justify-center sm:justify-start gap-6 px-6 sm:px-12 pb-10">
+                    {/* Event image */}
+                    <div
+                        className="event-image h-[250px] w-[200px] shadow-2xl rounded-lg overflow-hidden border-4 border-white">
                         <Image
-                            src={eventDetails?.coverImageLink || "/fallback.jpg"} // fallback image in public folder
+                            src={eventDetails?.coverImageLink || "/fallback.jpg"}
                             alt={eventDetails?.eventName || "Event cover image"}
-                            height={200}
-                            width={180}
-                            className="object-cover rounded-lg"
+                            height={250}
+                            width={200}
+                            className="object-cover w-full h-full"
                         />
                     </div>
 
-                    <div className="sm:ml-4 sm:mt-4">
-                        <h2 className="text-white text-xl sm:text-3xl font-semibold">{eventDetails?.eventName}</h2>
+                    {/* Event info */}
+                    <div className="text-center sm:text-left">
+                        <h2 className="text-white text-3xl sm:text-5xl md:text-6xl font-extrabold drop-shadow-lg">
+                            {eventDetails?.eventName}
+                        </h2>
+                        <p className="mt-3 text-lg sm:text-xl text-gray-200">
+                            Experience the unforgettable
+                        </p>
                     </div>
                 </div>
             </div>
+
 
             <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                 {/* Content Layout */}
@@ -249,7 +270,8 @@ const Page = () => {
                                 <div className="text-center">
                                     <div className="rounded-2xl p-4 mb-3 shadow-lg border border-gray-100"
                                          style={{backgroundColor: '#193cb8'}}>
-                                        <div className="text-3xl font-bold text-white">{String(timeLeft.days).padStart(2, '0')}</div>
+                                        <div
+                                            className="text-3xl font-bold text-white">{String(timeLeft.days).padStart(2, '0')}</div>
                                     </div>
                                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">DAYS
                                     </div>
@@ -257,7 +279,8 @@ const Page = () => {
                                 <div className="text-center">
                                     <div className="rounded-2xl p-4 mb-3 shadow-lg border border-gray-100"
                                          style={{backgroundColor: '#193cb8'}}>
-                                        <div className="text-3xl font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
+                                        <div
+                                            className="text-3xl font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
                                     </div>
                                     <div
                                         className="text-xs font-semibold text-gray-500 uppercase tracking-wider">HOURS
@@ -266,7 +289,8 @@ const Page = () => {
                                 <div className="text-center">
                                     <div className="rounded-2xl p-4 mb-3 shadow-lg border border-gray-100"
                                          style={{backgroundColor: '#193cb8'}}>
-                                        <div className="text-3xl font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                                        <div
+                                            className="text-3xl font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
                                     </div>
                                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">MINS
                                     </div>
@@ -274,7 +298,8 @@ const Page = () => {
                                 <div className="text-center">
                                     <div className="rounded-2xl p-4 mb-3 shadow-lg border border-gray-100"
                                          style={{backgroundColor: '#193cb8'}}>
-                                        <div className="text-3xl font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                                        <div
+                                            className="text-3xl font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
                                     </div>
                                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">SECS
                                     </div>
@@ -392,7 +417,7 @@ const Page = () => {
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <div
                                                             className="w-3 h-3 rounded-full"
-                                                            style={{ backgroundColor: "#193cb8" }}
+                                                            style={{backgroundColor: "#193cb8"}}
                                                         ></div>
                                                         <span className="font-bold text-gray-900">
                                                             {ticket.ticketType} Seats
@@ -425,7 +450,7 @@ const Page = () => {
                                                 <button
                                                     onClick={() => handleIncrement(ticket.ticketId, seatsLeft)}
                                                     className="w-12 h-12 rounded-xl border-2 flex items-center justify-center text-white font-bold hover:opacity-90 hover:cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                                    style={{ backgroundColor: "#193cb8", borderColor: "#193cb8" }}
+                                                    style={{backgroundColor: "#193cb8", borderColor: "#193cb8"}}
                                                     disabled={count >= seatsLeft}
                                                 >
                                                     +
@@ -436,10 +461,10 @@ const Page = () => {
                                 })}
 
                                 {/* Mobile Grand Total */}
-                                <div className="border-t-2 pt-4" style={{ borderColor: "#193cb8" }}>
+                                <div className="border-t-2 pt-4" style={{borderColor: "#193cb8"}}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-lg font-bold text-gray-900">Grand Total</span>
-                                        <span className="text-xl font-bold" style={{ color: "#193cb8" }}>
+                                        <span className="text-xl font-bold" style={{color: "#193cb8"}}>
                                              LKR {getValueString(grandTotal)}
                                         </span>
                                     </div>
@@ -473,13 +498,8 @@ const Page = () => {
 
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3">
-                                        <div
-                                            className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                                 viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
+                                        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                                            <CalendarMinus2 strokeWidth={1} />
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 font-medium">Date</p>
@@ -488,13 +508,8 @@ const Page = () => {
                                     </div>
 
                                     <div className="flex items-center gap-3">
-                                        <div
-                                            className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                                 viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
+                                        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                                            <Clock11 strokeWidth={1} />
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 font-medium">Time</p>
@@ -503,15 +518,8 @@ const Page = () => {
                                     </div>
 
                                     <div className="flex items-center gap-3">
-                                        <div
-                                            className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                                 viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            </svg>
+                                        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                                            <MapPin strokeWidth={1} />
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 font-medium">Venue</p>
@@ -545,7 +553,7 @@ const Page = () => {
                                                 <div className="flex justify-between items-center mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-3 h-3 rounded-full"
-                                                            style={{backgroundColor: "#193cb8"}}
+                                                             style={{backgroundColor: "#193cb8"}}
                                                         >
 
                                                         </div>

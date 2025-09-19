@@ -182,7 +182,7 @@ const Page = () => {
                                     Event Type
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                    { isOngoing ?  'Date Started' : isPending ? 'Date Requested' :  'Date Completed'}
+                                    { isOngoing ?  'Date Started' : isPending ? 'Date Requested' : isPendingApproval ? 'Date Requested' : 'Date Completed'}
                                 </th>
                             </tr>
                             </thead>
@@ -198,7 +198,7 @@ const Page = () => {
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventName}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventType}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">
-                                            {isOngoing ? `${event.startingDate}`: isPending ? `${event.dateAdded}`:`${event.startingDate}`}
+                                            {isOngoing ? `${event.startingDate}`: isPending ? `${event.dateAdded}`: isPendingApproval ? `${event.dateAdded}`: `${event.dateCompleted}`}
                                         </td>
                                     </tr>
                                 ))
