@@ -178,5 +178,17 @@ export interface BookedTicketDetails {
 
 export interface BookingData {
     ticketDetails:BookedTicketDetails[];
+    eventName:string;
     totalPrice:number;
 }
+
+export interface BookingDto {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    idNumber: string;
+    sessionId: number;
+    ticketIdList: number[];
+}
+

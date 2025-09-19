@@ -63,10 +63,40 @@ const Page = () => {
     return (
         <div className="min-h-screen flex flex-col">
             {/* Header section */}
-            <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
-                <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">{pageHeader}</h1>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">Discover amazing events happening around you</p>
+            <div className="sticky top-0 bg-white/80 backdrop-blur-lg z-30 border-b border-gray-200/30 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center py-4">
+                        {/* Main Title */}
+                        <div className="relative inline-block">
+                            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                    <span
+                        className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+                        {pageHeader}
+                    </span>
+                            </h1>
+                            {/* Accent Line */}
+                            <div
+                                className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-0.5 rounded-full"
+                                style={{backgroundColor: "#193cb8"}}>
+                            </div>
+                        </div>
+
+                        {/* Subtitle */}
+                        <p className="mt-3 text-sm sm:text-base text-gray-600 font-light max-w-xl mx-auto">
+                            Discover amazing events happening around you
+                        </p>
+
+                        {/* Decorative Elements */}
+                        <div className="mt-3 flex justify-center items-center gap-2 opacity-60">
+                            <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
+                            <div
+                                className="w-8 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                            <div className="w-2 h-2 rounded-full" style={{backgroundColor: "#193cb8"}}></div>
+                            <div
+                                className="w-8 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -75,7 +105,7 @@ const Page = () => {
                 {/* Events grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {sessions && sessions.length > 0 ? (
-                        sessions.map((session:SessionCardDetails) => (
+                        sessions.map((session: SessionCardDetails) => (
                             <div key={session.sessionId} className="flex justify-center">
                                 <EventCard session={session}/>
                             </div>
