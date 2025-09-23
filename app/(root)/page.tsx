@@ -3,18 +3,47 @@
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import EventCard from "@/app/(root)/app-components/EventCard";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {SessionCardDetails} from "@/types/entityTypes";
 import MainFooter from "@/app/(root)/app-components/MainFooter";
+import toast from "react-hot-toast";
 
 const Page = () => {
 
     //states
     const [sessions,setSessions]=useState<SessionCardDetails[]>([]);
+    const [eventName,setEventName]=useState<string>("");
+    const [isSearchMode, setIsSearchMode] = useState<boolean>(false); // New state to track search mode
 
     useEffect(() => {
         getLatestSessions();
     }, []);
+
+    const handleEventName=(event:React.ChangeEvent<HTMLInputElement>):void=>{
+        setEventName(event.target.value)
+        // If user clears the search, go back to latest events
+        if (!event.target.value.trim()) {
+            setIsSearchMode(false);
+            getLatestSessions();
+        }
+    }
+
+    // search handler function
+    const handleSearch = () => {
+        if (eventName && eventName.trim()) {
+            setIsSearchMode(true);
+            getSessionsByEventName(eventName.trim());
+        } else {
+            toast.error("Please enter an event name to search");
+        }
+    }
+
+    // function to handle Enter key press
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    }
 
     //fetch all latest sessions
     const getLatestSessions = async () => {
@@ -25,6 +54,35 @@ const Page = () => {
         } catch (err) {
             console.log(err);
         }
+    }
+
+    //function to handle response and console log data
+    const getSessionsByEventName = async (eventName: string) => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/name/${eventName}/sessions`);
+            console.log("Fetched sessions by event name:", response.data);
+            // Update sessions array with search results instead of sessionsByEvent
+            setSessions(response.data.entityList || response.data);
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
+    // Function to clear search and return to latest events
+    const clearSearch = () => {
+        setEventName("");
+        setIsSearchMode(false);
+        getLatestSessions();
     }
 
     return (
@@ -71,13 +129,17 @@ const Page = () => {
                                             </svg>
                                             <input
                                                 type="text"
+                                                value={eventName || ""}
                                                 placeholder="Search for events, venues, categories..."
+                                                onChange={handleEventName}
+                                                onKeyDown={handleKeyPress}
                                                 className="w-full pl-12 pr-4 py-4 text-gray-700 bg-transparent focus:outline-none text-lg placeholder-gray-400"
                                             />
                                         </div>
                                         <button
                                             className="px-8 py-4 text-white font-semibold text-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
                                             style={{ backgroundColor: '#193cb8' }}
+                                            onClick={handleSearch}
                                         >
                                             Search
                                         </button>
@@ -88,7 +150,7 @@ const Page = () => {
                     </div>
                 </div>
 
-                <div className="py-8">
+                <div>
                     {/* Modern header section */}
                     <div className="sticky top-0 bg-white/90 backdrop-blur-lg z-20 border-b border-gray-200/50 shadow-lg">
                         <div className="px-3 sm:px-4 md:px-8">
@@ -96,7 +158,7 @@ const Page = () => {
                                 <div className="relative inline-block">
                                     <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
                                         <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-                                            Latest Events
+                                            {isSearchMode ? `Search Results for "${eventName}"` : "Latest Events"}
                                         </span>
                                     </h2>
                                     {/* Accent Line */}
@@ -105,30 +167,58 @@ const Page = () => {
                                     </div>
                                 </div>
 
-                                <Link
-                                    className="group relative overflow-hidden font-semibold text-sm sm:text-base px-6 py-3 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                                    style={{
-                                        color: "#193cb8",
-                                        borderColor: "#193cb8",
-                                        backgroundColor: "transparent"
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor = "#193cb8";
-                                        e.target.style.color = "white";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor = "transparent";
-                                        e.target.style.color = "#193cb8";
-                                    }}
-                                    href={`/all-events`}
-                                >
-                                    <span className="relative flex items-center gap-2">
-                                        View All Events
-                                        <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </span>
-                                </Link>
+                                {/* Show different buttons based on search mode */}
+                                {isSearchMode ? (
+                                    <button
+                                        onClick={clearSearch}
+                                        className="group relative overflow-hidden font-semibold text-sm sm:text-base px-6 py-3 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                                        style={{
+                                            color: "#193cb8",
+                                            borderColor: "#193cb8",
+                                            backgroundColor: "transparent"
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.backgroundColor = "#193cb8";
+                                            e.target.style.color = "white";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.backgroundColor = "transparent";
+                                            e.target.style.color = "#193cb8";
+                                        }}
+                                    >
+                                        <span className="relative flex items-center gap-2">
+                                            Back to Latest Events
+                                            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                ) : (
+                                    <Link
+                                        className="group relative overflow-hidden font-semibold text-sm sm:text-base px-6 py-3 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                                        style={{
+                                            color: "#193cb8",
+                                            borderColor: "#193cb8",
+                                            backgroundColor: "transparent"
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.backgroundColor = "#193cb8";
+                                            e.target.style.color = "white";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.backgroundColor = "transparent";
+                                            e.target.style.color = "#193cb8";
+                                        }}
+                                        href={`/all-events`}
+                                    >
+                                        <span className="relative flex items-center gap-2">
+                                            View All Events
+                                            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </span>
+                                    </Link>
+                                )}
                             </div>
 
                             {/* Enhanced decorative elements */}
@@ -160,8 +250,12 @@ const Page = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Events Found</h3>
-                                <p className="text-gray-600">Check back later for upcoming events.</p>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                    {isSearchMode ? "No Events Found" : "No Events Available"}
+                                </h3>
+                                <p className="text-gray-600">
+                                    {isSearchMode ? `No events found for "${eventName}". Try a different search term.` : "Check back later for upcoming events."}
+                                </p>
                             </div>
                         )}
                     </div>
