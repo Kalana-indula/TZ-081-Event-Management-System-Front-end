@@ -192,3 +192,28 @@ export interface BookingDto {
     ticketIdList: number[];
 }
 
+//dto for register an organizer
+export interface RegisterOrganizerDto {
+    firstName: string;
+    lastName: string;
+    nic: string;
+    companyName: string;
+    phone: string;
+    email: string;
+    password: string;
+}
+
+export interface AddBankDetails {
+    organizerId: number;
+    bankName: string;
+    accountHolderName: string;
+    branchName: string;
+    accountNumber: string;
+}
+
+export interface UpdateBankDetails {
+    bankName: string;
+    accountHolderName: string;
+    branchName: string;
+    accountNumber: string;
+}

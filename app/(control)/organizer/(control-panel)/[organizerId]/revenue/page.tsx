@@ -3,9 +3,12 @@
 import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {CreateTransactionRequest} from "@/types/entityTypes";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
+import ChangeBankButton from "@/app/(control)/organizer/organizer-components/ChangeBankButton";
+import WithdrawalDialog from "@/app/(control)/organizer/organizer-components/WithdrawalDialog";
+import toast from "react-hot-toast";
 
 interface BankDetails {
     bankName: string;
@@ -20,16 +23,17 @@ const Page = () => {
     const [totalWithdrawals, setTotalWithdrawals] = useState<number>(0);
     const [currentBalance, setCurrentBalance] = useState<number>(0);
 
+    //bank details
+    const [bankName, setBankName] = useState<string>('');
+    const [branch, setBranch] = useState<string>('');
+    const [accountNumber, setAccountNumber] = useState<string>('');
+
     //get params
     const params = useParams();
 
-    const organizerId = params.organizerId;
+    const router=useRouter();
 
-    const [bankDetails, setBankDetails] = useState<BankDetails>({
-        bankName: "Some bank",
-        branchCode: "ZZZ525",
-        accountNumber: "xxx xxx xxx"
-    });
+    const organizerId = params.organizerId;
 
     //convert value to meaningful financial values
     const getValueString=(value:number):string =>{
@@ -39,6 +43,7 @@ const Page = () => {
     //load data at page loading
     useEffect(() => {
         getTotalEarnings();
+        getBankDetais();
     }, []);
 
     const handleWithdraw = async () => {
@@ -62,16 +67,13 @@ const Page = () => {
         }
     };
 
+    const routeToBankDetailsUpdate=()=>{
+        router.push(`/organizer/${organizerId}/bank/update-bank-details`);
+    }
 
-    const handleChangeBank = () => {
-        // Handle change bank logic
-        console.log('Changing bank details...');
-    };
-
-    const handleAddBank = () => {
-        // Handle add bank logic
-        console.log('Adding new bank...');
-    };
+    const routeToAddBank=()=>{
+        router.push(`/organizer/${organizerId}/bank/add-bank`);
+    }
 
     //fetch earnings by organizer
     const getTotalEarnings =async () => {
@@ -84,6 +86,29 @@ const Page = () => {
             setCurrentBalance(response.data.entityData.currentBalance);
         }catch (err){
             console.log(err);
+        }
+    }
+
+    //get bank details
+    const getBankDetais=async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/banks`);
+            console.log(response.data.entityData);
+            setBankName(response.data.entityData.bankName);
+            setBranch(response.data.entityData.branchName);
+            setAccountNumber(response.data.entityData.bankAccountNumber);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
         }
     }
 
@@ -133,12 +158,11 @@ const Page = () => {
                         </div>
 
                         <div className="flex gap-2">
-                            <Button
-                                onClick={handleWithdraw}
-                                className="bg-white border border-black text-black hover:bg-black hover:text-white active:bg-gray-800 px-2 sm:px-3 py-1 text-xs sm:text-sm w-full sm:w-auto hover:cursor-pointer"
-                            >
-                                Withdraw
-                            </Button>
+                            <WithdrawalDialog
+                                currentBalance={currentBalance}
+                                onWithdraw={handleWithdraw}
+                                getValueString={getValueString}
+                            />
                         </div>
                     </div>
                 </div>
@@ -149,7 +173,7 @@ const Page = () => {
                     <div>
                         <h3 className="text-gray-500 font-medium">YOUR BANK</h3>
                     </div>
-                    <div className="bg-white shadow-xl text-black p-4 sm:p-6 rounded-lg my-[10px] relative">
+                    <div className="bg-white shadow-xl text-black p-6 rounded-lg my-[10px] relative">
                         <div className="flex items-center gap-3">
                             <div
                                 className="flex justify-center items-center sm:h-32 sm:w-32 p-[18px] sm:p-[20px] mx-[10px] bg-gray-300 rounded-full">
@@ -158,32 +182,44 @@ const Page = () => {
                             <div className="sm:py-[20px] flex-1">
                                 <h2 className="text-lg sm:text-2xl font-semibold">Your Bank</h2>
                                 <div className="break-words text-gray-700 text-sm sm:text-base">
-                                    Bank name : {bankDetails?.bankName}
+                                    Bank name : {bankName}
                                 </div>
                                 <div className="break-words text-gray-700 text-sm sm:text-base">
-                                    Branch Code : {bankDetails?.branchCode}
+                                    Branch Code : {branch}
                                 </div>
                                 <div className="break-words text-gray-700 text-sm sm:text-base">
-                                    Account No : {bankDetails?.accountNumber}
+                                    Account No : {accountNumber}
                                 </div>
                             </div>
                         </div>
                         <Button
-                            onClick={handleChangeBank}
-                            className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white text-black border border-black sm:hover:bg-black sm:hover:text-white sm:active:bg-white sm:active:text-black active:bg-black hover:text-white active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm"
+                            onClick={routeToBankDetailsUpdate}
+                            className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white text-black border border-black sm:hover:bg-black sm:hover:text-white sm:active:bg-white sm:active:text-black active:bg-black hover:text-white active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm hover:cursor-pointer"
                         >
-                            <span className="hidden sm:inline">Change Bank</span>
-                            <span className="sm:hidden">Change</span>
+                            <span className="hidden sm:inline">Update Details</span>
+                            <span className="sm:hidden">Update</span>
                         </Button>
                     </div>
                 </div>
 
                 {/*    Add bank section */}
                 <button
-                    onClick={handleAddBank}
-                    className="bg-white hover:bg-gray-200 active:shadow-xl transition-colors duration-300 border rounded-[10px] font-semibold border-gray-800 p-[20px] w-full flex items-center justify-center gap-4">
+                    onClick={routeToAddBank}
+                    disabled={Boolean(bankName && bankName.trim() !== '')}
+                    className={`${
+                        bankName && bankName.trim() !== ''
+                            ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                            : 'bg-white hover:bg-gray-200 active:shadow-xl hover:cursor-pointer'
+                    } transition-colors duration-300 border rounded-[10px] font-semibold p-[20px] w-full flex items-center justify-center gap-4`}
+                >
                     <div>
-                        <Image src="/bank.png" height={24} width={24} alt="bank"/>
+                        <Image
+                            src="/bank.png"
+                            height={24}
+                            width={24}
+                            alt="bank"
+                            className={bankName && bankName.trim() !== '' ? 'opacity-50' : ''}
+                        />
                     </div>
                     <div>
                         Add Bank +

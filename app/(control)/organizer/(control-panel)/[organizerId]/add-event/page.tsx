@@ -137,9 +137,7 @@ const Page = () => {
             };
 
             //Post event
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,
-                eventData,
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, eventData,
                 {
                     headers: {
                         Accept: "application/json",
