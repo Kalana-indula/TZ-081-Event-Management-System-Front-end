@@ -6,9 +6,11 @@ import {CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tool
 import {Button} from "@/components/ui/button";
 import {IoDocumentTextOutline} from "react-icons/io5";
 import {useParams, useRouter} from "next/navigation";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {handleApiError} from "@/lib/utils";
-import {EventDetails} from "@/types/entityTypes";
+import {EventDetails, MonthlyEarningDetails} from "@/types/entityTypes";
+import toast from "react-hot-toast";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 interface StatData {
     name: string;
@@ -98,6 +100,14 @@ const Page = () => {
     const [totalEarnings, setTotalEarnings] = useState<number|string>(0);
     const [scheduledEvents, setScheduledEvents] = useState<number>(0);
     const [onGoingEvents, setOnGoingEvents] = useState<EventDetails[]>([]);
+    const [years,setYears]=useState<number[]>([]);
+
+    //selected year
+    const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+
+    //monthly earnings
+    const [monthlyEarnings,setMonthlyEarnings]=useState<MonthlyEarningDetails[]>([]);
+
 
     //get user id from params
     const params = useParams();
@@ -112,7 +122,21 @@ const Page = () => {
         //     getEventsList();
         getEventCounts();
         getEventsByOrganizer();
+        getYearsList();
+        getMonthlyEarnings();
     }, []);
+
+    //useEffect to watch for selectedYear changes
+    useEffect(() => {
+        if (selectedYear && organizerId) {
+            getMonthlyEarnings();
+        }
+    }, [selectedYear]);
+
+    // handler function for year selection
+    const handleYearChange = (year: string) => {
+        setSelectedYear(year);
+    };
 
     //format financial metrics
     const formatFinancialValues = (value: number) => {
@@ -131,6 +155,28 @@ const Page = () => {
         }
     }
 
+    //get monthly earning details sorted by year
+    const getMonthlyEarnings = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/monthly-earnings/organizers/${organizerId}/${selectedYear}`);
+
+            console.log(response.data.entityList);
+            setMonthlyEarnings(response.data.entityList);
+        }catch(err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
     //fetch events by organizer
     const getEventsByOrganizer = async () => {
         try {
@@ -140,6 +186,27 @@ const Page = () => {
 
         } catch (err) {
             handleApiError(err, "Failed to load events");
+        }
+    }
+
+    //get event completion years list
+    const getYearsList = async () =>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/completed/years/organizers/${organizerId}`);
+            console.log(response.data.entityList);
+            setYears(response.data.entityList);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
         }
     }
 
@@ -214,8 +281,24 @@ const Page = () => {
                 {/*    chart section*/}
                 <div
                     className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                    <div>
+
+                    <div className="flex items-center justify-between mb-2">
                         <h3 className="text-gray-500 font-medium py-2">ANNUAL FINANCIAL DATA</h3>
+                        {/*drop down */}
+                        <div>
+                            <Select value={selectedYear} onValueChange={handleYearChange}>
+                                <SelectTrigger className="w-[180px] bg-white shadow-lg">
+                                    <SelectValue placeholder="Select Year" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    {years && years.map((year) => (
+                                        <SelectItem key={year} value={year.toString()}>
+                                            {year}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
 
                     {/*chart*/}
@@ -223,7 +306,7 @@ const Page = () => {
                         <div className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full overflow-hidden">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart
-                                    data={data}
+                                    data={monthlyEarnings}
                                     margin={{
                                         top: 5,
                                         right: 10,
@@ -233,7 +316,7 @@ const Page = () => {
                                 >
                                     <CartesianGrid strokeDasharray="3 3"/>
                                     <XAxis
-                                        dataKey="name"
+                                        dataKey="monthName"
                                         tick={{fontSize: 12}}
                                         interval="preserveStartEnd"
                                     />
@@ -249,7 +332,7 @@ const Page = () => {
                                     />
                                     <Label
                                         value="Amount"
-                                        offset={-50}
+                                        offset={-65}
                                         angle={-90}
                                         position="insideLeft"
                                         style={{fontSize: 15}}
@@ -265,7 +348,7 @@ const Page = () => {
                                     <Legend
                                         wrapperStyle={{fontSize: '12px'}}
                                     />
-                                    <Line type="monotone" dataKey="pv" stroke="#8884d8" strokeWidth={2}/>
+                                    <Line type="monotone" dataKey="totalEarnings" name="Monthly Earnings (LKR.)" stroke="#8884d8" strokeWidth={1.5}/>
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>

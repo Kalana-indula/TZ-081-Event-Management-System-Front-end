@@ -45,7 +45,7 @@ const Page = () => {
     const getCategories = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/categories`);
-            setEventCategories(response.data);
+            setEventCategories(response.data.entityList);
         } catch (err) {
             handleApiError(err,"Failed to load categories");
         }
