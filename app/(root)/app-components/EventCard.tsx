@@ -5,12 +5,19 @@ import {useRouter} from "next/navigation";
 import {SessionCardDetails} from "@/types/entityTypes";
 import { CiLocationOn } from "react-icons/ci";
 import {formatDate, formatTime, getValueString} from "@/lib/utils";
+import {CalendarCheck} from "lucide-react";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
+import {isToday, parseISO} from "date-fns";
 
 interface EventCardProps {
     session:SessionCardDetails;
 }
 
 const EventCard = ({ session }:EventCardProps) => {
+
+    //check the date
+    const isEventToday = session.startingDate ? isToday(parseISO(session.startingDate)) : false;
 
     const router=useRouter();
 
@@ -28,12 +35,19 @@ const EventCard = ({ session }:EventCardProps) => {
                     alt={session.eventName || 'Event'}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                 />
-                {/* Crown/Premium Badge */}
-                <div className="absolute hidden top-3 right-3 bg-blue-600 text-white p-2 rounded-full shadow-lg">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                    </svg>
-                </div>
+                {/* Happening Today Badge */}
+                {isEventToday && (
+                    <div className="absolute top-3 right-3 text-white bg-blue-600 p-2 rounded-full shadow-lg">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <CalendarCheck strokeWidth={1.5} />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>It's Happening Today!</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                )}
             </div>
 
             {/* Event Content */}
