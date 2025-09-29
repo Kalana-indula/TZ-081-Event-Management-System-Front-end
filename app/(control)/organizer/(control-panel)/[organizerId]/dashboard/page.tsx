@@ -2,95 +2,16 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-import {CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend} from "recharts";
 import {Button} from "@/components/ui/button";
 import {IoDocumentTextOutline} from "react-icons/io5";
 import {useParams, useRouter} from "next/navigation";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {handleApiError} from "@/lib/utils";
-import {EventDetails} from "@/types/entityTypes";
-
-interface StatData {
-    name: string;
-    uv: number;
-    pv: number;
-    amt: number;
-}
-
-const data: StatData[] = [
-    {
-        "name": "Jan",
-        "uv": 4000,
-        "pv": 2400,
-        "amt": 2400
-    },
-    {
-        "name": "Feb",
-        "uv": 3000,
-        "pv": 1398,
-        "amt": 2210
-    },
-    {
-        "name": "Mar",
-        "uv": 2000,
-        "pv": 9800,
-        "amt": 2290
-    },
-    {
-        "name": "Apr",
-        "uv": 2780,
-        "pv": 3908,
-        "amt": 2000
-    },
-    {
-        "name": "May",
-        "uv": 1890,
-        "pv": 4800,
-        "amt": 2181
-    },
-    {
-        "name": "Jun",
-        "uv": 2390,
-        "pv": 3800,
-        "amt": 2500
-    },
-    {
-        "name": "Jul",
-        "uv": 3490,
-        "pv": 4300,
-        "amt": 2100
-    },
-    {
-        "name": "Aug",
-        "uv": 3200,
-        "pv": 4100,
-        "amt": 2300
-    },
-    {
-        "name": "Sep",
-        "uv": 3800,
-        "pv": 4500,
-        "amt": 2600
-    },
-    {
-        "name": "Oct",
-        "uv": 4200,
-        "pv": 4800,
-        "amt": 2800
-    },
-    {
-        "name": "Nov",
-        "uv": 4500,
-        "pv": 5200,
-        "amt": 3000
-    },
-    {
-        "name": "Dec",
-        "uv": 4800,
-        "pv": 5500,
-        "amt": 3200
-    }
-]
+import {EventDetails, MonthlyEarningDetails} from "@/types/entityTypes";
+import toast from "react-hot-toast";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {downloadMonthlyPDF} from "@/lib/generateMonthlyReport";
 
 const Page = () => {
     //get event count
@@ -98,6 +19,14 @@ const Page = () => {
     const [totalEarnings, setTotalEarnings] = useState<number|string>(0);
     const [scheduledEvents, setScheduledEvents] = useState<number>(0);
     const [onGoingEvents, setOnGoingEvents] = useState<EventDetails[]>([]);
+    const [years,setYears]=useState<number[]>([]);
+
+    //selected year
+    const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+
+    //monthly earnings
+    const [monthlyEarnings,setMonthlyEarnings]=useState<MonthlyEarningDetails[]>([]);
+
 
     //get user id from params
     const params = useParams();
@@ -112,7 +41,21 @@ const Page = () => {
         //     getEventsList();
         getEventCounts();
         getEventsByOrganizer();
+        getYearsList();
+        getMonthlyEarnings();
     }, []);
+
+    //useEffect to watch for selectedYear changes
+    useEffect(() => {
+        if (selectedYear && organizerId) {
+            getMonthlyEarnings();
+        }
+    }, [selectedYear]);
+
+    // handler function for year selection
+    const handleYearChange = (year: string) => {
+        setSelectedYear(year);
+    };
 
     //format financial metrics
     const formatFinancialValues = (value: number) => {
@@ -131,6 +74,28 @@ const Page = () => {
         }
     }
 
+    //get monthly earning details sorted by year
+    const getMonthlyEarnings = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/monthly-earnings/organizers/${organizerId}/${selectedYear}`);
+
+            console.log(response.data.entityList);
+            setMonthlyEarnings(response.data.entityList);
+        }catch(err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
     //fetch events by organizer
     const getEventsByOrganizer = async () => {
         try {
@@ -140,6 +105,27 @@ const Page = () => {
 
         } catch (err) {
             handleApiError(err, "Failed to load events");
+        }
+    }
+
+    //get event completion years list
+    const getYearsList = async () =>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/completed/years/organizers/${organizerId}`);
+            console.log(response.data.entityList);
+            setYears(response.data.entityList);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
         }
     }
 
@@ -214,45 +200,63 @@ const Page = () => {
                 {/*    chart section*/}
                 <div
                     className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                    <div>
+
+                    <div className="flex items-center justify-between mb-2">
                         <h3 className="text-gray-500 font-medium py-2">ANNUAL FINANCIAL DATA</h3>
+                        {/*drop down */}
+                        <div>
+                            <Select value={selectedYear} onValueChange={handleYearChange}>
+                                <SelectTrigger className="w-[180px] bg-white shadow-lg">
+                                    <SelectValue placeholder="Select Year" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    {years && years.map((year) => (
+                                        <SelectItem key={year} value={year.toString()}>
+                                            {year}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
 
                     {/*chart*/}
                     <div className="bg-white p-2 sm:p-4 lg:p-6 rounded-md">
-                        <div className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full overflow-hidden">
+                        <div className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart
-                                    data={data}
+                                    data={monthlyEarnings}
                                     margin={{
                                         top: 5,
                                         right: 10,
-                                        left: 0,
-                                        bottom: 30
+                                        left: 10,
+                                        bottom: 5
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3"/>
                                     <XAxis
-                                        dataKey="name"
-                                        tick={{fontSize: 12}}
+                                        dataKey="monthName"
+                                        tick={{ fontSize: 11 }}
                                         interval="preserveStartEnd"
-                                    />
-                                    <Label
-                                        value="Month"
-                                        offset={-70}
-                                        position="insideBottom"
-                                        style={{fontSize: 15}}
+                                        angle={-45}
+                                        textAnchor="end"
+                                        height={60}
+                                        label={{
+                                            value: 'Month',
+                                            position: 'insideBottom',
+                                            offset: -10,
+                                            style: { fontSize: 12, textAnchor: 'middle' }
+                                        }}
                                     />
                                     <YAxis
-                                        tick={{fontSize: 12}}
-                                        width={70}
-                                    />
-                                    <Label
-                                        value="Amount"
-                                        offset={-50}
-                                        angle={-90}
-                                        position="insideLeft"
-                                        style={{fontSize: 15}}
+                                        tick={{ fontSize: 11 }}
+                                        width={60}
+                                        label={{
+                                            value: 'Amount (LKR)',
+                                            angle: -90,
+                                            position: 'insideLeft',
+                                            style: { fontSize: 12, textAnchor: 'middle' }
+                                        }}
                                     />
                                     <Tooltip
                                         contentStyle={{
@@ -263,9 +267,17 @@ const Page = () => {
                                         }}
                                     />
                                     <Legend
-                                        wrapperStyle={{fontSize: '12px'}}
+                                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
                                     />
-                                    <Line type="monotone" dataKey="pv" stroke="#8884d8" strokeWidth={2}/>
+                                    <Line
+                                        type="monotone"
+                                        dataKey="totalEarnings"
+                                        name="Monthly Earnings (LKR)"
+                                        stroke="#8884d8"
+                                        strokeWidth={2}
+                                        dot={{ r: 3 }}
+                                        activeDot={{ r: 5 }}
+                                    />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -273,8 +285,11 @@ const Page = () => {
 
                     {/*    report generation button*/}
                     <div className="my-[20px] flex justify-center items-center">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                            <IoDocumentTextOutline className="mr-2"/>
+                        <Button
+                            className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
+                            onClick={() => downloadMonthlyPDF(monthlyEarnings, organizerId, selectedYear)}
+                        >
+                            <IoDocumentTextOutline className="mr-2" />
                             Generate Report
                         </Button>
                     </div>

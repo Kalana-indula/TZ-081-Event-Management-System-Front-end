@@ -217,3 +217,21 @@ export interface UpdateBankDetails {
     branchName: string;
     accountNumber: string;
 }
+
+export interface MonthlyEarningDetails {
+    id: number;
+    monthNumber: number;
+    monthName: string;
+    year: number;
+    totalEarnings: number;
+    organizerId: number;
+}
+
+export interface TotalMonthlyEarningDetails {
+    id: number;
+    monthNumber: number;
+    monthName: string;
+    year: number;
+    totalEarnings: number;
+    organizerId: number;
+}
