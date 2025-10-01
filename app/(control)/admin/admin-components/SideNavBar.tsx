@@ -12,6 +12,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {FaUserCircle} from "react-icons/fa";
 import {MdEventAvailable} from "react-icons/md";
 import {LayoutDashboard} from "lucide-react";
+import {GrTransaction} from "react-icons/gr";
 
 interface SideNavBarProps {
     isNavBarOpen: boolean;
@@ -37,9 +38,9 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
             label: 'Cash Flow'
         },
         {
-            href: '/admin/payments',
-            icon: MdOutlinePayment,
-            label: 'Payments'
+            href: '/admin/transactions',
+            icon: GrTransaction,
+            label: 'Transactions'
         },
         {
             href: '/admin/statistics',

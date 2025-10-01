@@ -106,11 +106,14 @@ export interface CreateSessionBody {
     eventId:number;
 }
 
-export interface EarningDetails {
-    totalEarnings:number;
-    totalWithdrawals:number;
-    currentBalance:number;
+export interface OrganizerEarningDetails {
+    organizerId: number;
+    organizerName: string;
+    totalEarnings: number;
+    totalWithdrawals: number;
+    currentBalance: number;
 }
+
 
 export interface CreateTransactionRequest {
     amount:number;
@@ -235,3 +238,15 @@ export interface TotalMonthlyEarningDetails {
     totalEarnings: number;
     organizerId: number;
 }
+
+export interface TransactionDetails {
+    id: number;
+    transactionId:string;
+    amount: number;
+    organizerId: number;
+    organizerName: string;
+    date: string;
+    time: string;
+    status:string;
+}
+

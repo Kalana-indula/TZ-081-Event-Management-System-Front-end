@@ -11,6 +11,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {FaUserCircle} from "react-icons/fa";
 import {MdEventAvailable} from "react-icons/md";
 import {LayoutDashboard} from "lucide-react";
+import {GrTransaction} from "react-icons/gr";
 
 interface SideNavBarProps {
     isNavBarOpen: boolean;
@@ -36,9 +37,9 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
             label: 'Organizers'
         },
         {
-            href: '/manager/payments',
-            icon: MdOutlinePayment,
-            label: 'Payments'
+            href: '/manager/transactions',
+            icon: GrTransaction,
+            label: 'Transactions'
         },
         {
             href: '/manager/settings',
@@ -148,7 +149,7 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                                     }
                                     ${isNavBarOpen ? "justify-start" : ""}`}>
                                     <div className="nav-icon text-[32px]">
-                                        <IconComponent/>
+                                        <IconComponent strokeWidth={1}/>
                                     </div>
                                     <div
                                         className={`page-name text-[20px] lg:block ${isNavBarOpen ? "block" : "hidden"}`}>

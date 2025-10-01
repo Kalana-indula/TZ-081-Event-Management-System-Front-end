@@ -1,34 +1,48 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-
-import activityData from '@/data/OrganizerActivityDetails';
 import {Button} from "@/components/ui/button";
-import {ChartSpline} from "lucide-react";
+import {ChartSpline, FileText} from "lucide-react";
 import {useRouter} from "next/navigation";
-
-interface OrganizerActivity {
-    eventId: number;
-    eventName: string;
-    eventType: string;
-    startedDate: string;
-    totalRevenue: number;
-    profit: number;
-    commission: number;
-}
+import {EventDetails} from "@/types/entityTypes";
+import axios, {AxiosError} from "axios";
+import toast from "react-hot-toast";
+import {getValueString} from "@/lib/utils";
 
 
 const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
-    const [organizerDetails, setOrganizerDetails] = useState<OrganizerActivity[]>([]);
+    const [eventDetails, setEventDetails] = useState<EventDetails[]>([]);
+
     const {organizerId} = React.use(params);
 
     //configure navigation
     const route=useRouter();
 
     useEffect(() => {
-        setOrganizerDetails(activityData);
+        getEventDetails();
     }, []);
+
+    //get event details
+    const getEventDetails = async () => {
+        try {
+            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
+            setEventDetails(response.data.completedEvents);
+            console.log(response.data.completedEvents);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
 
     const routeToOrganizerStats=()=>{
         route.push(`/admin/statistics/organizer/${organizerId}/organizer-stats`);
@@ -49,7 +63,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                 <div
                     className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
-                        <h3 className="text-gray-500 font-medium py-2">PAYMENT DETAILS</h3>
+                        <h3 className="text-gray-500 font-medium py-2">EVENT DETAILS</h3>
                     </div>
                     <div>
                         {/* Desktop Table View */}
@@ -70,42 +84,37 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                         Started On
                                     </th>
                                     <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Total Revenue
+                                        Total Revenue (LKR.)
                                     </th>
                                     <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Profit
+                                        Profit (LKR.)
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                {organizerDetails && organizerDetails.length > 0 ? (
-                                    organizerDetails.map((detail: OrganizerActivity) => (
+                                {eventDetails && eventDetails.length > 0 ? (
+                                    eventDetails.map((detail: EventDetails) => (
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={detail.eventId}>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{detail.eventId}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{detail.eventType}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{detail.startedDate}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{detail.totalRevenue}</td>
-                                            <td className="px-6 py-4 text-center">{detail.profit}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{detail.commission}</td>
+                                            <td className="px-6 py-4 text-sm text-left text-gray-900 font-sm">{detail.eventId}</td>
+                                            <td className="px-6 py-4 text-sm text-left text-gray-700 font-sm">{detail.eventName}</td>
+                                            <td className="px-6 py-4 text-sm text-left text-gray-700 font-sm">{detail.eventType}</td>
+                                            <td className="px-6 py-4 text-sm text-center text-gray-700 font-sm">{detail.dateCompleted}</td>
+                                            <td className="px-6 py-4 text-sm text-center text-gray-700 font-sm">{getValueString(detail.earningsByEvent)}</td>
+                                            <td className="px-6 py-4 text-sm text-center text-gray-700 font-sm">{getValueString(detail.totalProfit)}</td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                        <td colSpan={6} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                 <div
                                                     className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                         stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                                              strokeWidth={2}
-                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No payments
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No events
                                                     available</h3>
-                                                <p className="text-sm text-gray-500">There are currently no payment
+                                                <p className="text-sm text-gray-500">There are currently no event
                                                     records to display.</p>
                                             </div>
                                         </td>
@@ -118,8 +127,8 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                         {/* Mobile Card View */}
                         <div className="md:hidden space-y-4">
                             {(() => {
-                                return organizerDetails && organizerDetails.length > 0
-                                    ? organizerDetails.map((detail: OrganizerActivity) => (
+                                return eventDetails && eventDetails.length > 0
+                                    ? eventDetails.map((detail: EventDetails) => (
                                         <div
                                             className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer space-y-2"
                                             key={detail.eventId}>
@@ -143,14 +152,14 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                             <div className="flex justify-between">
                                                 <div>
                                                     <p>Started On</p>
-                                                    <p>Total Revenue</p>
-                                                    <p>Profit</p>
+                                                    <p>Total Revenue (LKR.)</p>
+                                                    <p>Profit (LKR.)</p>
                                                     <p>Commission</p>
                                                 </div>
                                                 <div className="text-gray-600">
-                                                    <p>{detail.startedDate}</p>
-                                                    <p>{detail.totalRevenue}</p>
-                                                    <p>{detail.profit}</p>
+                                                    <p>{detail.dateCompleted}</p>
+                                                    <p>{detail.earningsByEvent}</p>
+                                                    <p>{detail.totalProfit}</p>
                                                     <p>{detail.commission} %</p>
                                                 </div>
                                             </div>
@@ -161,12 +170,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                             <div className="flex flex-col items-center justify-center">
                                                 <div
                                                     className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                         stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                                              strokeWidth={2}
-                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
                                                 <h3 className="text-lg font-medium text-gray-900 mb-2">No payments
                                                     available</h3>

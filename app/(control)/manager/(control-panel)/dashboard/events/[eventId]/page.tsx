@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
-import {CircleCheck} from "lucide-react";
+import {CircleCheck, FileText} from "lucide-react";
 import {SlClose} from "react-icons/sl";
 import axios, {AxiosError} from "axios";
 import {EventDetails, EventStatus, Session} from "@/types/entityTypes";
@@ -300,12 +300,7 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                             <div className="flex flex-col items-center justify-center">
                                                 <div
                                                     className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                         stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                                              strokeWidth={2}
-                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
                                                 <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
                                                     available</h3>
@@ -368,12 +363,7 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                             <div className="flex flex-col items-center justify-center">
                                                 <div
                                                     className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                         stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                                              strokeWidth={2}
-                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
                                                 <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
                                                     available</h3>
