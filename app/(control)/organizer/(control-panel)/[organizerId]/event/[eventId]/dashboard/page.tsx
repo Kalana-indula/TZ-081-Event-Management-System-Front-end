@@ -9,9 +9,10 @@ import {formatDate, formatTime, getValueString, handleApiError} from "@/lib/util
 import {EventDetails, EventStatus, Session, TicketDetails} from "@/types/entityTypes";
 import Image from "next/image";
 import approvalStates from "@/data/EventStatusDetails";
-import {Clock, Eye, EyeOff} from "lucide-react";
+import {Clock, Eye, EyeOff, FileText} from "lucide-react";
 import {toast} from "react-hot-toast";
 import PublishEventSwitch from "@/app/(control)/organizer/organizer-components/PublishEventSwitch";
+import CompleteEventSwitch from "@/app/(control)/organizer/organizer-components/CompleteEventSwitch";
 
 const Page = () => {
     //states
@@ -400,14 +401,8 @@ const Page = () => {
                         ) : (
                             <div className="flex flex-col items-center justify-center py-2">
                                 <div
-                                    className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
-                                         viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
+                                    className="w-16 h-16 bg-gray-100 rounded-full text-gray-600 flex items-center justify-center mb-4">
+                                    <EyeOff strokeWidth={1} size={40} />
                                 </div>
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">Event Not Published</h3>
                                 <p className="text-sm text-gray-500 text-center">Publish your event to make it visible
@@ -459,12 +454,7 @@ const Page = () => {
                                             <div className="flex flex-col items-center justify-center">
                                                 <div
                                                     className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                         stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                                              strokeWidth={2}
-                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
                                                 <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
                                                     available</h3>
@@ -510,12 +500,7 @@ const Page = () => {
                                     <div className="flex flex-col items-center justify-center">
                                         <div
                                             className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                            <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                 stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round"
-                                                      strokeWidth={2}
-                                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
+                                            <FileText strokeWidth={1} size={40}/>
                                         </div>
                                         <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
                                             available</h3>
@@ -576,12 +561,7 @@ const Page = () => {
                                             <div className="flex flex-col items-center justify-center">
                                                 <div
                                                     className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                         stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                                              strokeWidth={2}
-                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
                                                 <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
                                                     available</h3>
@@ -622,12 +602,7 @@ const Page = () => {
                                     <div className="flex flex-col items-center justify-center">
                                         <div
                                             className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                            <svg className="w-8 h-8 text-gray-400" fill="none"
-                                                 stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round"
-                                                      strokeWidth={2}
-                                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
+                                            <FileText strokeWidth={1} size={40}/>
                                         </div>
                                         <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions
                                             available</h3>
@@ -641,15 +616,11 @@ const Page = () => {
                 </div>
 
                 {/*mark event as completed*/}
-                <div
-                    className={`flex flex-col sm:flex-row justify-start items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 p-4 bg-gray-50 rounded-md border border-gray-200 ${
-                        status === 'Approved' || status === 'Pending Approval' ? 'hidden' : ''
-                    }`}>
-                    <label className="text-sm sm:text-base font-medium text-gray-700">Mark Event Has Completed</label>
-                    <Switch
-                        checked={isCompleted}
-                        onCheckedChange={completeEvent}
-                        disabled={isCompleted}
+                <div>
+                    <CompleteEventSwitch
+                        isCompleted={isCompleted}
+                        status={status}
+                        onComplete={completeEvent}
                     />
                 </div>
 

@@ -1,72 +1,98 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
-import {CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {Button} from "@/components/ui/button";
 import { IoDocumentTextOutline } from "react-icons/io5";
-
-interface StatData {
-    name: string;
-    uv: number;
-    pv: number;
-    amt: number;
-}
-
-const data: StatData[] = [
-    {
-        "name": "Page A",
-        "uv": 4000,
-        "pv": 2400,
-        "amt": 2400
-    },
-    {
-        "name": "Page B",
-        "uv": 3000,
-        "pv": 1398,
-        "amt": 2210
-    },
-    {
-        "name": "Page C",
-        "uv": 2000,
-        "pv": 9800,
-        "amt": 2290
-    },
-    {
-        "name": "Page D",
-        "uv": 2780,
-        "pv": 3908,
-        "amt": 2000
-    },
-    {
-        "name": "Page E",
-        "uv": 1890,
-        "pv": 4800,
-        "amt": 2181
-    },
-    {
-        "name": "Page F",
-        "uv": 2390,
-        "pv": 3800,
-        "amt": 2500
-    },
-    {
-        "name": "Page G",
-        "uv": 3490,
-        "pv": 4300,
-        "amt": 2100
-    }
-]
+import axios, {AxiosError} from "axios";
+import toast from "react-hot-toast";
+import {useParams} from "next/navigation";
+import {MonthlyEarningDetails} from "@/types/entityTypes";
+import {downloadMonthlyPDF} from "@/lib/generateMonthlyReport";
 
 const Statistics = () => {
+
+    //get user id from params
+    const params = useParams();
+
+    const organizerId = params.organizerId as string;
+
+    //years
+    const [years,setYears]=useState<number[]>([]);
+
+    //selected year
+    const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+
+    //monthly earnings
+    const [monthlyEarnings,setMonthlyEarnings]=useState<MonthlyEarningDetails[]>([]);
+
+
+    //useEffect to watch for selectedYear changes
+    useEffect(() => {
+        if (selectedYear && organizerId) {
+            getMonthlyEarnings();
+        }
+    }, [selectedYear]);
+
+    useEffect(() => {
+        getYearsList();
+        getMonthlyEarnings();
+    }, []);
+
+    // handler function for year selection
+    const handleYearChange = (year: string) => {
+        setSelectedYear(year);
+    };
+
+    //get event completion years list
+    const getYearsList = async () =>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/completed/years/organizers/${organizerId}`);
+            console.log(response.data.entityList);
+            setYears(response.data.entityList);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
+    //get monthly earning details sorted by year
+    const getMonthlyEarnings = async ()=>{
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/monthly-earnings/organizers/${organizerId}/${selectedYear}`);
+
+            console.log(response.data.entityList);
+            setMonthlyEarnings(response.data.entityList);
+        }catch(err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
 
     return (
         <>
@@ -89,19 +115,16 @@ const Statistics = () => {
                         </div>
                         <div className="flex items-start flex-col sm:flex-row space-y-4 space-x-4">
                             <div>
-                                <Select>
+                                <Select value={selectedYear} onValueChange={handleYearChange}>
                                     <SelectTrigger className="w-[180px] bg-white shadow-lg">
-                                        <SelectValue placeholder="Select Year"/>
+                                        <SelectValue placeholder="Select Year" />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Fruits</SelectLabel>
-                                            <SelectItem value="apple">Apple</SelectItem>
-                                            <SelectItem value="banana">Banana</SelectItem>
-                                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                                            <SelectItem value="grapes">Grapes</SelectItem>
-                                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                                        </SelectGroup>
+                                    <SelectContent className="bg-white">
+                                        {years && years.map((year) => (
+                                            <SelectItem key={year} value={year.toString()}>
+                                                {year}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -121,36 +144,38 @@ const Statistics = () => {
                             <div className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full overflow-hidden">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart
-                                        data={data}
+                                        data={monthlyEarnings}
                                         margin={{
                                             top: 5,
                                             right: 10,
-                                            left: 0,
-                                            bottom: 30
+                                            left: 10,
+                                            bottom: 5
                                         }}
                                     >
                                         <CartesianGrid strokeDasharray="3 3"/>
                                         <XAxis
-                                            dataKey="name"
-                                            tick={{ fontSize: 12 }}
+                                            dataKey="monthName"
+                                            tick={{ fontSize: 11 }}
                                             interval="preserveStartEnd"
-                                        />
-                                        <Label
-                                            value="Month"
-                                            offset={-70}
-                                            position="insideBottom"
-                                            style={{ fontSize: 15 }}
+                                            angle={-45}
+                                            textAnchor="end"
+                                            height={60}
+                                            label={{
+                                                value: 'Month',
+                                                position: 'insideBottom',
+                                                offset: -10,
+                                                style: { fontSize: 12, textAnchor: 'middle' }
+                                            }}
                                         />
                                         <YAxis
-                                            tick={{ fontSize: 12 }}
-                                            width={70}
-                                        />
-                                        <Label
-                                            value="Amount"
-                                            offset={-50}
-                                            angle={-90}
-                                            position="insideLeft"
-                                            style={{ fontSize: 15 }}
+                                            tick={{ fontSize: 11 }}
+                                            width={60}
+                                            label={{
+                                                value: 'Amount (LKR)',
+                                                angle: -90,
+                                                position: 'insideLeft',
+                                                style: { fontSize: 12, textAnchor: 'middle' }
+                                            }}
                                         />
                                         <Tooltip
                                             contentStyle={{
@@ -161,10 +186,17 @@ const Statistics = () => {
                                             }}
                                         />
                                         <Legend
-                                            wrapperStyle={{ fontSize: '12px' }}
+                                            wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
                                         />
-                                        <Line type="monotone" dataKey="pv" stroke="#8884d8" strokeWidth={2}/>
-                                        <Line type="monotone" dataKey="uv" stroke="#82ca9d" strokeWidth={2}/>
+                                        <Line
+                                            type="monotone"
+                                            dataKey="totalEarnings"
+                                            name="Monthly Earnings (LKR)"
+                                            stroke="#8884d8"
+                                            strokeWidth={2}
+                                            dot={{ r: 3 }}
+                                            activeDot={{ r: 5 }}
+                                        />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
@@ -174,9 +206,12 @@ const Statistics = () => {
 
                 {/*generate report*/}
                 <div className="flex justify-center">
-                    <Button className="my-2 bg-white border border-black text-black hover:text-white active:text-black active:bg-white w-full sm:w-1/5">
-                        <IoDocumentTextOutline />
-                        Generate report
+                    <Button
+                        className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
+                        onClick={() => downloadMonthlyPDF(monthlyEarnings, organizerId, selectedYear)}
+                    >
+                        <IoDocumentTextOutline className="mr-2" />
+                        Generate Report
                     </Button>
                 </div>
             </div>

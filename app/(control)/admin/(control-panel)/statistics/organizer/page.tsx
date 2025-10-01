@@ -10,27 +10,45 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
-import earningsData from "@/data/OrganizerEarnings";
-import {useRouter} from "next/navigation";
-
-interface OrganizerEarning {
-    id: number;
-    firstName: string;
-    lastName: string;
-    totalRevenue:number;
-    totalProfit:number;
-}
+import { useRouter} from "next/navigation";
+import {OrganizerEarningDetails} from "@/types/entityTypes";
+import axios, {AxiosError} from "axios";
+import toast from "react-hot-toast";
+import {getValueString} from "@/lib/utils";
+import {FileText} from "lucide-react";
 
 const Page = () => {
 
-    const [organizerEarnings,setOrganizerEarnings] = useState<OrganizerEarning[]>([]);
+    const [organizerEarnings,setOrganizerEarnings] = useState<OrganizerEarningDetails[]>([]);
 
+    //get params
     const route=useRouter();
 
     //load data at the page loading
     useEffect(() => {
-        setOrganizerEarnings(earningsData);
+        getOrganizerEarningDetails();
     }, []);
+
+    //get organizer earning details
+    const getOrganizerEarningDetails= async () => {
+        try {
+            const response=await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/earnings`);
+            setOrganizerEarnings(response.data.entityList);
+            console.log(response.data.entityList);
+        }catch (err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
 
     const roteToUser = (id:number)=>{
         route.push(`/admin/statistics/organizer/${id}`);
@@ -94,7 +112,7 @@ const Page = () => {
                 {/*table*/}
                 <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
-                        <h3 className="text-gray-500 font-medium py-2">PAYMENT DETAILS</h3>
+                        <h3 className="text-gray-500 font-medium py-2">EARNING DETAILS</h3>
                     </div>
                     <div>
                         {/* Desktop Table View */}
@@ -109,33 +127,27 @@ const Page = () => {
                                         Organizer
                                     </th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Total Revenue
-                                    </th>
-                                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Total Profit
+                                        Total Revenue (LKR.)
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
                                 {organizerEarnings && organizerEarnings.length > 0 ? (
-                                    organizerEarnings.map((earning:OrganizerEarning)=> (
+                                    organizerEarnings.map((earning:OrganizerEarningDetails)=> (
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
-                                            key={earning.id}
-                                            onClick={()=>roteToUser(earning.id)}>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{earning.id}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{earning.firstName} {earning.lastName}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{earning.totalRevenue}</td>
-                                            <td className="px-6 py-4 text-center">{earning.totalRevenue}</td>
+                                            key={earning.organizerId}
+                                            onClick={()=>roteToUser(earning.organizerId)}>
+                                            <td className="px-6 py-4 text-sm text-gray-700 font-sm">{earning.organizerId}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700 font-sm">{earning.organizerName}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700 font-sm">{getValueString(earning.totalEarnings)}</td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center justify-center">
-                                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                    </svg>
+                                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600">
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
                                                 <h3 className="text-lg font-medium text-gray-900 mb-2">No payments available</h3>
                                                 <p className="text-sm text-gray-500">There are currently no payment records to display.</p>
@@ -151,35 +163,42 @@ const Page = () => {
                         <div className="md:hidden space-y-4">
                             {(() => {
                                 return organizerEarnings && organizerEarnings.length > 0
-                                    ? organizerEarnings.map((earning: OrganizerEarning) => (
+                                    ? organizerEarnings.map((earning: OrganizerEarningDetails) => (
                                         <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                             key={earning.id}
-                                             onClick={()=>roteToUser(earning.id)}>
-                                            <div className="flex justify-between items-start mb-3">
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-gray-900">Payment #{earning.id}</h3>
-                                                    <p className="text-gray-600">{earning.firstName} {earning.lastName}</p>
+                                             key={earning.organizerId}
+                                             onClick={()=>roteToUser(earning.organizerId)}>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span
+                                                        className="text-sm font-medium text-gray-500">Organizer ID:</span>
+                                                    <span
+                                                        className="text-sm text-gray-900 font-sm">{earning.organizerId}</span>
                                                 </div>
-                                                <div className="text-right">
-                                                    <div className="text-lg font-semibold text-green-600">${earning.totalRevenue}</div>
-                                                    <div className="text-sm text-gray-500">{earning.totalProfit}</div>
+                                                <div className="flex justify-between items-center">
+                                                <span
+                                                    className="text-sm font-medium text-gray-500">Organizer Name:</span>
+                                                    <span
+                                                        className="text-sm text-gray-900 font-sm">{earning.organizerName}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-medium text-gray-500">Total Revenue (LKR.) :</span>
+                                                    <span
+                                                        className="text-sm text-gray-900 font-sm">{getValueString(earning.totalEarnings)}</span>
                                                 </div>
                                             </div>
-                                            {/*<div className="text-sm text-gray-500">*/}
-                                            {/*    <span className="font-medium">Payment Date: </span>{earning.paymentDate}*/}
-                                            {/*</div>*/}
                                         </div>
                                     ))
                                     : (
                                         <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
                                             <div className="flex flex-col items-center justify-center">
-                                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                    </svg>
+                                                <div
+                                                    className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600">
+                                                    <FileText strokeWidth={1} size={40}/>
                                                 </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No payments available</h3>
-                                                <p className="text-sm text-gray-500 text-center">There are currently no payment records to display.</p>
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No payments
+                                                    available</h3>
+                                                <p className="text-sm text-gray-500 text-center">There are currently no
+                                                    payment records to display.</p>
                                             </div>
                                         </div>
                                     );

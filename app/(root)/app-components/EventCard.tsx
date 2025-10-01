@@ -6,8 +6,7 @@ import {SessionCardDetails} from "@/types/entityTypes";
 import { CiLocationOn } from "react-icons/ci";
 import {formatDate, formatTime, getValueString} from "@/lib/utils";
 import {CalendarCheck} from "lucide-react";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {Button} from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {isToday, parseISO} from "date-fns";
 
 interface EventCardProps {

@@ -66,59 +66,59 @@ const Page = () => {
                 </div>
 
                 {/* Additional Statistics Cards */}
-                <div
-                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                    <div>
-                        <h3 className="text-gray-500 font-medium">DETAILED METRICS</h3>
-                    </div>
+                {/*<div*/}
+                {/*    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">*/}
+                {/*    <div>*/}
+                {/*        <h3 className="text-gray-500 font-medium">DETAILED METRICS</h3>*/}
+                {/*    </div>*/}
 
-                    <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[30px] py-4">
-                        <div
-                            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative hover:shadow-xl transition-shadow duration-300">
-                            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                <Image src="/platform.png" alt="metric" height={32} width={32}/>
-                            </div>
-                            <div>
-                                <div className="font-medium text-gray-900">
-                                    Total Users
-                                </div>
-                                <div className="text-gray-700">
-                                    12,547
-                                </div>
-                            </div>
-                        </div>
+                {/*    <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[30px] py-4">*/}
+                {/*        <div*/}
+                {/*            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative hover:shadow-xl transition-shadow duration-300">*/}
+                {/*            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">*/}
+                {/*                <Image src="/platform.png" alt="metric" height={32} width={32}/>*/}
+                {/*            </div>*/}
+                {/*            <div>*/}
+                {/*                <div className="font-medium text-gray-900">*/}
+                {/*                    Total Users*/}
+                {/*                </div>*/}
+                {/*                <div className="text-gray-700">*/}
+                {/*                    12,547*/}
+                {/*                </div>*/}
+                {/*            </div>*/}
+                {/*        </div>*/}
 
-                        <div
-                            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative hover:shadow-xl transition-shadow duration-300">
-                            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                <Image src="/platform.png" alt="metric" height={32} width={32}/>
-                            </div>
-                            <div>
-                                <div className="font-medium text-gray-900">
-                                    Active Sessions
-                                </div>
-                                <div className="text-gray-700">
-                                    3,247
-                                </div>
-                            </div>
-                        </div>
+                {/*        <div*/}
+                {/*            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative hover:shadow-xl transition-shadow duration-300">*/}
+                {/*            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">*/}
+                {/*                <Image src="/platform.png" alt="metric" height={32} width={32}/>*/}
+                {/*            </div>*/}
+                {/*            <div>*/}
+                {/*                <div className="font-medium text-gray-900">*/}
+                {/*                    Active Sessions*/}
+                {/*                </div>*/}
+                {/*                <div className="text-gray-700">*/}
+                {/*                    3,247*/}
+                {/*                </div>*/}
+                {/*            </div>*/}
+                {/*        </div>*/}
 
-                        <div
-                            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative hover:shadow-xl transition-shadow duration-300">
-                            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                <Image src="/platform.png" alt="metric" height={32} width={32}/>
-                            </div>
-                            <div>
-                                <div className="font-medium text-gray-900">
-                                    Growth Rate
-                                </div>
-                                <div className="text-gray-700">
-                                    +15.3%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {/*        <div*/}
+                {/*            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative hover:shadow-xl transition-shadow duration-300">*/}
+                {/*            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">*/}
+                {/*                <Image src="/platform.png" alt="metric" height={32} width={32}/>*/}
+                {/*            </div>*/}
+                {/*            <div>*/}
+                {/*                <div className="font-medium text-gray-900">*/}
+                {/*                    Growth Rate*/}
+                {/*                </div>*/}
+                {/*                <div className="text-gray-700">*/}
+                {/*                    +15.3%*/}
+                {/*                </div>*/}
+                {/*            </div>*/}
+                {/*        </div>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </div>
         </>
     )

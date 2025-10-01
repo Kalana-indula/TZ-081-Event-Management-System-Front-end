@@ -182,7 +182,7 @@ const Statistics = () => {
                                         <Line
                                             type="monotone"
                                             dataKey="totalEarnings"
-                                            name="Monthly Total"
+                                            name="Monthly Total (LKR.)"
                                             stroke="#8884d8"
                                             strokeWidth={2}
                                             dot={{ r: 3 }}
