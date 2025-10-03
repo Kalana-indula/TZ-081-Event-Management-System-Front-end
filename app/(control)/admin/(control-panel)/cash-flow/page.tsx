@@ -1,21 +1,37 @@
 'use client'
 
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button"
-import {MdEdit, MdClose, MdSave} from "react-icons/md"
+import {MdClose, MdEdit, MdSave} from "react-icons/md"
 import Image from "next/image";
+import {useRouter} from "next/navigation";
+import {AddBankDetails} from "@/types/entityTypes";
+import axios, {AxiosError} from "axios";
+import toast from "react-hot-toast";
+import {getValueString} from "@/lib/utils";
 
 const CashFlow = () => {
-    const [commission, setCommission] = useState(20)
-    const [isEditingCommission, setIsEditingCommission] = useState(false)
-    const [tempCommission, setTempCommission] = useState(commission)
-    const [totalRevenue, setTotalRevenue] = useState(35000000)
-    const [totalProfit, setTotalProfit] = useState(15000000)
-    const [bankInfo, setBankInfo] = useState({
-        name: "Some bank",
-        branchCode: "222525",
-        accountNo: "xxx xxx xxx"
-    })
+    const [commission, setCommission] = useState<number>(0);
+    const [isEditingCommission, setIsEditingCommission] = useState<boolean>(false);
+    const [tempCommission, setTempCommission] = useState(commission);
+    const [totalRevenue, setTotalRevenue] = useState<number>(0);
+    const [bankInfo, setBankInfo] = useState<AddBankDetails>();
+
+    const router = useRouter();
+
+    const routeToAddBank = () => {
+        router.push(`/admin/bank/add-bank`);
+    }
+
+    const routeToBankDetailsUpdate = () => {
+        router.push(`/admin/bank/update-bank-details`);
+    }
+
+    useEffect(() => {
+        getBankDetails();
+        getCommissionData();
+        getTotalEarnings();
+    }, []);
 
     // Handle commission editing
     const handleEditCommission = () => {
@@ -23,26 +39,100 @@ const CashFlow = () => {
         setTempCommission(commission)
     }
 
-    const handleSaveCommission = () => {
-        setCommission(tempCommission)
-        setIsEditingCommission(false)
-        // Here you would typically make an API call to save the commission
-        console.log("Commission saved:", tempCommission)
-    }
-
     const handleCancelCommission = () => {
         setTempCommission(commission)
         setIsEditingCommission(false)
     }
 
-    const handleChangeBankInfo = () => {
-        // Handle bank info change logic
-        console.log("Change bank info clicked")
+    //get commission details
+    const getCommissionData = async ()=>{
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/commission`);
+            console.log(response.data.entityData);
+            setCommission(response.data.entityData);
+        }catch(err){
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
     }
 
-    const handleAddBank = () => {
-        // Handle add bank logic
-        console.log("Add bank clicked")
+    //update commission
+    const updateCommission = async()=>{
+        try {
+            const response = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/commission`,
+                { commission: tempCommission }, // Send as an object
+                {
+                    headers: {
+                        'Content-Type': 'application/json' // Explicitly set content type
+                    }
+                }
+            );
+            setCommission(tempCommission);
+            setIsEditingCommission(false);
+            console.log("Commission saved:", response.data);
+            toast.success('Commission updated successfully'); // Add success feedback
+        }catch(err){
+            if (err instanceof AxiosError) {
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                toast.error(err.message);
+            } else {
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
+    //get current earnings
+    const getTotalEarnings = async ()=>{
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/platform-balance`);
+            console.log(response.data.entityData);
+            setTotalRevenue(response.data.entityData);
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
+    //get bank details
+    const getBankDetails = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/system-banks`);
+            console.log(response.data.entityData);
+            setBankInfo(response.data.entityData);
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
     }
 
     return (
@@ -58,7 +148,8 @@ const CashFlow = () => {
             {/* Main Content */}
             <div className="p-3 sm:p-4 md:p-6 bg-white min-h-screen">
                 {/* Commission Section */}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">COMMISSION DATA</h3>
                     </div>
@@ -86,7 +177,7 @@ const CashFlow = () => {
                             {isEditingCommission ? (
                                 <>
                                     <Button
-                                        onClick={handleSaveCommission}
+                                        onClick={updateCommission}
                                         className="bg-green-white border border-black hover:bg-black text-black hover:text-white px-2 sm:px-3 py-1 text-xs sm:text-sm flex-1 sm:flex-none"
                                     >
                                         <MdSave className="mr-1"/>
@@ -114,13 +205,14 @@ const CashFlow = () => {
                 </div>
 
                 {/* Revenue Section */}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">REVENUE DATA</h3>
                     </div>
 
                     {/*Total revenue*/}
-                    <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
+                    <div className="grid sm:grid-cols-1 lg:grid-cols-2">
                         <div
                             className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
                             <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
@@ -132,7 +224,7 @@ const CashFlow = () => {
                                 </div>
                                 {totalRevenue ? (
                                     <div className="text-gray-700">
-                                        {totalRevenue} LKR.
+                                        {getValueString(totalRevenue)} LKR.
                                     </div>
                                 ) : (
                                     <div className="text-gray-700">
@@ -140,27 +232,6 @@ const CashFlow = () => {
                                     </div>
                                 )}
 
-                            </div>
-                        </div>
-                        {/* Profit Section */}
-                        <div
-                            className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
-                            <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                <Image src="/current-profit.png" alt="pending" height={32} width={32}/>
-                            </div>
-                            <div>
-                                <div className="font-medium">
-                                    Current Profit
-                                </div>
-                                {totalRevenue ? (
-                                    <div className="text-gray-700">
-                                        {totalProfit} LKR.
-                                    </div>
-                                ) : (
-                                    <div className="text-gray-700">
-                                        N/A
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
@@ -168,42 +239,45 @@ const CashFlow = () => {
 
 
                 {/* Bank Information Section */}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
                         <h3 className="text-gray-500 font-medium">BANK DETAILS</h3>
                     </div>
                     <div className="bg-white shadow-xl text-black p-4 sm:p-6 rounded-lg my-[10px] relative">
                         <div className="flex items-center gap-3">
-                                <div className="flex justify-center items-center sm:h-32 sm:w-32 p-[18px] sm:p-[20px] mx-[10px] bg-gray-300 rounded-full">
-                                    <Image src="/bank.png" alt="pending" height={64} width={64}/>
-                                </div>
-                                <div className="sm:py-[20px]">
-                                    <h2 className="text-lg sm:text-2xl font-semibold">Your Bank</h2>
-                                    <div className="break-words text-gray-700">{bankInfo.name}</div>
-                                    <div className="break-words text-gray-700">Branch Code : {bankInfo.branchCode}</div>
-                                    <div className="break-words text-gray-700">Account No : {bankInfo.accountNo}</div>
+                            <div
+                                className="flex justify-center items-center sm:h-32 sm:w-32 p-[18px] sm:p-[20px] mx-[10px] bg-gray-300 rounded-full">
+                                <Image src="/bank.png" alt="pending" height={64} width={64}/>
+                            </div>
+                            <div className="sm:py-[20px]">
+                                <h2 className="text-lg sm:text-2xl font-semibold">Your Bank</h2>
+                                <div className="break-words text-gray-700">{bankInfo?.bankName}</div>
+                                <div className="break-words text-gray-700">Account Holder Name
+                                    : {bankInfo?.accountHolderName}</div>
+                                <div className="break-words text-gray-700">Branch Code : {bankInfo?.branchName}</div>
+                                <div className="break-words text-gray-700">Account No : {bankInfo?.accountNumber}</div>
 
                             </div>
                         </div>
                         <Button
-                            onClick={handleChangeBankInfo}
-                            className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white text-black border border-black sm:hover:bg-black sm:hover:text-white sm:active:bg-white sm:active:text-black active:bg-black hover:text-white active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm"
+                            onClick={routeToBankDetailsUpdate}
+                            className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white text-black border border-black sm:hover:bg-black sm:hover:text-white sm:active:bg-white sm:active:text-black active:bg-black hover:text-white active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm hover:cursor-pointer"
                         >
-                            <span className="hidden sm:inline">Change Bank</span>
-                            <span className="sm:hidden">Change</span>
+                            <span className="hidden sm:inline">Update Bank</span>
+                            <span className="sm:hidden">Update</span>
                         </Button>
                     </div>
                 </div>
 
                 {/* Add Bank Section */}
                 <button
-                    className="bg-white hover:bg-gray-200 active:shadow-xl transition-colors duration-300 border rounded-[10px] font-semibold border-gray-800 p-[20px] w-full flex items-center justify-center gap-4">
-                    <div>
-                        <Image src="/bank.png" height={24} width={24} alt="pending"/>
-                    </div>
-                    <div>
-                        Add Bank +
-                    </div>
+                    onClick={routeToAddBank}
+                    disabled={!!bankInfo}
+                    className={`${bankInfo ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 active:shadow-xl hover:cursor-pointer'} 
+                    bg-white transition-colors duration-300 border rounded-[10px] font-semibold border-gray-800 p-[20px] w-full flex items-center justify-center gap-4`}>
+                    <div><Image src="/bank.png" height={24} width={24} alt="pending"/></div>
+                    <div>Add Bank +</div>
                 </button>
             </div>
         </>

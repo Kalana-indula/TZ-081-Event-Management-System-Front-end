@@ -167,7 +167,7 @@ const Page = () => {
                 <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     {/*    Search Organizer*/}
                     <div>
-                        <h3 className="text-gray-500 font-medium py-2">SEARCH ORGANIZER</h3>
+                        <h3 className="text-gray-500 font-medium py-2">SEARCH EVENT BY ID</h3>
                     </div>
                     <div className="flex justify-center sm:justify-start">
                         <div className="flex flex-col sm:flex-row w-full max-w-sm items-center gap-2">

@@ -49,6 +49,7 @@ export interface Session {
 
 export interface OrganizerDetails {
     id: number;
+    organizerId:string;
     name: string;
     nic: string;
     companyName ?:string;
@@ -107,7 +108,7 @@ export interface CreateSessionBody {
 }
 
 export interface OrganizerEarningDetails {
-    organizerId: number;
+    organizerId: string;
     organizerName: string;
     totalEarnings: number;
     totalWithdrawals: number;

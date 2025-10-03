@@ -2,7 +2,6 @@
 
 import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
-import {Switch} from "@/components/ui/switch";
 import {useParams, useRouter} from "next/navigation";
 import axios from "axios";
 import {formatDate, formatTime, getValueString, handleApiError} from "@/lib/utils";
@@ -118,6 +117,10 @@ const Page = () => {
 
     const routeToEventStats = (eventId: number) => {
         route.push(`/organizer/${organizerId}/event/${eventId}/statistics`);
+    }
+
+    const routeToUpdateEvent = ()=>{
+        route.push(`/organizer/${organizerId}/event/${eventId}/update-event`);
     }
 
     //get event details
@@ -238,14 +241,21 @@ const Page = () => {
                     ${status === 'Pending Approval' || status === 'Completed' ? 'hidden' : ''}`}
                             onClick={routeToCreateSession}
                     >
-                        + Add new session
+                        + Add New Session
                     </Button>
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 hover:cursor-pointer"
                             onClick={() => {
                                 routeToEventStats(Number(eventId));
                             }}
                     >
-                        View event statistics
+                        View Event Statistics
+                    </Button>
+                    <Button className={`bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 hover:cursor-pointer ${status==='Completed'?'hidden':'block'}`}
+                            onClick={() => {
+                                routeToUpdateEvent();
+                            }}
+                    >
+                        Update Event Details
                     </Button>
                 </div>
 
@@ -253,7 +263,7 @@ const Page = () => {
                 <div
                     className="display-event bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                     <div>
-                        <h3 className="text-gray-500 font-medium">EVENT DETAILS {startingDate}</h3>
+                        <h3 className="text-gray-500 font-medium">EVENT DETAILS</h3>
                     </div>
 
                     <div className="bg-white shadow-xl text-black p-4 sm:p-6 rounded-lg my-[10px] relative">
@@ -265,8 +275,12 @@ const Page = () => {
                             <div className="sm:py-[20px] flex-1">
                                 <h2 className="text-lg sm:text-2xl font-semibold">{eventDetails?.eventName}</h2>
                                 <div className="break-words text-gray-700 mt-2 text-sm sm:text-base">
-                                    Event Description<br/>
-                                    {eventDetails?.eventDescription}
+                                    <div className="my-1">
+                                        Date : {eventDetails?.startingDate}
+                                    </div>
+                                    <div className="mt-3 sm:mt-5">
+                                        {eventDetails?.eventDescription}
+                                    </div>
                                 </div>
                             </div>
                         </div>
