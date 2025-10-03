@@ -23,7 +23,6 @@ const Page = () => {
     const [eventCategories, setEventCategories] = useState<CategoryDetails[]>([]);
     const [eventCategoryId, setEventCategoryId] = useState<number>(0);
     const [bannerImage, setBannerImage] = useState<File | null>(null);
-    const [enableVipTickets, setEnableVipTickets] = useState(false)
     const [description, setDescription] = useState('')
     const [ticketTypes, setTicketTypes] = useState<TicketDetails[]>([
         { ticketType: '', price: 0, ticketCount: 0 }
@@ -153,7 +152,6 @@ const Page = () => {
             setEventName("");
             setStartingDate("");
             setBannerImage(null);
-            setEnableVipTickets(false);
             setDescription("");
             setEventCategoryId(0);
             setTicketTypes([{ ticketType: "", price: 0, ticketCount: 0 }]);
@@ -168,7 +166,6 @@ const Page = () => {
     const handleCancel = () => {
         setEventName('')
         setStartingDate('')
-        setEnableVipTickets(false)
         setDescription('')
         setTicketTypes([{ ticketType: '', price: '', ticketCount: 0 }])
     }

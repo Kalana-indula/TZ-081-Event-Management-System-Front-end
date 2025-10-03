@@ -1,25 +1,22 @@
 'use client'
 
-import React, {useEffect, useState} from 'react'
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
+import React, {useEffect, useState} from 'react';
 import { useRouter} from "next/navigation";
 import {OrganizerEarningDetails} from "@/types/entityTypes";
 import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
 import {getValueString} from "@/lib/utils";
 import {FileText} from "lucide-react";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 
 const Page = () => {
 
     const [organizerEarnings,setOrganizerEarnings] = useState<OrganizerEarningDetails[]>([]);
+    const [searchId, setSearchId] = useState<string>("");
+
+    //searched organizer details
+    const [organizerDetails,setOrganizerDetails] = useState<OrganizerEarningDetails | null>(null);
 
     //get params
     const route=useRouter();
@@ -29,6 +26,13 @@ const Page = () => {
         getOrganizerEarningDetails();
     }, []);
 
+    // Watch for searchId changes - when cleared, reset to default data
+    useEffect(() => {
+        if (searchId === "") {
+            setOrganizerDetails(null);
+        }
+    }, [searchId]);
+
     //get organizer earning details
     const getOrganizerEarningDetails= async () => {
         try {
@@ -37,22 +41,81 @@ const Page = () => {
             console.log(response.data.entityList);
         }catch (err){
             if (err instanceof AxiosError) {
-                // Handle Axios-specific errors
                 const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
                 toast.error(errorMessage);
             } else if (err instanceof Error) {
-                // Handle generic errors
                 toast.error(err.message);
             } else {
-                // Handle unknown errors
                 toast.error('An unknown error occurred');
             }
         }
     }
 
+    //get organizer by organizer id
+    const getOrganizerByOrganizerId = async (organizerId:string): Promise<void> => {
+
+        // Add validation check
+        if (!organizerId.trim()) {
+            toast.error("Please enter an Organizer ID before searching");
+            return;
+        }
+
+        try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/id/${organizerId}/earnings`);
+
+            if(response.data.entityData){
+                setOrganizerDetails(response.data.entityData);
+                console.log("Found organizer:", response.data.entityData);
+            }else{
+                console.log(response.data.message);
+                toast(response.data.message);
+                setOrganizerDetails(null);
+            }
+        }catch (err){
+            if (err instanceof AxiosError) {
+                if (err.response?.status === 404) {
+                    console.log("No organizer was found");
+                    toast.error("No organizer was found");
+                    setOrganizerDetails(null);
+                } else {
+                    console.error("Error fetching organizer:", err);
+                    const errorMessage = err.response?.data?.message || 'Failed to find organizer';
+                    toast.error(errorMessage);
+                }
+            } else {
+                console.error("Unexpected error:", err);
+                toast.error('An unexpected error occurred');
+            }
+        }
+    }
+
+    // Handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchId(e.target.value);
+    };
+
+    // Handle Enter key press
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    // Handle search button click
+    const handleSearch = () => {
+        if (searchId.trim()) {
+            getOrganizerByOrganizerId(searchId.trim());
+        } else {
+            toast.error("Please enter an Organizer ID");
+        }
+    };
+
     const roteToUser = (id:number)=>{
         route.push(`/admin/statistics/organizer/${id}`);
     }
+
+    // Determine which data to display in table
+    const displayData = organizerDetails ? [organizerDetails] : organizerEarnings;
 
     return (
         <>
@@ -66,53 +129,54 @@ const Page = () => {
 
             {/*    scrollable content*/}
             <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white min-h-screen">
-                {/*sort*/}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+
+                {/*search*/}
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    {/*    Search Organizer*/}
                     <div>
-                        <h3 className="text-gray-500 font-medium py-2">SORT</h3>
+                        <h3 className="text-gray-500 font-medium py-2">SEARCH ORGANIZER BY ID</h3>
                     </div>
-                    <div className="flex items-start flex-col sm:flex-row space-y-4 space-x-4">
-                        <div>
-                            <Select>
-                                <SelectTrigger className="w-[180px] bg-white shadow-lg">
-                                    <SelectValue placeholder="Select Year" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Fruits</SelectLabel>
-                                        <SelectItem value="apple">Apple</SelectItem>
-                                        <SelectItem value="banana">Banana</SelectItem>
-                                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                                        <SelectItem value="grapes">Grapes</SelectItem>
-                                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Select>
-                                <SelectTrigger className="w-[180px] bg-white shadow-lg">
-                                    <SelectValue placeholder="Select Month" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Fruits</SelectLabel>
-                                        <SelectItem value="apple">Apple</SelectItem>
-                                        <SelectItem value="banana">Banana</SelectItem>
-                                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                                        <SelectItem value="grapes">Grapes</SelectItem>
-                                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                    <div className="flex justify-center sm:justify-start">
+                        <div className="flex flex-col sm:flex-row w-full max-w-sm items-center gap-2">
+                            <Input
+                                type="text"
+                                placeholder="Organizer ID"
+                                className="bg-white shadow-lg"
+                                value={searchId}
+                                onChange={handleSearchChange}
+                                onKeyPress={handleKeyPress}
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="bg-black text-white w-full sm:w-1/5 active:bg-black active:text-white shadow-lg hover:cursor-pointer"
+                                onClick={handleSearch}
+                            >
+                                Search
+                            </Button>
                         </div>
                     </div>
                 </div>
 
                 {/*table*/}
-                <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                    <div>
-                        <h3 className="text-gray-500 font-medium py-2">EARNING DETAILS</h3>
+                <div
+                    className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                    <div className="flex justify-between items-center py-2">
+                        <h3 className="text-gray-500 font-medium">EARNING DETAILS</h3>
+                        {organizerDetails && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    setSearchId("");
+                                    setOrganizerDetails(null);
+                                }}
+                                className="text-xs"
+                            >
+                                Clear Search
+                            </Button>
+                        )}
                     </div>
                     <div>
                         {/* Desktop Table View */}
@@ -120,23 +184,17 @@ const Page = () => {
                             <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                                 <thead className="bg-gray-300">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">Organizer
-                                        ID
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Organizer
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                        Total Revenue (LKR.)
-                                    </th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">Organizer ID</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">Organizer</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">Total Revenue (LKR.)</th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                {organizerEarnings && organizerEarnings.length > 0 ? (
-                                    organizerEarnings.map((earning:OrganizerEarningDetails)=> (
+                                {displayData && displayData.length > 0 ? (
+                                    displayData.map((earning: OrganizerEarningDetails) => (
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={earning.organizerId}
-                                            onClick={()=>roteToUser(earning.organizerId)}>
+                                            onClick={() => roteToUser(Number(earning.organizerId))}>
                                             <td className="px-6 py-4 text-sm text-gray-700 font-sm">{earning.organizerId}</td>
                                             <td className="px-6 py-4 text-sm text-gray-700 font-sm">{earning.organizerName}</td>
                                             <td className="px-6 py-4 text-sm text-gray-700 font-sm">{getValueString(earning.totalEarnings)}</td>
@@ -144,13 +202,13 @@ const Page = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                        <td colSpan={3} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600">
                                                     <FileText strokeWidth={1} size={40}/>
                                                 </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No payments available</h3>
-                                                <p className="text-sm text-gray-500">There are currently no payment records to display.</p>
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No records available</h3>
+                                                <p className="text-sm text-gray-500">There are currently no records to display.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -161,54 +219,43 @@ const Page = () => {
 
                         {/* Mobile Card View */}
                         <div className="md:hidden space-y-4">
-                            {(() => {
-                                return organizerEarnings && organizerEarnings.length > 0
-                                    ? organizerEarnings.map((earning: OrganizerEarningDetails) => (
-                                        <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
-                                             key={earning.organizerId}
-                                             onClick={()=>roteToUser(earning.organizerId)}>
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between items-center">
-                                                    <span
-                                                        className="text-sm font-medium text-gray-500">Organizer ID:</span>
-                                                    <span
-                                                        className="text-sm text-gray-900 font-sm">{earning.organizerId}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center">
-                                                <span
-                                                    className="text-sm font-medium text-gray-500">Organizer Name:</span>
-                                                    <span
-                                                        className="text-sm text-gray-900 font-sm">{earning.organizerName}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-sm font-medium text-gray-500">Total Revenue (LKR.) :</span>
-                                                    <span
-                                                        className="text-sm text-gray-900 font-sm">{getValueString(earning.totalEarnings)}</span>
-                                                </div>
+                            {displayData && displayData.length > 0 ? (
+                                displayData.map((earning: OrganizerEarningDetails) => (
+                                    <div
+                                        className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:cursor-pointer"
+                                        key={earning.organizerId}
+                                        onClick={() => roteToUser(Number(earning.organizerId))}>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-gray-500">Organizer ID:</span>
+                                                <span className="text-sm text-gray-900 font-sm">{earning.organizerId}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-gray-500">Organizer Name:</span>
+                                                <span className="text-sm text-gray-900 font-sm">{earning.organizerName}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-gray-500">Total Revenue (LKR.) :</span>
+                                                <span className="text-sm text-gray-900 font-sm">{getValueString(earning.totalEarnings)}</span>
                                             </div>
                                         </div>
-                                    ))
-                                    : (
-                                        <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
-                                            <div className="flex flex-col items-center justify-center">
-                                                <div
-                                                    className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600">
-                                                    <FileText strokeWidth={1} size={40}/>
-                                                </div>
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No payments
-                                                    available</h3>
-                                                <p className="text-sm text-gray-500 text-center">There are currently no
-                                                    payment records to display.</p>
-                                            </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
+                                    <div className="flex flex-col items-center justify-center">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600">
+                                            <FileText strokeWidth={1} size={40}/>
                                         </div>
-                                    );
-                            })()}
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2">No records available</h3>
+                                        <p className="text-sm text-gray-500 text-center">There are currently no records to display.</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-
                     </div>
                 </div>
             </div>
-
         </>
     )
 }

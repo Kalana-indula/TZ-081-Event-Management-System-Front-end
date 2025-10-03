@@ -43,7 +43,7 @@ const Page = () => {
     //load data at page loading
     useEffect(() => {
         getTotalEarnings();
-        getBankDetais();
+        getBankDetails();
     }, []);
 
     const handleWithdraw = async () => {
@@ -90,7 +90,7 @@ const Page = () => {
     }
 
     //get bank details
-    const getBankDetais=async ()=>{
+    const getBankDetails=async ()=>{
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/banks`);
             console.log(response.data.entityData);
