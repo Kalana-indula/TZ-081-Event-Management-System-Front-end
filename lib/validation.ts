@@ -29,7 +29,7 @@ export const registerOrganizerSchema = z
         email: z.string().trim().email("Enter a valid email"),
         password: z
             .string()
-            .regex(passwordRegex, "Min 8 chars, 1 upper, 1 lower, 1 number"),
+            .regex(passwordRegex, "Invalid Password Format"),
         confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -39,3 +39,54 @@ export const registerOrganizerSchema = z
 
 // create a type
 export type RegisterOrganizerForm = z.infer<typeof registerOrganizerSchema>;
+
+// -------------------- Admin (new) --------------------
+export const registerAdminSchema = z.object({
+    firstName: z.string().trim().min(1, "First name is required").max(100),
+    lastName: z.string().trim().min(1, "Last name is required").max(100),
+    nic: z
+        .string()
+        .trim()
+        .min(1, "NIC/Passport is required")
+        .regex(nicPassportRegex, "Enter a valid NIC/Passport"),
+    phone: z
+        .string()
+        .trim()
+        .regex(phoneRegex, "Enter phone as +94XXXXXXXXX or 0XXXXXXXXX"),
+    email: z.string().trim().email("Enter a valid email"),
+    password: z
+        .string()
+        .regex(passwordRegex, "Invalid Password Format"),
+    confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"], // error lands on confirm field
+    });
+
+export type RegisterAdminForm = z.infer<typeof registerAdminSchema>;
+
+// -------------------- Update Password --------------------
+export const updatePasswordSchema = z
+    .object({
+        currentPassword: z.string().min(1, "Current password is required"),
+        newPassword: z
+            .string()
+            .regex(passwordRegex, "Invalid Password Format"),
+    })
+    .refine(
+        (data) => data.currentPassword !== data.newPassword,
+        {
+            path: ["newPassword"],
+            message: "New password must be different from current password",
+        }
+    );
+
+export type UpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
+
+// -------------------- Update Email --------------------
+export const updateEmailSchema = z.object({
+    email: z.string().trim().email("Enter a valid email"),
+});
+
+export type UpdateEmailForm = z.infer<typeof updateEmailSchema>;

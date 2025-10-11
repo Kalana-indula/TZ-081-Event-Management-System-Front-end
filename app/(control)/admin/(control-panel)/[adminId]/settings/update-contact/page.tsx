@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
-import ProtectedRoute from "@/utils/ProtectedRoutes";
+import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
 
 const Page = () => {
     //current contact details
@@ -20,18 +20,17 @@ const Page = () => {
 
     return (
         <>
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Update Contact</h1>
+                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Contact</h1>
                     </div>
                 </div>
 
                 {/*main content*/}
                 <div className="p-3 sm:p-4 md:p-6 bg-white">
-                    <div
-                        className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
+                    <div className="bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
                         <div>
                             <h3 className="text-gray-500 font-medium py-2">UPDATE CONTACT DETAILS</h3>
                         </div>
@@ -85,7 +84,7 @@ const Page = () => {
                     </div>
 
                 </div>
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         </>
     )
 }

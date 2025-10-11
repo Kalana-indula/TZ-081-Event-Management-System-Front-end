@@ -1,19 +1,14 @@
 'use client'
-
+// register page
 import React, {useState} from 'react'
 import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
+import {AdminFormData} from "@/types/entityTypes";
+import {RegisterAdminForm, registerAdminSchema} from "@/lib/validation";
+import {useRouter} from "next/navigation";
+import Link from "next/link";
 
 //types
-interface AdminFormData {
-    firstName: string;
-    lastName: string;
-    nic: string;
-    phone: string;
-    email: string;
-    password: string;
-}
-
 const Page = () => {
 
     //fetch input details
@@ -24,13 +19,18 @@ const Page = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [errorMessage, setErrorMessage] = useState<string>('');
+
+    const router=useRouter();
+
+    //route to admin login
+    const routeToAdminLogin = ()=>{
+        router.push('/admin/auth/login');
+    }
 
     //handle inputs
     const handleFirstName = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const {value} = e.target;
         setFirstName(value);
-        // console.log(firstName);
     }
 
     const handleLastName = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -67,58 +67,64 @@ const Page = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
 
-        //check if the password and confirm password are not matching
-        if (password !== confirmPassword) {
-            setErrorMessage('Passwords do not match');
+        //build form data object for validation
+        const formdData: RegisterAdminForm = {
+            firstName,
+            lastName,
+            nic,
+            phone,
+            email,
+            password,
+            confirmPassword,
+        };
+
+        //zod validation
+        const parsed = registerAdminSchema.safeParse(formdData);
+
+        if (!parsed.success) {
+            //collect error messages
+            const firstError = parsed.error.issues[0]?.message || "Invalid form input";
+            toast.error(firstError);
+            return;
         }
 
-        if (password === confirmPassword) {
-
-            const adminData: AdminFormData = {
-                firstName: firstName,
-                lastName: lastName,
-                nic: nic,
-                phone: phone,
-                email: email,
-                password: password
-            }
-
-            try {
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins`, adminData,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                toast.success(response.data.message+"Admin Saved Successfully!");
-
-                setFirstName('');
-                setLastName('');
-                setNic('');
-                setPhone('');
-                setEmail('');
-                setPassword('');
-                setConfirmPassword('');
-
-            } catch (err) {
-                if (err instanceof AxiosError) {
-                    // Handle Axios-specific errors
-                    const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
-                    toast.error(errorMessage);
-                } else if (err instanceof Error) {
-                    // Handle generic errors
-                    toast.error(err.message);
-                } else {
-                    // Handle unknown errors
-                    toast.error('An unknown error occurred');
-                }
-            }
+        //build payload
+        const adminPayload: AdminFormData = {
+            firstName: parsed.data.firstName,
+            lastName: parsed.data.lastName,
+            nic: parsed.data.nic,
+            phone: parsed.data.phone,
+            email: parsed.data.email,
+            password: parsed.data.password,
         }
 
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/admins`, adminPayload,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+            clearData();
+            toast.success( "Admin Saved Successfully!");
+            routeToAdminLogin();
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
     }
 
-    const handleCancel = (): void => {
+    const clearData = () => {
         setFirstName('');
         setLastName('');
         setNic('');
@@ -128,33 +134,45 @@ const Page = () => {
         setConfirmPassword('');
     }
 
+    const handleCancel = (): void => {
+        clearData();
+    }
+
     return (
-        <>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             {/*Header section*/}
-            <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
-                <div className="text-center mb-4">
-                    <h1 className="text-2xl font-semibold text-gray-900">Admin Registration</h1>
-                    <p className="mt-1 text-gray-600">Create a new admin account</p>
+            <div className="sticky top-0 bg-white z-30 border-b border-gray-200 shadow-sm">
+                <div className="px-4 py-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="text-xl sm:text-2xl font-bold text-blue-600">EventWisp</div>
+                        <div className="text-sm sm:text-base text-gray-600 font-medium">
+                            Platform Control Panel
+                        </div>
+                    </div>
+                    <div className="text-center">
+                        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">Admin Registration</h1>
+                        <p className="mt-1 text-sm sm:text-base text-gray-600">Create a new admin account</p>
+                    </div>
                 </div>
             </div>
 
             {/*page content*/}
-            <div className="px-3 py-1 sm:px-4 sm:py-2 md:px-6 bg-white">
-                {/*input form div*/}
-                <div
-                    className="display-form bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
-                    <div>
-                        <h3 className="text-gray-500 font-medium py-2">ADMIN DETAILS</h3>
-                    </div>
+            <div className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+                <div className="max-w-2xl mx-auto">
+                    <div className="bg-white shadow-2xl rounded-lg border border-gray-200">
+                        {/*Form header*/}
+                        <div className="px-6 pt-6 pb-2">
+                            <h2 className="text-lg font-semibold text-gray-700 border-l-4 border-blue-500 pl-3">ADMIN DETAILS</h2>
+                        </div>
 
-                    <div className="max-w-md mx-auto">
-                        <div className="bg-white shadow-2xl p-8 rounded-lg">
+                        {/*Form content*/}
+                        <div className="p-6 sm:p-8">
                             <form className="space-y-6" onSubmit={handleSubmit}>
-                                <div className="grid grid-cols-1 space-y-6 sm:space-y-0 sm:grid-cols-2 sm:gap-6">
+                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <div>
                                         <label htmlFor="firstName"
                                                className="block text-sm font-medium text-gray-700 mb-2">
-                                            First Name<span className="text-red-500">*</span>
+                                            First Name<span className="text-red-600">*</span>
                                         </label>
                                         <input
                                             id="firstName"
@@ -170,7 +188,7 @@ const Page = () => {
                                     <div>
                                         <label htmlFor="lastName"
                                                className="block text-sm font-medium text-gray-700 mb-2">
-                                            Last Name Name<span className="text-red-600">*</span>
+                                            Last Name<span className="text-red-600">*</span>
                                         </label>
                                         <input
                                             id="lastName"
@@ -218,12 +236,12 @@ const Page = () => {
 
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                        E Mail <span className="text-red-600">*</span>
+                                        Email <span className="text-red-600">*</span>
                                     </label>
                                     <input
                                         id="email"
                                         name="email"
-                                        type="text"
+                                        type="email"
                                         value={email}
                                         required={true}
                                         onChange={handleEmail}
@@ -263,31 +281,40 @@ const Page = () => {
                                         className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                     />
                                     <p className="mt-2 text-xs text-gray-500">
-                                        Password must contain at least one uppercase letter, one lowercase letter, and
-                                        one
-                                        number
+                                        Password must contain at least one uppercase letter, one lowercase letter, and one number
                                     </p>
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     <button
                                         type="submit"
-                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        Save
+                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer">
+                                        Register
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={handleCancel}
-                                        className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer">
                                         Cancel
                                     </button>
                                 </div>
-
                             </form>
+                        </div>
+
+                        {/*Footer link*/}
+                        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-0">
+                            <div className="border-t border-gray-200 pt-4">
+                                <p className="text-center text-sm text-gray-600">
+                                    Already have an account?{' '}
+                                    <Link href="/admin/auth/login" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                                        Login Here
+                                    </Link>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </>
+        </div>
     )
 }
 export default Page;

@@ -20,11 +20,11 @@ const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
     const router = useRouter();
 
     const navigateToRegister = () => {
-        router.push("/register");
+        router.push("/organizer/auth/register");
     }
 
     const navigateToLogin = () => {
-        router.push("/login");
+        router.push("/organizer/auth/login");
     }
 
     useEffect(() => {

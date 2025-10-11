@@ -2,13 +2,32 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
-import ProtectedRoute from "@/utils/ProtectedRoutes";
+import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
+import {UpdatePasswordForm, updatePasswordSchema} from "@/lib/validation";
+import toast from "react-hot-toast";
+import axios, {AxiosError} from "axios";
+import {useParams, useRouter} from "next/navigation";
+
+interface UpdatePasswordDetails {
+    currentPassword: string;
+    newPassword: string;
+}
 
 const Page = () => {
     //fetch password details
     const [currentPassword, setCurrentPassword] = useState<string>("");
     const [newPassword, setNewPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+    const params=useParams();
+
+    const adminId = params.adminId;
+
+    const router=useRouter();
+
+    const routeToSettings = ()=>{
+        router.push(`/admin/${adminId}/settings`);
+    }
 
     //handle cancel
     const handleCancel = (): void => {
@@ -32,9 +51,53 @@ const Page = () => {
         setConfirmPassword(value);
     }
 
+    const handleUpdatePassword = async (event: React.FormEvent<HTMLFormElement>)=>{
+        event.preventDefault();
+
+        //build data object
+        const passwordData: UpdatePasswordForm = {
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        }
+
+        //zod validation
+        const parsed=updatePasswordSchema.safeParse(passwordData);
+
+        if(!parsed.success){
+            //collect error message
+            const firstError = parsed.error.issues[0]?.message || "Invalid form input";
+            toast.error(firstError);
+            return;
+        }
+
+        const passwordDetails :UpdatePasswordDetails={
+            currentPassword:parsed.data.currentPassword,
+            newPassword:parsed.data.newPassword
+        }
+
+        try{
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}`, passwordDetails);
+            console.log(response.data);
+            toast.success("Password updated successfully!");
+            routeToSettings();
+        }catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
     return (
         <>
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
@@ -53,7 +116,7 @@ const Page = () => {
                         {/*    form*/}
                         <div className="max-w-md mx-auto">
                             <div className="bg-white shadow-2xl p-8 rounded-lg">
-                                <form className="space-y-6">
+                                <form className="space-y-6" onSubmit={handleUpdatePassword}>
                                     {/*old password field*/}
                                     <div>
                                         <label htmlFor="current-password"
@@ -134,7 +197,7 @@ const Page = () => {
                     </div>
 
                 </div>
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         </>
     )
 }

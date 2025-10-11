@@ -108,6 +108,7 @@ export interface CreateSessionBody {
 }
 
 export interface OrganizerEarningDetails {
+    id:number;
     organizerId: string;
     organizerName: string;
     totalEarnings: number;
@@ -250,4 +251,51 @@ export interface TransactionDetails {
     time: string;
     status:string;
 }
+
+export interface OrganizerLoginDetails {
+    email: string;
+    password: string;
+}
+
+export interface AdminFormData {
+    firstName: string;
+    lastName: string;
+    nic: string;
+    phone: string;
+    email: string;
+    password: string;
+}
+
+export interface AdminLoginDetails {
+    email: string;
+    password: string;
+}
+
+export interface AdminDetails {
+    id: number;
+    firstName: string;
+    lastName: string;
+    nic: string;
+    phone: string;
+    email: string;
+    password: string;
+    userRole: string;
+}
+
+// UpdatePasswordDto.ts
+export interface UpdatePasswordDetails {
+    currentPassword:string;
+    newPassword: string;
+}
+
+// UpdateEmailDto.ts
+export interface UpdateEmailDetails {
+    email: string;
+}
+
+// UpdateContactDetailsDto.ts
+export interface UpdateContactDetails {
+    contactDetails: string;
+}
+
 

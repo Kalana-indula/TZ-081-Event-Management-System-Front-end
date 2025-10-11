@@ -7,6 +7,7 @@ import axios, {AxiosError} from "axios";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import {RegisterOrganizerForm, registerOrganizerSchema} from "@/lib/validation";
+import MainFooter from "@/app/(root)/app-components/MainFooter";
 
 
 const Page = () => {
@@ -29,7 +30,7 @@ const Page = () => {
     const router=useRouter();
 
     const routeToLogin=()=>{
-        router.push('/login');
+        router.push('/organizer/auth/login');
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -70,7 +71,7 @@ const Page = () => {
 
         try {
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers`, AddOrganizerPayload,
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/organizers`, AddOrganizerPayload,
                 {
                     headers: {
                         Accept: "application/json",
@@ -413,6 +414,11 @@ const Page = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Footer section */}
+            <footer className="mt-auto">
+                <MainFooter/>
+            </footer>
         </div>
     )
 }

@@ -1,11 +1,12 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-import { useParams, useRouter } from "next/navigation"
+import {useParams, useRouter} from "next/navigation"
 import axios, {AxiosError} from "axios"
-import { mediaUpload } from "@/lib/mediaUpload"
-import { toast } from "react-hot-toast"
-import { handleApiError } from "@/lib/utils"
+import {mediaUpload} from "@/lib/mediaUpload"
+import {toast} from "react-hot-toast"
+import {handleApiError} from "@/lib/utils"
+import ProtectedRoute from "@/utils/ProtectedRoutes";
 
 const Page = () => {
     // State for form fields
@@ -119,108 +120,114 @@ const Page = () => {
 
     return (
         <>
-            {/* Header section */}
-            <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
-                <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Update Event Details</h1>
-                    <p className="mt-1 text-sm sm:text-base text-gray-600">Some times you need to make changes</p>
-                </div>
-            </div>
-
-            {/* Main scrollable content */}
-            <div className="p-3 sm:p-4 md:p-6 bg-white">
-                <div className="bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
-                    <div>
-                        <h3 className="text-gray-500 font-medium py-2">UPDATE EVENT INFORMATION</h3>
+            <ProtectedRoute>
+                {/* Header section */}
+                <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
+                    <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
+                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Update Event Details</h1>
+                        <p className="mt-1 text-sm sm:text-base text-gray-600">Some times you need to make changes</p>
                     </div>
+                </div>
 
-                    {/* Form content */}
-                    <div className="max-w-2xl mx-auto">
-                        <div className="bg-white shadow-2xl p-6 sm:p-8 rounded-lg">
-                            <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Main scrollable content */}
+                <div className="p-3 sm:p-4 md:p-6 bg-white">
+                    <div className="bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
+                        <div>
+                            <h3 className="text-gray-500 font-medium py-2">UPDATE EVENT INFORMATION</h3>
+                        </div>
 
-                                {/* Starting date */}
-                                <div>
-                                    <label htmlFor="startingDate" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Starting date
-                                    </label>
-                                    <input
-                                        id="startingDate"
-                                        name="startingDate"
-                                        type="date"
-                                        value={startingDate}
-                                        onChange={handleStartingDate}
-                                        className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
-                                    />
-                                </div>
+                        {/* Form content */}
+                        <div className="max-w-2xl mx-auto">
+                            <div className="bg-white shadow-2xl p-6 sm:p-8 rounded-lg">
+                                <form className="space-y-6" onSubmit={handleSubmit}>
 
-                                {/* Banner Image */}
-                                <div>
-                                    <label htmlFor="bannerImage" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Banner Image
-                                    </label>
-                                    <div className="flex items-center space-x-3">
-                                        <input
-                                            id="bannerImage"
-                                            name="bannerImage"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleBannerImage}
-                                            className="hidden"
-                                        />
-                                        <label
-                                            htmlFor="bannerImage"
-                                            className="px-4 py-2 border border-gray-400 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                                        >
-                                            Browse
+                                    {/* Starting date */}
+                                    <div>
+                                        <label htmlFor="startingDate"
+                                               className="block text-sm font-medium text-gray-700 mb-2">
+                                            Starting date
                                         </label>
-                                        <span className="text-sm text-gray-500">
+                                        <input
+                                            id="startingDate"
+                                            name="startingDate"
+                                            type="date"
+                                            value={startingDate}
+                                            onChange={handleStartingDate}
+                                            className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
+                                        />
+                                    </div>
+
+                                    {/* Banner Image */}
+                                    <div>
+                                        <label htmlFor="bannerImage"
+                                               className="block text-sm font-medium text-gray-700 mb-2">
+                                            Banner Image
+                                        </label>
+                                        <div className="flex items-center space-x-3">
+                                            <input
+                                                id="bannerImage"
+                                                name="bannerImage"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleBannerImage}
+                                                className="hidden"
+                                            />
+                                            <label
+                                                htmlFor="bannerImage"
+                                                className="px-4 py-2 border border-gray-400 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                            >
+                                                Browse
+                                            </label>
+                                            <span className="text-sm text-gray-500">
                                              {newBannerImage ? newBannerImage.name : bannerImageUrl ? 'Existing image loaded' : 'No file chosen'}
                                         </span>
+                                        </div>
+                                        <p className="mt-1 text-xs text-gray-500">Upload a new image to replace the
+                                            current banner</p>
                                     </div>
-                                    <p className="mt-1 text-xs text-gray-500">Upload a new image to replace the current banner</p>
-                                </div>
 
-                                {/* Description */}
-                                <div>
-                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Description
-                                    </label>
-                                    <textarea
-                                        id="description"
-                                        name="description"
-                                        rows={4}
-                                        value={description}
-                                        onChange={handleDescription}
-                                        className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400 resize-vertical"
-                                        placeholder="Enter event description..."
-                                    />
-                                </div>
+                                    {/* Description */}
+                                    <div>
+                                        <label htmlFor="description"
+                                               className="block text-sm font-medium text-gray-700 mb-2">
+                                            Description
+                                        </label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            rows={4}
+                                            value={description}
+                                            onChange={handleDescription}
+                                            className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400 resize-vertical"
+                                            placeholder="Enter event description..."
+                                        />
+                                    </div>
 
-                                {/* Action buttons */}
-                                <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isSubmitting ? 'Updating...' : 'Update Event'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleCancel}
-                                        disabled={isSubmitting}
-                                        className="flex-1 flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
+                                    {/* Action buttons */}
+                                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-colors bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isSubmitting ? 'Updating...' : 'Update Event'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleCancel}
+                                            disabled={isSubmitting}
+                                            className="flex-1 flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white transition-colors text-blue-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
 
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </ProtectedRoute>
         </>
     )
 }

@@ -1,11 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {LuMessageSquareText} from "react-icons/lu";
 import {FaMoneyBillTransfer} from "react-icons/fa6";
-import {MdOutlinePayment} from "react-icons/md";
 import {TfiStatsUp} from "react-icons/tfi";
-import {IoSettingsOutline} from "react-icons/io5";
+import {IoLogOutOutline, IoSettingsOutline} from "react-icons/io5";
 import {IoIosClose, IoIosHome, IoIosLogOut, IoIosNotifications} from "react-icons/io";
 import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
@@ -21,43 +20,50 @@ interface SideNavBarProps {
 
 const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
 
+    // hold adminId only on client
+    const [adminId, setAdminId] = useState<string | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
+
+
     //fetch current route
     const pathName = usePathname();
 
     const router = useRouter();
 
-    const navItems = [
-        {
-            href: '/admin/dashboard',
-            icon: LayoutDashboard,
-            label: 'Dashboard'
-        },
-        {
-            href: '/admin/cash-flow',
-            icon: FaMoneyBillTransfer,
-            label: 'Cash Flow'
-        },
-        {
-            href: '/admin/transactions',
-            icon: GrTransaction,
-            label: 'Transactions'
-        },
-        {
-            href: '/admin/statistics',
-            icon: TfiStatsUp,
-            label: 'Statistics'
-        },
-        {
-            href: '/admin/settings',
-            icon: IoSettingsOutline,
-            label: 'Settings'
-        },
-        {
-            href: '/admin/logout',
-            icon: IoIosLogOut,
-            label: 'Logout'
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const id = localStorage.getItem('userId');
+            const name = localStorage.getItem('userName'); // ✅ fetch username
+
+            if (id && id !== 'undefined' && id !== 'null') {
+                setAdminId(id);
+            }
+
+            if (name && name !== 'undefined' && name !== 'null') {
+                setUsername(name);
+            }
         }
+    }, []);
+
+
+    const navItems = [
+        { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+        { href: '/admin/cash-flow', icon: FaMoneyBillTransfer, label: 'Cash Flow' },
+        { href: '/admin/transactions', icon: GrTransaction, label: 'Transactions' },
+        { href: '/admin/statistics', icon: TfiStatsUp, label: 'Statistics' },
+
+        // only add settings link when adminId is known
+        ...(adminId
+            ? [
+                {
+                    href: `/admin/${adminId}/settings`,
+                    icon: IoSettingsOutline,
+                    label: 'Settings',
+                },
+            ]
+            : []),
     ];
+
 
     //close nav bar when link is clicked
     const handleLinkClick = () => {
@@ -67,6 +73,17 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
     const navigateToUser = () => {
         router.push("/user");
     }
+
+
+    const handleLogout = () => {
+        setIsNavBarOpen(false);
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userRole');
+        }
+        router.push('/admin/auth/login');
+    };
 
     return (
         <>
@@ -104,10 +121,10 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                             <div
                                 className="flex items-center justify-start px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200">
                                 <div className="text-[32px]">
-                                    <FaUserCircle/>
+                                    <FaUserCircle />
                                 </div>
                                 <div className="text-[20px]">
-                                    Username
+                                    {username || "Username"}
                                 </div>
                             </div>
                         </Link>
@@ -165,6 +182,22 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                             </Link>
                         );
                     })}
+
+                    {/* Logout Button */}
+                    <button
+                        onClick={handleLogout}
+                        className="w-full">
+                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600
+                            ${isNavBarOpen ? "justify-start" : ""}`}>
+                            <div className="nav-icon text-[32px]">
+                                <IoLogOutOutline strokeWidth={1.5} />
+                            </div>
+                            <div
+                                className={`page-name text-[20px] lg:block ${isNavBarOpen ? "block" : "hidden"}`}>
+                                Logout
+                            </div>
+                        </div>
+                    </button>
                 </div>
             </div>
         </>
