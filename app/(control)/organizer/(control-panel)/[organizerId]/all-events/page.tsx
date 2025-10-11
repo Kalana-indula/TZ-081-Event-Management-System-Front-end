@@ -8,6 +8,7 @@ import {useParams, useRouter} from "next/navigation";
 import axios from "axios";
 import {handleApiError} from "@/lib/utils";
 import {FileText} from "lucide-react";
+import ProtectedRoute from "@/utils/ProtectedRoutes";
 
 
 const Page = () => {
@@ -113,6 +114,7 @@ const Page = () => {
     }
 
     return (
+        <ProtectedRoute>
         <>
             {/*    header section*/}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
@@ -275,6 +277,7 @@ const Page = () => {
             </div>
 
         </>
+        </ProtectedRoute>
     )
 }
 export default Page

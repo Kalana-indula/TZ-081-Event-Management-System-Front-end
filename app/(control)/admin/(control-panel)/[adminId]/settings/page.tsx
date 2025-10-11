@@ -1,29 +1,64 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Image from "next/image";
-import {useRouter} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
+import axios, {AxiosError} from "axios";
+import toast from "react-hot-toast";
+import {AdminDetails} from "@/types/entityTypes";
+
 
 const Page = () => {
+
+    const [adminDetails,setAdminDetails]=useState<AdminDetails>();
+
+    const params=useParams();
+
+    const adminId = params.adminId;
 
     //configure navigation
     const router = useRouter();
 
+    useEffect(() => {
+        getAdminDetails();
+    }, []);
+
     const routeToUpdatePassword = () => {
-        router.push("/admin/settings/update-password");
+        router.push(`/admin/${adminId}/settings/update-password`);
     }
 
     const routeToUpdateEmail =()=>{
-        router.push("/admin/settings/update-email");
+        router.push(`/admin/${adminId}/settings/update-email`);
     }
 
     const routeToUpdateContact = ()=>{
-        router.push("/admin/settings/update-contact");
+        router.push(`/admin/${adminId}/settings/update-contact`);
     }
 
     const routeToDeleteAccount = ()=>{
-        router.push("/admin/settings/delete-account");
+        router.push(`/admin/${adminId}/settings/delete-account`);
     }
+
+    const getAdminDetails =async ()=>{
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}`);
+            console.log(response.data);
+            setAdminDetails(response.data);
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
+
     return (
         <>
             {/*Header section*/}
@@ -48,10 +83,10 @@ const Page = () => {
                                 <Image src="/admin-user.png" alt="pending" height={64} width={64}/>
                             </div>
                             <div className="sm:py-[20px]">
-                                <h2 className="text-lg sm:text-2xl font-semibold">Admin Name</h2>
-                                <div className="break-words text-gray-700"></div>
-                                <div className="break-words text-gray-700">Contact :</div>
-                                <div className="break-words text-gray-700">Email : </div>
+                                <h2 className="text-lg sm:text-2xl font-semibold">{}</h2>
+                                <div className="break-words text-gray-700 font-semibold text-[24px]">{adminDetails?.firstName} {adminDetails?.lastName}</div>
+                                <div className="break-words text-gray-700">Contact : {adminDetails?.phone}</div>
+                                <div className="break-words text-gray-700">Email : {adminDetails?.email}</div>
 
                             </div>
                         </div>

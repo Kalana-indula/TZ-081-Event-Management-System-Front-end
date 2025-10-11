@@ -15,6 +15,7 @@ import {
 import {handleApiError} from "@/lib/utils";
 import {mediaUpload} from "@/lib/mediaUpload";
 import {toast} from "react-hot-toast";
+import ProtectedRoute from "@/utils/ProtectedRoutes";
 
 const Page = () => {
     // State for form fields
@@ -171,6 +172,7 @@ const Page = () => {
     }
 
     return (
+        <ProtectedRoute>
         <>
             {/*Header section*/}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
@@ -382,6 +384,7 @@ const Page = () => {
                 </div>
             </div>
         </>
+        </ProtectedRoute>
     )
 }
 

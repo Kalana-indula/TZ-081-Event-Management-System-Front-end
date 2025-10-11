@@ -2,24 +2,90 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
-import ProtectedRoute from "@/utils/ProtectedRoutes";
+import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
+import {UpdateEmailDetails} from "@/types/entityTypes";
+import toast from "react-hot-toast";
+import {UpdateEmailForm, updateEmailSchema} from "@/lib/validation";
+import axios, {AxiosError} from "axios";
+import {useParams, useRouter} from "next/navigation";
+
 
 const Page = () => {
     //fetch password details
-    const [currentEmail, setCurrentEmail] = useState<string>('');
+    const [newEmail, setNewEmail] = useState<string>('');
+
+    const params=useParams();
+
+    const router = useRouter();
+
+    const adminId=params.adminId;
+
     //handle cancel
     const handleCancel = (): void => {
-        setCurrentEmail('');
+        setNewEmail('');
     }
 
-    const handleCurrentEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNewEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
-        setCurrentEmail(value);
+        setNewEmail(value);
+    }
+
+    //logout from current session
+    const logoutFromSession = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
+        }
+        router.push('/admin/auth/login');
+    };
+
+    const handleUpdateEmail = async (event:React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        // build form data object for validation
+        const formData: UpdateEmailForm = {
+            email: newEmail,
+        };
+
+        // zod validation
+        const parsed = updateEmailSchema.safeParse(formData);
+
+        if (!parsed.success) {
+            const firstError = parsed.error.issues[0]?.message || "Invalid form input";
+            toast.error(firstError);
+            return;
+        }
+
+        // build payload
+        const emailPayload: UpdateEmailDetails = {
+            email: parsed.data.email,
+        };
+
+        try{
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}/email`, emailPayload);
+            console.log(response.data);
+            toast.success("Email updated successfully");
+            logoutFromSession();
+        }catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
     }
 
     return (
         <>
-            <ProtectedRoute>
+            <AdminProtectedRoute>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
@@ -38,20 +104,20 @@ const Page = () => {
                         {/*    form*/}
                         <div className="max-w-md mx-auto">
                             <div className="bg-white shadow-2xl p-8 rounded-lg">
-                                <form className="space-y-6">
+                                <form className="space-y-6" onSubmit={handleUpdateEmail}>
                                     {/*old password field*/}
                                     <div>
-                                        <label htmlFor="current-email"
+                                        <label htmlFor="new-email"
                                                className="block text-sm font-medium text-gray-700 mb-2">
-                                            Enter Current Email <span className="text-red-600">*</span>
+                                            Enter Your New Email <span className="text-red-600">*</span>
                                         </label>
                                         <input
-                                            id="current-email"
-                                            name="current-email"
+                                            id="new-email"
+                                            name="new-email"
                                             type="email"
                                             required={true}
-                                            value={currentEmail}
-                                            onChange={handleCurrentEmail}
+                                            value={newEmail}
+                                            onChange={handleNewEmail}
                                             placeholder="email@example.com"
                                             className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400"
                                         />
@@ -78,7 +144,7 @@ const Page = () => {
                         </div>
                     </div>
                 </div>
-            </ProtectedRoute>
+            </AdminProtectedRoute>
         </>
     )
 }

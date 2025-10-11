@@ -15,6 +15,7 @@ import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
 import {TotalMonthlyEarningDetails} from "@/types/entityTypes";
 import {downloadTotalEarningsReport} from "@/lib/platformEaningsReport";
+import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
 
 const Statistics = () => {
     //states
@@ -87,6 +88,7 @@ const Statistics = () => {
 
     return (
         <>
+            <AdminProtectedRoute>
             {/*Header section*/}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                 <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
@@ -206,6 +208,7 @@ const Statistics = () => {
                     </Button>
                 </div>
             </div>
+            </AdminProtectedRoute>
         </>
     )
 }

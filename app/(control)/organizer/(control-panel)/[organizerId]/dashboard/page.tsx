@@ -12,21 +12,22 @@ import {EventDetails, MonthlyEarningDetails} from "@/types/entityTypes";
 import toast from "react-hot-toast";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {downloadMonthlyPDF} from "@/lib/generateMonthlyReport";
-import {FileText} from "lucide-react";
+import {FileChartLine, FileText} from "lucide-react";
+import ProtectedRoute from "@/utils/ProtectedRoutes";
 
 const Page = () => {
     //get event count
     const [totalEvents, setTotalEvents] = useState<number>(0);
-    const [totalEarnings, setTotalEarnings] = useState<number|string>(0);
+    const [totalEarnings, setTotalEarnings] = useState<number | string>(0);
     const [scheduledEvents, setScheduledEvents] = useState<number>(0);
     const [onGoingEvents, setOnGoingEvents] = useState<EventDetails[]>([]);
-    const [years,setYears]=useState<number[]>([]);
+    const [years, setYears] = useState<number[]>([]);
 
     //selected year
     const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
 
     //monthly earnings
-    const [monthlyEarnings,setMonthlyEarnings]=useState<MonthlyEarningDetails[]>([]);
+    const [monthlyEarnings, setMonthlyEarnings] = useState<MonthlyEarningDetails[]>([]);
 
 
     //get user id from params
@@ -36,6 +37,11 @@ const Page = () => {
 
     //configure navigation
     const route = useRouter();
+
+    //route to login
+    const routeToLogin = () => {
+        route.push(`/organizer/auth/login`);
+    }
 
     useEffect(() => {
         //     load all events at page reload
@@ -61,8 +67,19 @@ const Page = () => {
     //format financial metrics
     const formatFinancialValues = (value: number) => {
 
-        setTotalEarnings(value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        setTotalEarnings(value.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
     }
+
+    //handle unauthorized errors
+    const handleUnauthorizedError = (err: unknown) => {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+            toast.error("Session expired. Please log in again.");
+            routeToLogin();
+            return true; // handled
+        }
+        return false;
+    };
+
 
     //fetch event counts
     const getEventCounts = async () => {
@@ -71,18 +88,24 @@ const Page = () => {
             setTotalEvents(response.data.allEventsCount);
             setScheduledEvents(response.data.approvedEventsCount);
         } catch (err) {
+
+            if (handleUnauthorizedError(err)) return;
+
             handleApiError(err, "Failed to load events");
         }
     }
 
     //get monthly earning details sorted by year
-    const getMonthlyEarnings = async ()=>{
-        try{
+    const getMonthlyEarnings = async () => {
+        try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/monthly-earnings/organizers/${organizerId}/${selectedYear}`);
 
             console.log(response.data.entityList);
             setMonthlyEarnings(response.data.entityList);
-        }catch(err){
+        } catch (err) {
+
+            if(handleUnauthorizedError(err)) return;
+
             if (err instanceof AxiosError) {
                 // Handle Axios-specific errors
                 const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
@@ -105,17 +128,23 @@ const Page = () => {
             formatFinancialValues(response.data.totalEarnings);
 
         } catch (err) {
+
+            if(handleUnauthorizedError(err)) return;
+
             handleApiError(err, "Failed to load events");
         }
     }
 
     //get event completion years list
-    const getYearsList = async () =>{
-        try{
+    const getYearsList = async () => {
+        try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/completed/years/organizers/${organizerId}`);
             console.log(response.data.entityList);
             setYears(response.data.entityList);
-        }catch (err){
+        } catch (err) {
+
+            if(handleUnauthorizedError(err)) return;
+
             if (err instanceof AxiosError) {
                 // Handle Axios-specific errors
                 const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
@@ -146,6 +175,7 @@ const Page = () => {
     }
 
     return (
+        <ProtectedRoute>
         <>
             {/*    header section*/}
             <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
@@ -208,7 +238,7 @@ const Page = () => {
                         <div>
                             <Select value={selectedYear} onValueChange={handleYearChange}>
                                 <SelectTrigger className="w-[180px] bg-white shadow-lg">
-                                    <SelectValue placeholder="Select Year" />
+                                    <SelectValue placeholder="Select Year"/>
                                 </SelectTrigger>
                                 <SelectContent className="bg-white">
                                     {years && years.map((year) => (
@@ -223,77 +253,93 @@ const Page = () => {
 
                     {/*chart*/}
                     <div className="bg-white p-2 sm:p-4 lg:p-6 rounded-md">
-                        <div className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart
-                                    data={monthlyEarnings}
-                                    margin={{
-                                        top: 5,
-                                        right: 10,
-                                        left: 10,
-                                        bottom: 5
-                                    }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3"/>
-                                    <XAxis
-                                        dataKey="monthName"
-                                        tick={{ fontSize: 11 }}
-                                        interval="preserveStartEnd"
-                                        angle={-45}
-                                        textAnchor="end"
-                                        height={60}
-                                        label={{
-                                            value: 'Month',
-                                            position: 'insideBottom',
-                                            offset: -10,
-                                            style: { fontSize: 12, textAnchor: 'middle' }
-                                        }}
-                                    />
-                                    <YAxis
-                                        tick={{ fontSize: 11 }}
-                                        width={60}
-                                        label={{
-                                            value: 'Amount (LKR)',
-                                            angle: -90,
-                                            position: 'insideLeft',
-                                            style: { fontSize: 12, textAnchor: 'middle' }
-                                        }}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            fontSize: '12px',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                            border: '1px solid #ccc',
-                                            borderRadius: '4px'
-                                        }}
-                                    />
-                                    <Legend
-                                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="totalEarnings"
-                                        name="Monthly Earnings (LKR)"
-                                        stroke="#8884d8"
-                                        strokeWidth={2}
-                                        dot={{ r: 3 }}
-                                        activeDot={{ r: 5 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                        {monthlyEarnings && monthlyEarnings.length > 0 ? (
+                            <>
+                                <div className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart
+                                            data={monthlyEarnings}
+                                            margin={{
+                                                top: 5,
+                                                right: 10,
+                                                left: 10,
+                                                bottom: 5
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3"/>
+                                            <XAxis
+                                                dataKey="monthName"
+                                                tick={{fontSize: 11}}
+                                                interval="preserveStartEnd"
+                                                angle={-45}
+                                                textAnchor="end"
+                                                height={60}
+                                                label={{
+                                                    value: 'Month',
+                                                    position: 'insideBottom',
+                                                    offset: -10,
+                                                    style: {fontSize: 12, textAnchor: 'middle'}
+                                                }}
+                                            />
+                                            <YAxis
+                                                tick={{fontSize: 11}}
+                                                width={60}
+                                                label={{
+                                                    value: 'Amount (LKR)',
+                                                    angle: -90,
+                                                    position: 'insideLeft',
+                                                    style: {fontSize: 12, textAnchor: 'middle'}
+                                                }}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    fontSize: '12px',
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                    border: '1px solid #ccc',
+                                                    borderRadius: '4px'
+                                                }}
+                                            />
+                                            <Legend
+                                                wrapperStyle={{fontSize: '12px', paddingTop: '10px'}}
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="totalEarnings"
+                                                name="Monthly Earnings (LKR)"
+                                                stroke="#8884d8"
+                                                strokeWidth={2}
+                                                dot={{r: 3}}
+                                                activeDot={{r: 5}}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-12">
+                                <div
+                                    className="w-16 h-16 bg-gray-100 rounded-full text-gray-700 flex items-center justify-center mb-4">
+                                    <FileChartLine strokeWidth={1} size={40}/>
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No earnings data available</h3>
+                                <p className="text-sm text-gray-500 text-center">There are currently no earnings records
+                                    to display for {selectedYear}.</p>
+                            </div>
+                        )}
                     </div>
 
-                    {/*    report generation button*/}
-                    <div className="my-[20px] flex justify-center items-center">
-                        <Button
-                            className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
-                            onClick={() => downloadMonthlyPDF(monthlyEarnings, organizerId, selectedYear)}
-                        >
-                            <IoDocumentTextOutline className="mr-2" />
-                            Generate Report
-                        </Button>
-                    </div>
+                    {/*    report generation button - only show when data is available*/}
+                    {monthlyEarnings && monthlyEarnings.length > 0 && (
+                        <div className="my-[20px] flex justify-center items-center">
+                            <Button
+                                className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
+                                onClick={() => downloadMonthlyPDF(monthlyEarnings, organizerId, selectedYear)}
+                            >
+                                <IoDocumentTextOutline className="mr-2"/>
+                                Generate Report
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 {/*    table section*/}
@@ -409,6 +455,7 @@ const Page = () => {
                 </div>
             </div>
         </>
+        </ProtectedRoute>
     )
 }
 

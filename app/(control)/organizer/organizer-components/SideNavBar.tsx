@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { LuMessageSquareText, LuUserRound } from "react-icons/lu";
-import { MdOutlinePayment } from "react-icons/md";
 import { IoIosClose, IoIosHome, IoIosNotifications } from "react-icons/io";
+import { IoLogOutOutline } from "react-icons/io5";
 import Link from "next/link";
 import { usePathname, useRouter, useParams } from "next/navigation";
 import { FaUserCircle } from "react-icons/fa";
@@ -55,6 +55,20 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
         router.push("/user");
     }
 
+    const handleLogout = () => {
+
+        // Close navbar on mobile
+        setIsNavBarOpen(false);
+
+        //clear local storage
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
+
+        // Redirect to login or home page
+        router.push("/organizer/auth/login");
+    }
+
     return (
         <>
             <div className={`h-screen bg-gray-700 w-[100px] lg:w-[200px] sm:block
@@ -96,7 +110,6 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
                                 </div>
                             </div>
                         </Link>
-
                     </div>
                     <hr className="border-gray-600 border-t-2 mx-4 my-5 shadow-sm" />
                 </div>
@@ -132,10 +145,9 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
 
                         return (
                             <Link href={item.href} key={item.href} className="w-full" onClick={handleLinkClick}>
-                                <div
-                                    className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 ${
-                                        isActive ? 'bg-gray-600 text-white border-r-4 border-blue-500' : 'text-gray-100 hover:bg-gray-600'
-                                    }
+                                <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 ${
+                                    isActive ? 'bg-gray-600 text-white border-r-4 border-blue-500' : 'text-gray-100 hover:bg-gray-600'
+                                }
                                     ${isNavBarOpen ? "justify-start" : ""}`}>
                                     <div className="nav-icon text-[32px]">
                                         <IconComponent strokeWidth={1.5} />
@@ -148,6 +160,22 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
                             </Link>
                         );
                     })}
+
+                    {/* Logout Button */}
+                    <button
+                        onClick={handleLogout}
+                        className="w-full">
+                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600
+                            ${isNavBarOpen ? "justify-start" : ""}`}>
+                            <div className="nav-icon text-[32px]">
+                                <IoLogOutOutline strokeWidth={1.5} />
+                            </div>
+                            <div
+                                className={`page-name text-[20px] lg:block ${isNavBarOpen ? "block" : "hidden"}`}>
+                                Logout
+                            </div>
+                        </div>
+                    </button>
                 </div>
             </div>
         </>
