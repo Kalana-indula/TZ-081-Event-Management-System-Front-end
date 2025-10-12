@@ -18,7 +18,7 @@ const AdminHeader = ({ isNavBarOpen, toggleNavBar }: AdminHeaderProps) => {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const storedName = localStorage.getItem('userName'); // ✅ key must match what you stored
+            const storedName = localStorage.getItem('userName'); // key must match what you stored
             if (storedName && storedName !== 'undefined' && storedName !== 'null') {
                 setUsername(storedName);
             }

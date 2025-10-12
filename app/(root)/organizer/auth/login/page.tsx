@@ -54,9 +54,10 @@ const Page = () => {
             if(response.status === 200){
                 if(response.data.userRole==='ORGANIZER'){
                     //store the token in local storage
-                    localStorage.setItem("token",response.data.authToken);
-                    localStorage.setItem("userId",response.data.userId);
-                    localStorage.setItem("userRole",response.data.userRole);
+                    localStorage.setItem("token", response.data.authToken);
+                    localStorage.setItem("userId", response.data.userId);
+                    localStorage.setItem("userName", response.data.userName);
+                    localStorage.setItem("userRole", response.data.userRole);
 
                     //set the token as default token for axios
                     axios.defaults.headers.common['Authorization']=`Bearer ${response.data.authToken}`;

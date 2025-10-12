@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {LuMessageSquareText} from "react-icons/lu";
 import {MdOutlinePayment} from "react-icons/md";
 import { LuUserRound } from "react-icons/lu";
-import {IoSettingsOutline} from "react-icons/io5";
+import {IoLogOutOutline, IoSettingsOutline} from "react-icons/io5";
 import {IoIosClose, IoIosHome, IoIosLogOut, IoIosNotifications} from "react-icons/io";
 import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
@@ -20,10 +20,29 @@ interface SideNavBarProps {
 
 const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
 
+   //manager id and username
+    const [managerId,setManagerId] = useState<string | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
+
     //fetch current route
     const pathName = usePathname();
 
     const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const id = localStorage.getItem('userId');
+            const name = localStorage.getItem('userName'); // fetch username
+
+            if (id && id !== 'undefined' && id !== 'null') {
+                setManagerId(id);
+            }
+
+            if (name && name !== 'undefined' && name !== 'null') {
+                setUsername(name);
+            }
+        }
+    }, []);
 
     const navItems = [
         {
@@ -41,16 +60,17 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
             icon: GrTransaction,
             label: 'Transactions'
         },
-        {
-            href: '/manager/settings',
-            icon: IoSettingsOutline,
-            label: 'Settings'
-        },
-        {
-            href: '/manager/logout',
-            icon: IoIosLogOut,
-            label: 'Logout'
-        }
+
+        // only add settings link when adminId is known
+        ...(managerId
+            ? [
+                {
+                    href: `/manager/${managerId}/settings`,
+                    icon: IoSettingsOutline,
+                    label: 'Settings',
+                },
+            ]
+            : []),
     ];
 
     //close nav bar when link is clicked
@@ -61,6 +81,16 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
     const navigateToUser = () => {
         router.push("/user");
     }
+
+    const handleLogout = () => {
+        setIsNavBarOpen(false);
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userRole');
+        }
+        router.push('/manager/auth/login');
+    };
 
     return (
         <>
@@ -101,7 +131,7 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                                     <FaUserCircle/>
                                 </div>
                                 <div className="text-[20px]">
-                                    Username
+                                    {username||'Username'}
                                 </div>
                             </div>
                         </Link>
@@ -159,6 +189,22 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                             </Link>
                         );
                     })}
+
+                    {/* Logout Button */}
+                    <button
+                        onClick={handleLogout}
+                        className="w-full">
+                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600 hover:cursor-pointer
+                            ${isNavBarOpen ? "justify-start" : ""}`}>
+                            <div className="nav-icon text-[32px]">
+                                <IoLogOutOutline strokeWidth={1.5} />
+                            </div>
+                            <div
+                                className={`page-name text-[20px] lg:block ${isNavBarOpen ? "block" : "hidden"}`}>
+                                Logout
+                            </div>
+                        </div>
+                    </button>
                 </div>
             </div>
         </>
