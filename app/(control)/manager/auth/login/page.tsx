@@ -1,75 +1,74 @@
 'use client'
 
 import React, {useState} from 'react'
-import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {AdminLoginDetails} from "@/types/entityTypes";
 import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const Page = () => {
 
     //fetch password details
-    const [email,setEmail]=useState<string>("");
-    const [password,setPassword]=useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
 
-    const router=useRouter();
+    const router = useRouter();
 
     //route to organizer dashboard
-    const routeToDashboard= ()=>{
-        router.push(`/admin/dashboard`);
+    const routeToDashboard = () => {
+        router.push(`/manager/dashboard`);
     }
 
-    const handleEmail = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
         setEmail(value);
     }
 
-    const handlePassword = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
         setPassword(value);
     }
 
     //handle admin login
-    const handleLogin = async (event:React.FormEvent<HTMLFormElement>)=>{
+    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const loginPayload:AdminLoginDetails ={
-            email:email,
-            password:password,
+        const loginPayload: AdminLoginDetails = {
+            email: email,
+            password: password,
         }
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/admins/login`,loginPayload,
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/managers/login`, loginPayload,
                 {
-                    headers:{
+                    headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     }
                 });
             console.log(response.data);
             //check if the login successful
-            if(response.status === 200){
-                if(response.data.userRole==='ADMIN'){
+            if (response.status === 200) {
+                //check if the user has a role = 'MANAGER'
+                if (response.data.userRole === 'MANAGER') {
                     //store the token in local storage
-                    localStorage.setItem("token",response.data.authToken);
-                    localStorage.setItem("userId",response.data.userId);
-                    localStorage.setItem("userName",response.data.userName);
-                    localStorage.setItem("userRole",response.data.userRole);
+                    localStorage.setItem("token", response.data.authToken);
+                    localStorage.setItem("userId", response.data.userId);
+                    localStorage.setItem("userName", response.data.userName);
+                    localStorage.setItem("userRole", response.data.userRole);
 
                     //set the token as default token for axios
-                    axios.defaults.headers.common['Authorization']=`Bearer ${response.data.authToken}`;
-
-                    console.log(response.data.authToken);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.authToken}`;
 
                     routeToDashboard();
                     toast.success("Login Successfully");
-                }else{
+                } else {
                     toast.error("Not a valid user type");
                 }
             }
 
-        }catch(err){
+        } catch (err) {
             if (err instanceof AxiosError) {
                 // Handle Axios-specific errors
                 const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
@@ -84,7 +83,7 @@ const Page = () => {
         }
     }
 
-    const handleCancel = ():void => {
+    const handleCancel = (): void => {
         setEmail('');
         setPassword('');
     }
@@ -105,8 +104,9 @@ const Page = () => {
                         </div>
                     </div>
                     <div className="text-center">
-                        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">Admin Login</h1>
-                        <p className="mt-1 text-sm sm:text-base text-gray-600">Sign in to access the admin panel</p>
+                        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">Manager Login</h1>
+                        <p className="mt-1 text-sm sm:text-base text-gray-600">Sign in to access the management
+                            panel</p>
                     </div>
                 </div>
             </div>
@@ -117,7 +117,8 @@ const Page = () => {
                     <div className="bg-white shadow-2xl rounded-lg border border-gray-200">
                         {/*Form header*/}
                         <div className="px-6 pt-6 pb-2">
-                            <h2 className="text-lg font-semibold text-gray-700 border-l-4 border-blue-500 pl-3">LOGIN CREDENTIALS</h2>
+                            <h2 className="text-lg font-semibold text-gray-700 border-l-4 border-blue-500 pl-3">LOGIN
+                                CREDENTIALS</h2>
                         </div>
 
                         {/*Form content*/}
@@ -173,18 +174,6 @@ const Page = () => {
                                     </button>
                                 </div>
                             </form>
-                        </div>
-
-                        {/*Footer link*/}
-                        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-0">
-                            <div className="border-t border-gray-200 pt-4">
-                                <p className="text-center text-sm text-gray-600">
-                                    Don't have an account?{' '}
-                                    <Link href="/admin/auth/register" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
-                                        Register Here
-                                    </Link>
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>

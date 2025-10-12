@@ -3,11 +3,21 @@
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
 import ProtectedRoute from "@/utils/ProtectedRoutes";
+import {useParams, useRouter} from "next/navigation";
+import {UpdateContactDetailsForm, updateContactDetailsSchema} from "@/lib/validation";
+import toast from "react-hot-toast";
+import {UpdateContactDetails} from "@/types/entityTypes";
+import axios, {AxiosError} from "axios";
 
 const Page = () => {
-    //current contact details
-    const [currentContactDetails, setCurrentContactDetails] = useState<string>("+94 710 754 343");
+    //new contact details
     const [newContactDetails, setNewContactDetails] = useState<string>("");
+
+    const params=useParams();
+
+    const router = useRouter();
+
+    const organizerId = params.organizerId;
 
     const handleContactDetails = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
@@ -18,6 +28,51 @@ const Page = () => {
         setNewContactDetails("");
     }
 
+    const routeToSettings = ()=>{
+        router.push(`/organizer/${organizerId}/settings`);
+    }
+
+    const handleUpdateContactDetails = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        // build form data object for validation
+        const formData: UpdateContactDetailsForm = {
+            contactDetails: newContactDetails,
+        };
+
+        // zod validation
+        const parsed = updateContactDetailsSchema.safeParse(formData);
+
+        if (!parsed.success) {
+            const firstError = parsed.error.issues[0]?.message || "Invalid form input";
+            toast.error(firstError);
+            return;
+        }
+
+        // build payload
+        const contactDetailsData: UpdateContactDetails = {
+            contactDetails: parsed.data.contactDetails,
+        };
+
+        try{
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/contact`, contactDetailsData);
+            console.log(response.data);
+            toast.success("Contact details updated successfully");
+            routeToSettings();
+        }catch (err) {
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
+        }
+    }
     return (
         <>
             <ProtectedRoute>
@@ -39,23 +94,18 @@ const Page = () => {
                         {/*form*/}
                         <div className="max-w-md mx-auto">
                             <div className="bg-white shadow-2xl p-8 rounded-lg">
-                                <div className="mb-3 flex flex-col sm:flex-row gap-2">
-                                    <p className="block text-sm font-medium text-gray-700 ">Your Current Contact Details
-                                        : </p>
-                                    <p className="text-sm">{currentContactDetails}</p>
-                                </div>
 
-                                <form className="space-y-6">
+                                <form className="space-y-6" onSubmit={handleUpdateContactDetails}>
                                     {/*New contact details section*/}
                                     <div>
-                                        <label htmlFor="new-email"
+                                        <label htmlFor="new-contact"
                                                className="block text-sm font-medium text-gray-700 mb-2">
                                             New Contact <span className="text-red-600">*</span>
                                         </label>
                                         <input
-                                            id="new-email"
-                                            name="email"
-                                            type="email"
+                                            id="new-contact"
+                                            name="new-contact"
+                                            type="text"
                                             required={true}
                                             value={newContactDetails}
                                             onChange={handleContactDetails}

@@ -2,11 +2,11 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
-import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
+import ManagerProtectedRoutes from "@/utils/ManagerProtectedRoutes";
+import {useParams, useRouter} from "next/navigation";
 import {DeleteUserForm, deleteUserSchema} from "@/lib/validation";
 import toast from "react-hot-toast";
 import axios from "axios";
-import {useParams, useRouter} from "next/navigation";
 
 const Page = () => {
     //set password state
@@ -17,20 +17,19 @@ const Page = () => {
 
     const params=useParams();
 
-    const adminId=params.adminId;
+    const managerId= params.managerId;
 
     const router = useRouter();
-
-    //handle cancel
-    const handleCancel = (): void => {
-        clearData();
-    }
 
     const clearData = () => {
         setEmail("");
         setPassword("");
     };
 
+    //handle cancel
+    const handleCancel = (): void => {
+        clearData();
+    }
 
     const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
@@ -42,7 +41,7 @@ const Page = () => {
         setPassword(value);
     }
 
-    const handleDeleteAdmin = async (event:React.FormEvent<HTMLFormElement>)=>{
+    const handleDeleteManager = async (event:React.FormEvent<HTMLFormElement>)=>{
         event.preventDefault();
 
         // build + validate
@@ -61,7 +60,7 @@ const Page = () => {
 
         try {
             // IMPORTANT: send DELETE body under `data`
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}`,
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers/${managerId}`,
                 {
                     data: parsed.data,
                     headers: {
@@ -87,7 +86,7 @@ const Page = () => {
             localStorage.removeItem("userId");
             localStorage.removeItem("userRole");
             clearData?.();
-            router.replace("/admin/auth/login");
+            router.replace("/manager/auth/login");
 
         }catch (err) {
             if (axios.isAxiosError(err)) {
@@ -107,7 +106,7 @@ const Page = () => {
 
     return (
         <>
-            <AdminProtectedRoute>
+            <ManagerProtectedRoutes>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
@@ -126,7 +125,7 @@ const Page = () => {
                         {/*    form*/}
                         <div className="max-w-md mx-auto">
                             <div className="bg-white shadow-2xl p-8 rounded-lg">
-                                <form className="space-y-6" onSubmit={handleDeleteAdmin}>
+                                <form className="space-y-6" onSubmit={handleDeleteManager}>
                                     {/*email field*/}
                                     <div>
                                         <label htmlFor="current-email"
@@ -147,13 +146,13 @@ const Page = () => {
 
                                     {/*password field*/}
                                     <div>
-                                        <label htmlFor="password"
+                                        <label htmlFor="current-email"
                                                className="block text-sm font-medium text-gray-700 mb-2">
                                             Enter Password<span className="text-red-600">*</span>
                                         </label>
                                         <input
-                                            id="password"
-                                            name="password"
+                                            id="current-email"
+                                            name="current-email"
                                             type="password"
                                             required={true}
                                             value={password}
@@ -168,13 +167,13 @@ const Page = () => {
                                         {/*save button*/}
                                         <Button
                                             type="submit"
-                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium text-white hover:bg-white hover:text-black active:bg-black active:text-white hover:cursor-pointer">
+                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium text-white hover:bg-white hover:text-black active:bg-black active:text-white">
                                             Delete Account
                                         </Button>
 
                                         {/*cancel button*/}
                                         <Button
-                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium bg-white text-black hover:bg-black hover:text-white active:text-black active:bg-white hover:cursor-pointer"
+                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium bg-white text-black hover:bg-black hover:text-white active:text-black active:bg-white"
                                             onClick={handleCancel}>
                                             Cancel
                                         </Button>
@@ -184,7 +183,7 @@ const Page = () => {
                         </div>
                     </div>
                 </div>
-            </AdminProtectedRoute>
+            </ManagerProtectedRoutes>
         </>
     )
 }

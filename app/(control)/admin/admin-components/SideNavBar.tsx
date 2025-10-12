@@ -33,7 +33,7 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const id = localStorage.getItem('userId');
-            const name = localStorage.getItem('userName'); // ✅ fetch username
+            const name = localStorage.getItem('userName'); // fetch username
 
             if (id && id !== 'undefined' && id !== 'null') {
                 setAdminId(id);
@@ -63,7 +63,6 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
             ]
             : []),
     ];
-
 
     //close nav bar when link is clicked
     const handleLinkClick = () => {

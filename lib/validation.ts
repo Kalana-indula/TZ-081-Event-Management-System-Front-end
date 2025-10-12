@@ -67,21 +67,25 @@ export const registerAdminSchema = z.object({
 export type RegisterAdminForm = z.infer<typeof registerAdminSchema>;
 
 // -------------------- Update Password --------------------
-export const updatePasswordSchema = z
-    .object({
-        currentPassword: z.string().min(1, "Current password is required"),
-        newPassword: z
-            .string()
-            .regex(passwordRegex, "Invalid Password Format"),
-    })
-    .refine(
-        (data) => data.currentPassword !== data.newPassword,
-        {
-            path: ["newPassword"],
-            message: "New password must be different from current password",
-        }
-    );
+// Validation schema
+export const updatePasswordSchema = z.object({
+    currentPassword: z
+        .string()
+        .min(6, "Current password must be at least 6 characters long")
+        .max(50, "Current password is too long")
+        .trim(),
+    newPassword: z
+        .string()
+        .min(6, "New password must be at least 6 characters long")
+        .max(50, "New password is too long")
+        .trim()
+        .refine(
+            (val) => /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).*$/.test(val),
+            "New password must contain at least one uppercase letter, one lowercase letter, and one number"
+        ),
+});
 
+// Inferred TypeScript form type
 export type UpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
 
 // -------------------- Update Email --------------------
@@ -90,3 +94,21 @@ export const updateEmailSchema = z.object({
 });
 
 export type UpdateEmailForm = z.infer<typeof updateEmailSchema>;
+
+// -------------------- Update Contact Details --------------------
+export const updateContactDetailsSchema = z.object({
+    contactDetails: z
+        .string()
+        .trim()
+        .min(1, "Contact details are required")
+        .max(1000),
+});
+
+export type UpdateContactDetailsForm = z.infer<typeof updateContactDetailsSchema>;
+
+// --------------------Delete user ----------------------------------
+export const deleteUserSchema = z.object({
+    email: z.string().trim().email("Enter a valid email"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+});
+export type DeleteUserForm = z.infer<typeof deleteUserSchema>;

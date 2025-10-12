@@ -3,48 +3,47 @@
 import React, {useEffect, useState} from 'react'
 import Image from "next/image";
 import {useParams, useRouter} from "next/navigation";
+import ManagerProtectedRoutes from "@/utils/ManagerProtectedRoutes";
 import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
-import {AdminDetails} from "@/types/entityTypes";
-import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
-
+import {ManagerDetails} from "@/types/entityTypes";
 
 const Page = () => {
 
-    const [adminDetails, setAdminDetails] = useState<AdminDetails>();
+    const [managerDetails, setManagerDetails] = useState<ManagerDetails>();
 
     const params = useParams();
 
-    const adminId = params.adminId;
+    const managerId = params.managerId;
 
     //configure navigation
     const router = useRouter();
 
     useEffect(() => {
-        getAdminDetails();
+        getManagerDetails();
     }, []);
 
     const routeToUpdatePassword = () => {
-        router.push(`/admin/${adminId}/settings/update-password`);
+        router.push(`/manager/${managerId}/settings/update-password`);
     }
 
     const routeToUpdateEmail = () => {
-        router.push(`/admin/${adminId}/settings/update-email`);
+        router.push(`/manager/${managerId}/settings/update-email`);
     }
 
     const routeToUpdateContact = () => {
-        router.push(`/admin/${adminId}/settings/update-contact`);
+        router.push(`/manager/${managerId}/settings/update-contact`);
     }
 
     const routeToDeleteAccount = () => {
-        router.push(`/admin/${adminId}/settings/delete-account`);
+        router.push(`/manager/${managerId}/settings/delete-account`);
     }
 
-    const getAdminDetails = async () => {
+    const getManagerDetails = async ()=>{
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers/${managerId}`);
             console.log(response.data);
-            setAdminDetails(response.data);
+            setManagerDetails(response.data);
         } catch (err) {
             if (err instanceof AxiosError) {
                 // Handle Axios-specific errors
@@ -59,15 +58,13 @@ const Page = () => {
             }
         }
     }
-
     return (
         <>
-            <AdminProtectedRoute>
+            <ManagerProtectedRoutes>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
-                    <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Statistics</h1>
-                        <p className="mt-1 text-sm sm:text-base text-gray-600">Analyze Financial Data</p>
+                    <div className="text-center mb-[10px] p-[10px]">
+                        <h1 className="text-2xl font-semibold text-gray-900">Manager Dashboard</h1>
                     </div>
                 </div>
 
@@ -78,7 +75,7 @@ const Page = () => {
                     <div
                         className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <div>
-                            <h3 className="text-gray-500 font-medium">ADMIN DETAILS</h3>
+                            <h3 className="text-gray-500 font-medium">MANAGER DETAILS</h3>
                         </div>
                         <div className="bg-white shadow-xl text-black p-4 sm:p-6 rounded-lg my-[10px] relative">
                             <div className="flex items-center gap-3">
@@ -87,11 +84,10 @@ const Page = () => {
                                     <Image src="/admin-user.png" alt="pending" height={64} width={64}/>
                                 </div>
                                 <div className="sm:py-[20px]">
-                                    <h2 className="text-lg sm:text-2xl font-semibold">{}</h2>
-                                    <div
-                                        className="break-words text-gray-700 font-semibold text-[24px]">{adminDetails?.firstName} {adminDetails?.lastName}</div>
-                                    <div className="break-words text-gray-700">Contact : {adminDetails?.phone}</div>
-                                    <div className="break-words text-gray-700">Email : {adminDetails?.email}</div>
+                                    <h2 className="text-lg sm:text-2xl font-semibold">{managerDetails?.firstName} {managerDetails?.lastName}</h2>
+                                    <div className="break-words text-gray-700"></div>
+                                    <div className="break-words text-gray-700">Contact : {managerDetails?.phone}</div>
+                                    <div className="break-words text-gray-700">Email : {managerDetails?.email}</div>
 
                                 </div>
                             </div>
@@ -102,7 +98,7 @@ const Page = () => {
                     <div
                         className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                         <div>
-                            <h3 className="text-gray-500 font-medium">ADMIN ACCOUNT SETTINGS</h3>
+                            <h3 className="text-gray-500 font-medium">MANAGER ACCOUNT SETTINGS</h3>
                         </div>
 
                         <div className="flex justify-center py-4 sm:py-6">
@@ -159,9 +155,9 @@ const Page = () => {
                         </div>
                     </div>
                 </div>
-            </AdminProtectedRoute>
+            </ManagerProtectedRoutes>
         </>
     )
 }
-
-export default Page;
+export default Page
+  

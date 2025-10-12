@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { LuMessageSquareText, LuUserRound } from "react-icons/lu";
 import { IoIosClose, IoIosHome, IoIosNotifications } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
@@ -19,10 +19,24 @@ interface SideNavBarProps {
 
 const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
 
+    //organizer id and username
+    const [username, setUsername] = useState<string | null>(null);
+
+    //fetch current route
     const pathName = usePathname();
     const router = useRouter();
     const params = useParams();
     const organizerId = params.organizerId;
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const name = localStorage.getItem('userName'); // fetch username
+
+            if (name && name !== 'undefined' && name !== 'null') {
+                setUsername(name);
+            }
+        }
+    }, []);
 
     const navItems = [
         {
@@ -106,7 +120,7 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
                                     <FaUserCircle />
                                 </div>
                                 <div className="text-[20px]">
-                                    Username
+                                    {username || 'username'}
                                 </div>
                             </div>
                         </Link>

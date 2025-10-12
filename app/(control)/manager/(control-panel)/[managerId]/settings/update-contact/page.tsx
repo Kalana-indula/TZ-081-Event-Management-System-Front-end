@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
-import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
+import ManagerProtectedRoutes from "@/utils/ManagerProtectedRoutes";
 import {useParams, useRouter} from "next/navigation";
 import {UpdateContactDetailsForm, updateContactDetailsSchema} from "@/lib/validation";
 import toast from "react-hot-toast";
@@ -10,14 +10,14 @@ import {UpdateContactDetails} from "@/types/entityTypes";
 import axios, {AxiosError} from "axios";
 
 const Page = () => {
-    //current contact details
+    //new contact details
     const [newContactDetails, setNewContactDetails] = useState<string>("");
 
     const params=useParams();
 
     const router = useRouter();
 
-    const adminId=params.adminId;
+    const managerId=params.managerId;
 
     const handleContactDetails = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
@@ -29,7 +29,7 @@ const Page = () => {
     }
 
     const routeToSettings = ()=>{
-        router.push(`/admin/${adminId}/settings`);
+        router.push(`/manager/${managerId}/settings`);
     }
 
     const handleUpdateContactDetails = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -55,7 +55,7 @@ const Page = () => {
         };
 
         try{
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}/contact`, contactDetailsData);
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers/${managerId}/contact`, contactDetailsData);
             console.log(response.data);
             toast.success("Contact details updated successfully");
             routeToSettings();
@@ -73,9 +73,10 @@ const Page = () => {
             }
         }
     }
+
     return (
         <>
-            <AdminProtectedRoute>
+            <ManagerProtectedRoutes>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
@@ -85,7 +86,8 @@ const Page = () => {
 
                 {/*main content*/}
                 <div className="p-3 sm:p-4 md:p-6 bg-white">
-                    <div className="bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
+                    <div
+                        className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 pb-6 mb-6 rounded-r-md shadow-sm">
                         <div>
                             <h3 className="text-gray-500 font-medium py-2">UPDATE CONTACT DETAILS</h3>
                         </div>
@@ -93,12 +95,13 @@ const Page = () => {
                         {/*form*/}
                         <div className="max-w-md mx-auto">
                             <div className="bg-white shadow-2xl p-8 rounded-lg">
+
                                 <form className="space-y-6" onSubmit={handleUpdateContactDetails}>
                                     {/*New contact details section*/}
                                     <div>
                                         <label htmlFor="new-contact"
                                                className="block text-sm font-medium text-gray-700 mb-2">
-                                            New Contact Details<span className="text-red-600">*</span>
+                                            New Contact <span className="text-red-600">*</span>
                                         </label>
                                         <input
                                             id="new-contact"
@@ -133,7 +136,7 @@ const Page = () => {
                     </div>
 
                 </div>
-            </AdminProtectedRoute>
+            </ManagerProtectedRoutes>
         </>
     )
 }

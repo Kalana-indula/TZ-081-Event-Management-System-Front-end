@@ -2,16 +2,12 @@
 
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
-import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
+import ManagerProtectedRoutes from "@/utils/ManagerProtectedRoutes";
+import {useParams, useRouter} from "next/navigation";
 import {UpdatePasswordForm, updatePasswordSchema} from "@/lib/validation";
 import toast from "react-hot-toast";
-import axios, {AxiosError} from "axios";
-import {useParams, useRouter} from "next/navigation";
-
-interface UpdatePasswordDetails {
-    currentPassword: string;
-    newPassword: string;
-}
+import {UpdatePasswordDetails} from "@/types/entityTypes";
+import axios from "axios";
 
 const Page = () => {
     //fetch password details
@@ -21,7 +17,7 @@ const Page = () => {
 
     const params=useParams();
 
-    const adminId = params.adminId;
+    const managerId = params.managerId;
 
     const router=useRouter();
 
@@ -55,17 +51,11 @@ const Page = () => {
             localStorage.removeItem('userName');
             localStorage.removeItem('userRole');
         }
-        router.push('/admin/auth/login');
+        router.push('/manager/auth/login');
     };
 
-    //response type from back end
-    type UpdatePasswordResponse<T> = {
-        success: boolean;
-        message: string;
-        entityData: T | null;
-    };
-
-    const handleUpdatePassword = async (event: React.FormEvent<HTMLFormElement>) => {
+    //update manager password
+    const handleUpdatePassword = async ( event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         // 1) Build + validate
@@ -81,28 +71,26 @@ const Page = () => {
             newPassword: parsed.data.newPassword,
         };
 
-        try {
-            // 2) Call API (backend returns 200 on success, 400 on known failures)
-            const { data } = await axios.put<UpdatePasswordResponse<unknown>>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admins/${adminId}/password`,
-                payload,
+        try{
+            const response=await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers/${managerId}/password`,payload,
                 {
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            });
 
-            // 3) Success path
-            if (data?.success) {
-                toast.success(data.message || "Password updated successfully");
+            //check if the process success
+            if(response.data?.success){
+                toast.success(response.data.message || "Password updated successfully");
                 logoutFromSession(); // e.g. force re-login
                 return;
             }
 
             // (Shouldn’t hit here if backend uses 400 for failures, but keep as fallback)
-            toast.error(data?.message || "Password update failed");
-        } catch (err) {
+            toast.error(response.data?.message || "Password update failed");
+
+        }catch (err) {
             // 4) Handle 4xx/5xx errors, show backend message if present
             if (axios.isAxiosError(err)) {
                 const apiMsg = (typeof err.response?.data === "string" && err.response.data) ||
@@ -115,12 +103,11 @@ const Page = () => {
                 toast.error("An unknown error occurred");
             }
         }
-    };
-
+    }
 
     return (
         <>
-            <AdminProtectedRoute>
+            <ManagerProtectedRoutes>
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
@@ -220,7 +207,7 @@ const Page = () => {
                     </div>
 
                 </div>
-            </AdminProtectedRoute>
+            </ManagerProtectedRoutes>
         </>
     )
 }

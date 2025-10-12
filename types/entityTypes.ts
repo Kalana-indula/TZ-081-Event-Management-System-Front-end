@@ -61,6 +61,19 @@ export interface OrganizerDetails {
     isDisapproved: boolean;
 }
 
+export interface ManagerDetails {
+    id: number;
+    firstName: string;
+    lastName: string;
+    nic: string;
+    phone: string;
+    email: string;
+    password: string;
+    userRole: "MANAGER";
+    isAssigned: boolean;
+    statusUpdateDate: string;
+}
+
 export interface OrganizerStatus {
     pendingApproval:boolean;
     isApproved:boolean;
@@ -298,4 +311,8 @@ export interface UpdateContactDetails {
     contactDetails: string;
 }
 
+export interface DeleteAccountDetails {
+    email: string;
+    password: string;
+}
 

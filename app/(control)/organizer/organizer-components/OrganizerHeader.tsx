@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Link from "next/link";
 import {IoIosMenu} from "react-icons/io";
 import {useRouter} from "next/navigation";
@@ -13,7 +13,18 @@ interface OrganizerHeaderProps {
 
 const OrganizerHeader = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
 
+    const [username,setUsername]=useState<string|null>(null);
+
     const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const storedName = localStorage.getItem('userName'); // key must match what you stored
+            if (storedName && storedName !== 'undefined' && storedName !== 'null') {
+                setUsername(storedName);
+            }
+        }
+    }, []);
 
     const navigateToUser = () => {
         router.push("/user");
@@ -66,7 +77,7 @@ const OrganizerHeader = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => 
                                 <CircleUserRound />
                             </div>
                             <div className="text-[16px]">
-                                Username
+                                {username || 'username'}
                             </div>
                         </button>
                     </div>
