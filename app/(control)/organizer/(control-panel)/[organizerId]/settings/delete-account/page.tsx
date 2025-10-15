@@ -3,6 +3,10 @@
 import React, {useState} from 'react'
 import {Button} from "@/components/ui/button";
 import ProtectedRoute from "@/utils/ProtectedRoutes";
+import {useParams, useRouter} from "next/navigation";
+import {DeleteUserForm, deleteUserSchema} from "@/lib/validation";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Page = () => {
     //set password state
@@ -10,10 +14,21 @@ const Page = () => {
 
     // set email state
     const [email, setEmail] = useState<string>('');
-    //handle cancel
-    const handleCancel = (): void => {
+
+    const params=useParams();
+
+    const organizerId = params.organizerId;
+
+    const router = useRouter();
+
+    const clearData = () => {
         setEmail('');
         setPassword('');
+    }
+
+    //handle cancel
+    const handleCancel = (): void => {
+        clearData()
     }
 
     const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,6 +39,71 @@ const Page = () => {
     const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {value} = e.target;
         setPassword(value);
+    }
+
+    //logout and route to login page
+    const logoutFromSession = ()=>{
+        localStorage.removeItem("auth");
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
+        clearData?.();
+        router.replace("/organizer/auth/login");
+    }
+
+    const handleDeleteOrganizer = async (event:React.FormEvent<HTMLFormElement>)=>{
+        event.preventDefault();
+
+        // build + validate
+        const formData: DeleteUserForm = {
+            email:email,
+            password:password
+        };
+
+        const parsed = deleteUserSchema.safeParse(formData);
+
+        if (!parsed.success) {
+            const firstError = parsed.error.issues[0]?.message || "Invalid input";
+            toast.error(firstError);
+            return;
+        }
+
+        try {
+            // IMPORTANT: send DELETE body under `data`
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}`,
+                {
+                    data: parsed.data,
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            //check if the process success
+            if(response.data?.success){
+                toast.success(response.data.message || "Organizer account deleted successfully");
+                logoutFromSession(); // e.g. force re-login
+                return;
+            }
+
+            // send an error message
+            toast.error(response.data?.message || "Account deletion failed");
+
+        }catch (err) {
+            if (axios.isAxiosError(err)) {
+                const apiMsg =
+                    (typeof err.response?.data === "string" && err.response?.data) ||
+                    err.response?.data?.message ||
+                    err.message ||
+                    "Failed to delete account";
+                toast.error(apiMsg);
+            } else if (err instanceof Error) {
+                toast.error(err.message);
+            } else {
+                toast.error("An unknown error occurred");
+            }
+        }
     }
 
     return (
@@ -47,36 +127,7 @@ const Page = () => {
                         {/*    form*/}
                         <div className="max-w-md mx-auto">
                             <div className="bg-white shadow-2xl p-8 rounded-lg">
-                                <form className="space-y-6">
-                                    <div>
-                                        <label htmlFor="eventType"
-                                               className="block text-sm font-medium text-gray-700 mb-2">
-                                            Select Reason
-                                        </label>
-                                        <div className="relative">
-                                            <select
-                                                id="eventType"
-                                                name="eventType"
-                                                className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-400 appearance-none bg-white"
-                                            >
-                                                <option value="Conference">Conference</option>
-                                                <option value="Workshop">Workshop</option>
-                                                <option value="Seminar">Seminar</option>
-                                                <option value="Webinar">Webinar</option>
-                                                <option value="Concert">Concert</option>
-                                                <option value="Exhibition">Exhibition</option>
-                                            </select>
-                                            <div
-                                                className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                                                     viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                          d="M19 9l-7 7-7-7"/>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                <form className="space-y-6" onSubmit={handleDeleteOrganizer}>
                                     {/*email field*/}
                                     <div>
                                         <label htmlFor="current-email"

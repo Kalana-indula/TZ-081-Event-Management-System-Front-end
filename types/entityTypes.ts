@@ -316,3 +316,20 @@ export interface DeleteAccountDetails {
     password: string;
 }
 
+// confirmed booking details
+export interface confirmedTicketDetails {
+    ticketType:string;
+    ticketCount:number;
+}
+
+export interface confirmedBookingDetails {
+    bookingId:string;
+    eventName:string;
+    name:string;
+    email:string;
+    phone:string;
+    nic:string;
+    ticketDetails:confirmedTicketDetails[];
+}
+
+

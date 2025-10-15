@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-import {useParams, useSearchParams} from "next/navigation";
+import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {BookedTicketDetails,BookingDto} from "@/types/entityTypes";
 import {getValueString} from "@/lib/utils";
 import axios, {AxiosError} from "axios";
@@ -16,7 +16,7 @@ const Page = () => {
     //store the fetched data from parameters
     const [tickets]=useState(()=>JSON.parse(searchParams.get("tickets") || "[]"));
     const [bookedTicketDetails]=useState(()=>JSON.parse(searchParams.get("bookedTickets") || "{}"));
-    
+
     //states
     const [selectedTicketDetails, setSelectedTicketDetails] = useState<BookedTicketDetails[]>([]);
     const [totalTicketPrice, setTotalTicketPrice] = useState<number>(0);
@@ -33,6 +33,10 @@ const Page = () => {
     const params=useParams();
 
     const sessionId = params.sessionId;
+
+    const eventId=params.eventId;
+
+    const router=useRouter();
 
     useEffect(() => {
         setSelectedTicketDetails(bookedTicketDetails.ticketDetails);
@@ -64,6 +68,11 @@ const Page = () => {
         setNic(event.target.value);
     }
 
+    const routeToConfirmation = (query:string)=>{
+        router.push(`/event/${eventId}/session/${sessionId}/booking/confirmation?${query}`);
+    }
+
+    //pay and book tickets
     const handleSubmit = async (event:React.FormEvent<HTMLFormElement>):Promise<void> => {
         event.preventDefault();
 
@@ -94,6 +103,13 @@ const Page = () => {
             setPhoneNumber('');
             setNic('');
 
+            //query booking id
+            const query=new URLSearchParams({
+                bookingId:JSON.stringify(response.data.bookingDetails.bookingId),
+                savedBookingDetails:JSON.stringify(response.data)
+            }).toString();
+
+            routeToConfirmation(query);
         }catch(err){
             if (err instanceof AxiosError) {
                 // Handle Axios-specific errors
