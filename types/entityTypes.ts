@@ -317,19 +317,22 @@ export interface DeleteAccountDetails {
 }
 
 // confirmed booking details
-export interface confirmedTicketDetails {
+export interface ConfirmedTicketDetails {
     ticketType:string;
     ticketCount:number;
 }
 
-export interface confirmedBookingDetails {
+export interface ConfirmedBookingDetails {
     bookingId:string;
     eventName:string;
     name:string;
     email:string;
     phone:string;
     nic:string;
-    ticketDetails:confirmedTicketDetails[];
+    ticketDetails:ConfirmedTicketDetails[];
+    ticketIssued:boolean;
+    ticketIssuedDate:string;
+    ticketIssuedTime:string;
 }
 
 

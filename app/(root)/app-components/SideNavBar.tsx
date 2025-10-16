@@ -44,16 +44,24 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
         setIsNavBarOpen(false);
     }
 
-    const navigateToUser = () => {
-        router.push("/user");
-    }
-
     const navigateToRegister = () => {
-        router.push("/register");
+        router.push("/organizer/auth/register");
     }
 
     const navigateToLogin = () => {
-        router.push("/login");
+        router.push("/organizer/auth/login");
+    }
+
+    const navigateToEntertainment = ()=>{
+        router.push("/categories/entertainment");
+    }
+
+    const navigateToEducational = ()=>{
+        router.push("/categories/educational");
+    }
+
+    const navigateToBusinessAndTech = ()=>{
+        router.push("/categories/business & tech");
     }
 
     return (
@@ -110,21 +118,21 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
                 <div className="flex flex-col justify-center text-gray-100 lg:hidden">
                     <button
                         className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
+                        onClick={navigateToEntertainment}>
                         <div className="text-[20px] sm:hidden">
                             Entertainment
                         </div>
                     </button>
                     <button
                         className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
+                        onClick={navigateToEducational}>
                         <div className="text-[20px] sm:hidden">
                             Educational
                         </div>
                     </button>
                     <button
                         className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
+                        onClick={navigateToBusinessAndTech}>
                         <div className="text-[20px] sm:hidden">
                             Business & Tech
                         </div>

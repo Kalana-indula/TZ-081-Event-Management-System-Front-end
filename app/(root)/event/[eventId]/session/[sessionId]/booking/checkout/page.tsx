@@ -41,8 +41,8 @@ const Page = () => {
     useEffect(() => {
         setSelectedTicketDetails(bookedTicketDetails.ticketDetails);
         setTotalTicketPrice(bookedTicketDetails.totalPrice);
-        console.log("Tickets:", tickets);
-        console.log("Booked Details:", bookedTicketDetails);
+        // console.log("Tickets:", tickets);
+        // console.log("Booked Details:", bookedTicketDetails);
 
     }, []);
 
@@ -94,7 +94,7 @@ const Page = () => {
                      'Content-Type': 'application/json'
                  }
                 });
-            console.log(response.data);
+            console.log("from checkout page"+ "\n"+ response.data);
             toast.success(response.data.message);
 
             setFirstName('');

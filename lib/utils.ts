@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 // utils/errorHandler.ts
 import axios from "axios";
 import {toast} from "react-hot-toast";
+import React from "react";
 
 export function handleApiError(err: unknown, fallbackMessage = "Something went wrong") {
     if (axios.isAxiosError(err)) {
@@ -66,3 +67,7 @@ export const getValueString = (value?: number | null): string => {
     if (typeof value !== "number") return "0.00";
     return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+
+//==============turn rendered QR into a PNG data URL==============================
+
+
