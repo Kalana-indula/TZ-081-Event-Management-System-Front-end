@@ -14,24 +14,48 @@ export default function AdminProtectedRoute({ children }: ProtectedRouteProps) {
     const [checked, setChecked] = useState(false);
 
     useEffect(() => {
-        // read token safely
+        // Safely read token from localStorage
         const raw = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         const token = raw && raw !== "undefined" && raw !== "null" ? raw : null;
 
-        // if already on login, don't redirect again
+        // Read stored user data
+        const storedUserId = localStorage.getItem("userId");
+        const storedUserRole = localStorage.getItem("userRole"); // e.g. "ADMIN"
+
+        //  Skip redirect if already on admin login page
         const isOnLogin = pathname?.startsWith("/admin/auth/login");
 
         if (!token) {
             if (!isOnLogin) router.replace("/admin/auth/login");
-            return; // do not set checked; prevents rendering children
+            return;
         }
 
-        // optional: set axios default header for subsequent calls
+        // Set auth header globally
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-        setChecked(true); // allow children to render
+        // -------- Role vs path prefix check ----------
+        // Allow ADMIN to access both /admin and /manager
+        if (
+            (pathname?.startsWith("/admin") && storedUserRole !== "ADMIN") ||
+            (pathname?.startsWith("/manager") && !["ADMIN", "MANAGER"].includes(storedUserRole ?? ""))
+        ) {
+            router.replace("/unauthorized");
+            return;
+        }
+
+        // -------- Optional: ID match for admin routes ----------
+        // e.g. /admin/5/dashboard → should match logged-in user’s ID
+        const match = pathname?.match(/^\/admin\/(\d+)(?:\/|$)/);
+        const pathUserId = match?.[1];
+
+        if (pathUserId && storedUserId && pathUserId !== storedUserId) {
+            router.replace(`/admin/${storedUserId}/dashboard`);
+            return;
+        }
+
+        setChecked(true);
     }, [router, pathname]);
 
-    if (!checked) return null; // or a skeleton/loader
+    if (!checked) return null; // You can replace with a spinner or skeleton
     return <>{children}</>;
 }

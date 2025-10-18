@@ -8,6 +8,7 @@ import {SlClose} from "react-icons/sl";
 import axios, {AxiosError} from "axios";
 import {EventDetails, EventStatus, Session} from "@/types/entityTypes";
 import toast from "react-hot-toast";
+import DisapproveEventDialog from "@/app/(control)/manager/manager-components/DisapproveEventDialog";
 
 const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
 
@@ -239,15 +240,12 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                                 </Button>
                             )}
                             {/*rounded hover:cursor-pointer*/}
-                            {!isDisapproved && (
-                                <Button className={`rounded hover:cursor-pointer ${isStarted ? `hidden`:`block`}`}
-                                        onClick={disapproveEvent}
-                                >
-                                    <div className="flex justify-center items-center gap-2">
-                                        <SlClose/> Disapprove Event
-                                    </div>
-                                </Button>
-                            )}
+                            <DisapproveEventDialog
+                                status={eventApproval}
+                                isDisapproved={isDisapproved}
+                                isStarted={isStarted}
+                                onDisapprove={disapproveEvent}
+                            />
 
                         </div>
                     </div>

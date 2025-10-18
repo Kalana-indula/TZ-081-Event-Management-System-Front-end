@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import MainFooter from "@/app/(root)/app-components/MainFooter";
 import {LogIn} from "lucide-react";
+import OrganizerLoginButton from "@/app/(root)/app-components/OrganizerLoginButton";
 
 const Page = () => {
 
@@ -52,7 +53,7 @@ const Page = () => {
 
             //check if the login successful
             if(response.status === 200){
-                if(response.data.userRole==='ORGANIZER'){
+                if((response.data.userRole==='ORGANIZER') && (response.data.isApproved===true)){
                     //store the token in local storage
                     localStorage.setItem("token", response.data.authToken);
                     localStorage.setItem("userId", response.data.userId);
@@ -66,8 +67,10 @@ const Page = () => {
 
                     routeToDashboard(Number(response.data.userId));
                     toast.success("Login Successfully");
-                }else{
+                }else if(response.data.userRole !== 'ORGANIZER'){
                     toast.error("Not a valid user type");
+                }else {
+                    toast.error("Your account is pending approval");
                 }
             }
 
@@ -131,7 +134,7 @@ const Page = () => {
                 {/* Form section */}
                 <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 p-8">
-                        <form className="space-y-6" onSubmit={handleLogin}>
+                        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
 
                             {/* Email field */}
                             <div className="space-y-2">
@@ -171,16 +174,9 @@ const Page = () => {
 
                             {/* Login button */}
                             <div className="space-y-4 pt-4">
-                                <button
-                                    type="submit"
-                                    className="w-full py-4 px-6 rounded-2xl text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] hover:cursor-pointer"
-                                    style={{backgroundColor: '#193cb8'}}
-                                >
-                                    <div className="flex items-center justify-center gap-2">
-                                        <LogIn strokeWidth={1} size={40} />
-                                        Sign In
-                                    </div>
-                                </button>
+                                <div className="space-y-4 pt-4">
+                                    <OrganizerLoginButton email={email} password={password}/>
+                                </div>
                             </div>
 
                             {/* Additional info */}

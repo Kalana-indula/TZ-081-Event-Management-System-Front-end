@@ -87,43 +87,41 @@ const Page = () => {
         }
     }
 
-    //get event by Id
+    // get event by generated ID (String) using new API shape { message, entityData }
     const getEventById = async (eventId: string): Promise<void> => {
-
-        // Add validation check
         if (!eventId.trim()) {
             toast.error("Please enter an Event ID before searching");
-            return; // Exit early if empty
+            return;
         }
 
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${eventId}`);
+            const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/search/events/${eventId}`;
+            const { data } = await axios.get<{ message: string; entityData: EventDetails | null }>(url);
 
-            if (response.data.eventDetails) {
-                setEventDetails(response.data.eventDetails);
+            if (data?.entityData) {
+                // Your state expects an array; wrap the single DTO
+                setEventDetails([data.entityData]);
+                toast.success(data.message || "Event loaded");
             } else {
-                console.log(response.data.message);
-                toast(response.data.message);
+                setEventDetails([]);
+                toast.error(data?.message || "No event was found");
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                // Check if it's a 404 (no assigned manager) vs actual error
                 if (err.response?.status === 404) {
-                    // 404 means no manager assigned - this is normal
-                    console.log("No event was found");
+                    setEventDetails([]);
                     toast.error("No event was found");
                 } else {
-                    // Actual error (500, network issues, etc.)
-                    console.error("Error fetching event:", err);
-                    const errorMessage = err.response?.data?.message || 'Failed to find event';
+                    const errorMessage =
+                        (err.response?.data as any)?.message || err.message || "Failed to find event";
                     toast.error(errorMessage);
                 }
             } else {
                 console.error("Unexpected error:", err);
-                toast.error('An unexpected error occurred');
+                toast.error("An unexpected error occurred");
             }
         }
-    }
+    };
 
     //fetch value from search field
     const handleSearchedId = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -270,7 +268,7 @@ const Page = () => {
                                                 key={event.eventId}
                                                 onClick={() => routeToEvent(event.eventId)}
                                             >
-                                                <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.eventId}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.generatedId}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.eventName}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.eventType}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600 font-sm">{event.organizer}</td>
@@ -312,7 +310,7 @@ const Page = () => {
                                                     <div className="flex justify-between items-center">
                                                         <span className="text-sm font-medium text-gray-900">ID:</span>
                                                         <span
-                                                            className="text-sm text-gray-600 font-sm">{event.eventId}</span>
+                                                            className="text-sm text-gray-600 font-sm">{event.generatedId}</span>
                                                     </div>
                                                     <div className="flex justify-between items-center">
                                                         <span className="text-sm font-medium text-gray-900">Name:</span>
