@@ -1,5 +1,6 @@
 export interface EventDetails {
     eventId: number;
+    generatedId: string;
     eventName: string;
     eventType: string;
     organizer: string;
@@ -59,6 +60,8 @@ export interface OrganizerDetails {
     pendingApproval: boolean;
     isApproved: boolean;
     isDisapproved: boolean;
+    activeEventsCount:number;
+
 }
 
 export interface ManagerDetails {

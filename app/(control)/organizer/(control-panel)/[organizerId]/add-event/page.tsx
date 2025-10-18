@@ -231,7 +231,7 @@ const Page = () => {
                                         Event Category
                                     </label>
                                     <Select
-                                        value={eventCategoryId?.toString()}
+                                        value={eventCategoryId ? String(eventCategoryId) : undefined}
                                         onValueChange={handleEventCategory}
                                     >
                                         <SelectTrigger

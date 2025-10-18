@@ -405,7 +405,7 @@ const Page = () => {
                             <div className="text-center pt-4">
                                 <p className="text-sm text-gray-600">
                                     Already have an account?{' '}
-                                    <Link href="/login" className="font-semibold underline" style={{color: '#193cb8'}}>
+                                    <Link href="/organizer/auth/login" className="font-semibold underline" style={{color: '#193cb8'}}>
                                         Sign in here
                                     </Link>
                                 </p>

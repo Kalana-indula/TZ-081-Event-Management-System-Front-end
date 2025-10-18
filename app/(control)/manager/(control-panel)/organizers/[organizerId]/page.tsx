@@ -3,17 +3,24 @@
 import React, {useEffect, useState} from 'react'
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
-import {CircleCheck, CircleSlash, Trash2} from "lucide-react";
-import {SlClose} from "react-icons/sl";
+import {CircleCheck} from "lucide-react";
 import {OrganizerDetails, OrganizerStatus} from "@/types/entityTypes";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 import ManagerProtectedRoutes from "@/utils/ManagerProtectedRoutes";
+import toast from "react-hot-toast";
+import DisapproveAccountSwitch from "@/app/(control)/manager/manager-components/DisapproveAccountSwitch";
+import DeleteOrganizerDialog from "@/app/(control)/manager/manager-components/DeleteOrganizerDialog";
 
 const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
     const {organizerId} = React.use(params);
     const router = useRouter();
+
+    //route to organizer list
+    const routeToOrganizersList = () => {
+        router.push("/manager/organizers");
+    }
 
     //approval state
     const [organizerApproval, setOrganizerApproval] = useState<string>('pending');
@@ -79,7 +86,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
             // Update local state
             setOrganizerApproval('approved');
-
+            toast.success("Organizer was approved");
             // Update organizer details if needed
             if (organizerDetails) {
                 setOrganizerDetails({
@@ -92,7 +99,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
         } catch (err) {
             console.error('Error approving account:', err);
-            // Optionally show an error message to the user
+            toast.success("Error approving account");
         } finally {
             setIsLoading(false);
         }
@@ -113,7 +120,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
             // Update local state
             setOrganizerApproval('disapproved');
-
+            toast.success("Organizer was disapproved");
             // Update organizer details if needed
             if (organizerDetails) {
                 setOrganizerDetails({
@@ -126,22 +133,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
         } catch (err) {
             console.error('Error disapproving account:', err);
-            // Optionally show an error message to the user
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    const deleteAccount = async (): Promise<void> => {
-
-        setIsLoading(true);
-
-        try {
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}`);
-            router.push('/manager/organizers');
-            console.log('Deleting organizer:', response.data);
-        } catch (err) {
-            console.error('Error deleting account:', err);
+            toast.error("Error disapproving account");
         } finally {
             setIsLoading(false);
         }
@@ -159,7 +151,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-[10px] p-[10px]">
                         <h1 className="text-2xl font-semibold text-gray-900">Organizer </h1>
-                        <p className="mt-1 text-gray-600">Organizer {organizerId} details</p>
+                        <p className="mt-1 text-gray-600">Organizer {organizerDetails?.organizerId} details</p>
                     </div>
                 </div>
 
@@ -179,8 +171,17 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                 </div>
                                 <div className="sm:py-[20px] flex-1">
                                     <h2 className="text-lg sm:text-2xl font-semibold">{organizerDetails?.name}</h2>
-                                    <div className="break-words text-gray-700 text-sm sm:text-base">Company Name
-                                        : {organizerDetails?.companyName}
+                                    <div className="break-words text-gray-700 text-sm sm:text-base font-semibold">
+                                        Company Name :
+                                        <span className="font-normal">
+                                            {organizerDetails?.companyName}
+                                        </span>
+                                    </div>
+                                    <div className="break-words text-gray-700 text-sm sm:text-base font-semibold">
+                                        Active Events Count :
+                                        <span className="font-normal">
+                                            {organizerDetails?.activeEventsCount ?? 0}
+                                        </span>
                                     </div>
                                     <div className="break-words text-gray-700 mt-2 text-sm sm:text-base space-y-2">
                                         <div className="flex items-center space-x-2">
@@ -188,7 +189,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                                 <Image src="/organizer-id.png" alt="event" height={32} width={32}/>
                                             </div>
                                             <div>
-                                                {organizerDetails?.id}
+                                                {organizerDetails?.organizerId}
                                             </div>
                                         </div>
 
@@ -262,7 +263,8 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                 {/* Approve Button - Show when pending or disapproved */}
                                 {(organizerApproval === 'pending' || organizerApproval === 'disapproved') && (
                                     <Button
-                                        className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white border-blue-500"
+                                        className="hover:cursor-pointer text-white border-blue-500"
+                                        variant={'default'}
                                         onClick={approveAccount}
                                         disabled={isLoading}
                                     >
@@ -275,41 +277,23 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
 
                                 {/* Disapprove Button - Show only when pending */}
                                 {organizerApproval === 'pending' && (
-                                    <Button
-                                        className="bg-gray-600 hover:bg-gray-700 hover:cursor-pointer text-white border-gray-600"
-                                        onClick={disapproveAccount}
-                                        disabled={isLoading}
-                                    >
-                                        <div className="flex items-center justify-center">
-                                            <SlClose className="mr-2"/>
-                                            {isLoading ? 'Disapproving...' : 'Disapprove Organizer'}
-                                        </div>
-                                    </Button>
-                                )}
-
-                                {/* Disable Account Button - Show only when approved */}
-                                {organizerApproval === 'approved' && (
-                                    <Button
-                                        className="bg-gray-500 hover:bg-gray-600 hover:cursor-pointer text-white border-gray-500"
-                                    >
-                                        <div className="flex items-center justify-center">
-                                            <CircleSlash strokeWidth={1.5} className="mr-2"/> Disable Account
-                                        </div>
-                                    </Button>
+                                    <DisapproveAccountSwitch
+                                        status={organizerApproval}
+                                        onDisapprove={disapproveAccount}
+                                        isLoading={isLoading}
+                                        organizerName={organizerDetails?.name}
+                                    />
                                 )}
 
                                 {/* Delete Account Button - Show when not pending */}
                                 {organizerApproval !== 'pending' && (
-                                    <Button
-                                        className="bg-gray-700 hover:bg-gray-800 hover:cursor-pointer text-white border-gray-700"
-                                        onClick={deleteAccount}
-                                    >
-                                        <div className="flex items-center justify-center">
-                                            <Trash2 strokeWidth={1.5} className="mr-2"/>
-                                            {isLoading ? 'Deleting...' : 'Delete Organizer'}
-                                        </div>
-                                    </Button>
+                                    <DeleteOrganizerDialog
+                                        organizerId={organizerId}
+                                        onSuccess={routeToOrganizersList}
+                                        // className is optional; keeps your existing styling by default
+                                    />
                                 )}
+
                             </div>
                         </div>
                     </div>
