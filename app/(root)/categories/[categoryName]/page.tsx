@@ -118,7 +118,7 @@ const Page = () => {
                                     className="w-16 h-16 bg-gray-100 rounded-full text-gray-600 flex items-center justify-center mb-4">
                                     <Calendar strokeWidth={1.25} size={40}/>
                                 </div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">No featured events available</h3>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No events available in this category</h3>
                                 <p className="text-sm text-gray-500">Check back later for upcoming events.</p>
                             </div>
                         </div>

@@ -20,8 +20,8 @@ const MainFooter = () => {
                             <li><Link href="/categories/business-tech" className="text-gray-300 hover:text-white">Business & Tech</Link></li>
                             <li><Link href="/categories/educational" className="text-gray-300 hover:text-white">Educational</Link></li>
                             <li><Link href="/categories/entertainment" className="text-gray-300 hover:text-white">Entertainment</Link></li>
-                            <li><Link href="/register" className="text-gray-300 hover:text-white">Register</Link></li>
-                            <li><Link href="/login" className="text-gray-300 hover:text-white">Login</Link></li>
+                            <li><Link href="/organizer/auth/register" className="text-gray-300 hover:text-white">Register</Link></li>
+                            <li><Link href="/organizer/auth/login" className="text-gray-300 hover:text-white">Login</Link></li>
                         </ul>
                     </div>
 
@@ -30,7 +30,7 @@ const MainFooter = () => {
                         <h3 className="text-lg font-semibold mb-4">Legal & FAQ</h3>
                         <ul className="space-y-2">
                             <li><Link href="/privacy-policy" className="text-gray-300 hover:text-white">Privacy Policy</Link></li>
-                            <li><Link href="/terms-conditions" className="text-gray-300 hover:text-white">Terms & Condition</Link></li>
+                            <li><Link href="/terms-and-conditions" className="text-gray-300 hover:text-white">Terms & Conditions</Link></li>
                             <li><Link href="/about-us" className="text-gray-300 hover:text-white">About Us</Link></li>
                         </ul>
                     </div>

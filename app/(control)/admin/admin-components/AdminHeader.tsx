@@ -59,20 +59,8 @@ const AdminHeader = ({ isNavBarOpen, toggleNavBar }: AdminHeaderProps) => {
             {/* Right Section - User Link */}
             <div className="hidden sm:block">
                 <div className="flex justify-center items-center gap-[20px]">
-                    <button onClick={navigateToUser} className="hidden lg:block hover:cursor-pointer">
-                        <div className="text-[25px]">
-                            <Bell />
-                        </div>
-                    </button>
-                    <button onClick={navigateToUser} className="hidden lg:block hover:cursor-pointer">
-                        <div className="text-[25px]">
-                            <Mail />
-                        </div>
-                    </button>
-
                     <button
                         className="flex items-center hover:cursor-pointer"
-                        onClick={navigateToUser}
                     >
                         <div className="text-[25px]">
                             <CircleUserRound />

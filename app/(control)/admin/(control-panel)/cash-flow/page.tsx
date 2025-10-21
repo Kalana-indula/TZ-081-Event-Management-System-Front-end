@@ -182,27 +182,30 @@ const CashFlow = () => {
                                     <>
                                         <Button
                                             onClick={updateCommission}
-                                            className="bg-green-white border border-black hover:bg-black text-black hover:text-white px-2 sm:px-3 py-1 text-xs sm:text-sm flex-1 sm:flex-none"
+                                            className="bg-blue-600 border border-blue-600 text-white hover:bg-blue-700 active:bg-blue-600 active:text-white px-2 sm:px-3 py-1 text-xs sm:text-sm flex-1 sm:flex-none rounded-lg shadow-sm font-medium hover:cursor-pointer transition-colors duration-200"
                                         >
                                             <MdSave className="mr-1"/>
                                             Save
                                         </Button>
+
                                         <Button
                                             onClick={handleCancelCommission}
-                                            className="bg-gray-white border border-black hover:bg-black text-black hover:text-white px-2 sm:px-3 py-1 text-xs sm:text-sm flex-1 sm:flex-none"
+                                            className="bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white active:bg-white active:text-blue-600 px-2 sm:px-3 py-1 text-xs sm:text-sm flex-1 sm:flex-none rounded-lg shadow-sm font-medium hover:cursor-pointer transition-colors duration-200"
                                         >
                                             <MdClose className="mr-1"/>
                                             Cancel
                                         </Button>
+
                                     </>
                                 ) : (
                                     <Button
                                         onClick={handleEditCommission}
-                                        className="bg-white border border-black text-black hover:bg-black hover:text-white active:bg-gray-800 px-2 sm:px-3 py-1 text-xs sm:text-sm w-full sm:w-auto"
+                                        className="bg-blue-600 border border-blue-600 text-white hover:bg-blue-700 active:bg-blue-600 active:text-white px-2 sm:px-3 py-1 text-xs sm:text-sm w-full sm:w-auto rounded-lg shadow-sm font-medium hover:cursor-pointer transition-colors duration-200"
                                     >
                                         <MdEdit className="mr-1"/>
                                         Edit
                                     </Button>
+
                                 )}
                             </div>
                         </div>
@@ -268,11 +271,12 @@ const CashFlow = () => {
                             </div>
                             <Button
                                 onClick={routeToBankDetailsUpdate}
-                                className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white text-black border border-black sm:hover:bg-black sm:hover:text-white sm:active:bg-white sm:active:text-black active:bg-black hover:text-white active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm hover:cursor-pointer"
+                                className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-blue-600 border border-blue-600 text-white hover:bg-blue-700 active:bg-blue-600 active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg shadow-sm text-xs sm:text-sm font-medium hover:cursor-pointer transition-colors duration-200"
                             >
                                 <span className="hidden sm:inline">Update Bank</span>
                                 <span className="sm:hidden">Update</span>
                             </Button>
+
                         </div>
                     </div>
 

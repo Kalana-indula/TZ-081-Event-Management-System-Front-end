@@ -148,12 +148,12 @@ const Page = () => {
                                 />
                                 <Button
                                     type="button"
-                                    variant="outline"
-                                    className="bg-black text-white w-full sm:w-1/5 active:bg-black active:text-white shadow-lg hover:cursor-pointer"
                                     onClick={handleSearch}
+                                    className="w-full sm:w-1/5 bg-blue-600 border border-blue-600 text-white rounded-md shadow-sm font-medium py-2 sm:py-3 px-4 text-sm hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer"
                                 >
                                     Search
                                 </Button>
+
                             </div>
                         </div>
                     </div>

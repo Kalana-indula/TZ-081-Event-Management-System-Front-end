@@ -7,7 +7,6 @@ import {MdOutlineDashboard} from "react-icons/md";
 import axios from "axios";
 import Image from "next/image";
 import {useRouter} from "next/navigation";
-import {Button} from "@/components/ui/button";
 import AdminProtectedRoute from "@/utils/AdminProtectedRoutes";
 
 const Page = () => {
@@ -21,15 +20,17 @@ const Page = () => {
     }
 
     //fetch organizer count
-    const [organizers, setOrganizers] = useState<number | string>(0);
+    const [approvedOrganizers, setApprovedOrganizers] = useState<number | string>(0);
+    const [pendingOrganizerAccounts, setPendingOrganizerAccounts] = useState<number|string>(0);
     const [onGoingEvents, setOnGoingEvents] = useState<number | string>(0);
+    const [pendingEvents, setPendingEvents] = useState<number|string>(0);
 
     //configure navigation
     const router = useRouter();
 
     //navigate
     const routeToAddAdmin = () => {
-        router.push("/admin/add-admin");
+        router.push("/admin/auth/register");
     }
 
     const routeToAddManager = (): void => {
@@ -46,27 +47,45 @@ const Page = () => {
 
     //load data at page loading
     useEffect(() => {
-        getOrganizerCount();
+        getApprovedOrganizerCount();
+        getPendingOrganizerCount();
+        getPendingEvents();
         getOngoingEvents();
     }, []);
 
     //fetch organizers count from api
-    const getOrganizerCount = async () => {
+    const getApprovedOrganizerCount = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/count`);
-            console.log(response.data);
-            setOrganizers(response.data);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/approved`);
+            console.log(response.data.remarks);
+            setApprovedOrganizers(response.data.remarks);
 
         } catch (error) {
             console.log(error);
 
             //check the error
             if (axios.isAxiosError(error) && error.response) {
-                //display the message from back end
-                setOrganizers(error.response.data);
+                setApprovedOrganizers(error.response.data.message);
             } else {
-                //handle other errors
-                setOrganizers("Error Loading Data");
+                setApprovedOrganizers("Error Loading Data");
+            }
+        }
+    }
+
+    const getPendingOrganizerCount = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/pending`);
+            console.log(response.data.remarks);
+            setPendingOrganizerAccounts(response.data.remarks);
+
+        } catch (error) {
+            console.log(error);
+
+            //check the error
+            if (axios.isAxiosError(error) && error.response) {
+                setPendingOrganizerAccounts(error.response.data.message);
+            } else {
+                setPendingOrganizerAccounts("Error Loading Data");
             }
         }
     }
@@ -74,20 +93,36 @@ const Page = () => {
     //fetch ongoing events
     const getOngoingEvents = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/on-going/events`);
-            setOnGoingEvents(response.data);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/status/3`);
+            setOnGoingEvents(response.data.remarks);
+            console.log(response.data.remarks);
         } catch (error) {
             console.log(error);
 
-            //check the error
             if (axios.isAxiosError(error) && error.response) {
-                //display message
-                setOnGoingEvents(error.response.data);
+                setOnGoingEvents(error.response.data.message);
             } else {
                 setOnGoingEvents("Error Loading Data");
             }
         }
     }
+
+    const getPendingEvents = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events/status/1`);
+            setPendingEvents(response.data.remarks);
+            console.log(response.data.remarks);
+        } catch (error) {
+            console.log(error);
+
+            if (axios.isAxiosError(error) && error.response) {
+                setPendingEvents(error.response.data.message);
+            } else {
+                setPendingEvents("Error Loading Data");
+            }
+        }
+    }
+
     return (
         <>
             <AdminProtectedRoute>
@@ -97,110 +132,84 @@ const Page = () => {
                         <h1>Admin Dashboard</h1>
                     </div>
                 </div>
-                {/*scrollable content*/}
-                <div className="p-3 sm:p-4 md:p-6 ">
+
+                {/*Scrollable content*/}
+                <div className="p-3 sm:p-4 md:p-6">
                     <div>
-                        <div
-                            className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                        <div className="display-date bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                             <span className="text-gray-500 font-medium">DATE:</span>
                             <span className="text-gray-800 font-semibold ml-2">{getCurrentDate()}</span>
                         </div>
 
                         {/*Organizer Details*/}
-                        <div
-                            className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                        <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                             <div>
                                 <h3 className="text-gray-500 font-medium">ORGANIZER STATUS</h3>
                             </div>
 
-                            <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
-                                <div
-                                    className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
-                                    <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                        <Image src="/pending.png" alt="pending" height={32} width={32}/>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">
-                                            Pending Approvals
+                            <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div className="card flex items-center justify-between bg-white px-4 py-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-3 bg-gray-300 rounded-full flex-shrink-0">
+                                            <Image src="/pending.png" alt="pending" height={28} width={28}/>
                                         </div>
-                                        <div>Count</div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm text-gray-500 font-medium">Pending Approvals</span>
+                                            <span className="text-2xl font-bold text-gray-800">{pendingOrganizerAccounts}</span>
+                                        </div>
                                     </div>
-                                    <Button
-                                        className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
-                                        View All
-                                    </Button>
                                 </div>
-                                <div
-                                    className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
-                                    <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                        <Image src="/approved.png" alt="pending" height={32} width={32}/>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">
-                                            Approved Organizers
+                                <div className="card flex items-center justify-between bg-white px-4 py-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-3 bg-gray-300 rounded-full flex-shrink-0">
+                                            <Image src="/approved.png" alt="approved" height={28} width={28}/>
                                         </div>
-                                        <div>{organizers}</div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm text-gray-500 font-medium">Approved Organizers</span>
+                                            <span className="text-2xl font-bold text-gray-800">{approvedOrganizers}</span>
+                                        </div>
                                     </div>
-                                    <Button
-                                        className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
-                                        View All
-                                    </Button>
                                 </div>
                             </div>
                         </div>
 
                         {/*Event details*/}
-                        <div
-                            className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
+                        <div className="display-organizers bg-gray-200 border-l-4 border-blue-500 px-4 py-2 mb-6 rounded-r-md shadow-sm">
                             <div>
                                 <h3 className="text-gray-500 font-medium">EVENT STATUS</h3>
                             </div>
 
-                            <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-[30px]">
-                                <div
-                                    className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
-                                    <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                        <Image src="/pending.png" alt="pending" height={32} width={32}/>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">
-                                            Pending Approvals
+                            <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div className="card flex items-center justify-between bg-white px-4 py-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-3 bg-gray-300 rounded-full flex-shrink-0">
+                                            <Image src="/pending.png" alt="pending" height={28} width={28}/>
                                         </div>
-                                        <div>Count</div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm text-gray-500 font-medium">Pending Approvals</span>
+                                            <span className="text-2xl font-bold text-gray-800">{pendingEvents}</span>
+                                        </div>
                                     </div>
-                                    <Button
-                                        className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
-                                        View All
-                                    </Button>
                                 </div>
-                                <div
-                                    className="card flex items-center bg-white px-[10px] py-[30px] rounded-[8px] shadow-lg my-[5px] mx-[10px] relative">
-                                    <div className="p-[12px] mx-[10px] bg-gray-300 rounded-full">
-                                        <Image src="/ongoing.png" alt="pending" height={32} width={32}/>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">
-                                            On Going Events
+                                <div className="card flex items-center justify-between bg-white px-4 py-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-3 bg-gray-300 rounded-full flex-shrink-0">
+                                            <Image src="/ongoing.png" alt="ongoing" height={28} width={28}/>
                                         </div>
-                                        <div>{onGoingEvents}</div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm text-gray-500 font-medium">On Going Events</span>
+                                            <span className="text-2xl font-bold text-gray-800">{onGoingEvents}</span>
+                                        </div>
                                     </div>
-                                    <Button
-                                        className="border border-black bg-white text-black px-[10px] py-[10px] rounded-[5px] hover:bg-black hover:text-white transition-colors duration-300 absolute right-[20px] bottom-[20px] active:bg-white active:text-black">
-                                        View All
-                                    </Button>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
-                    <div>
 
-                    </div>
+                    {/*Action buttons*/}
                     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 my-[20px] gap-[20px] mx-[10px]">
-
                         <button
-                            className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                            className="h-[150px] bg-blue-600 text-white flex flex-col justify-center items-center my-[5px] hover:bg-blue-700 transition-colors duration-200 rounded-[5px] cursor-pointer"
                             onClick={routeToAddAdmin}>
                             <div className="text-4xl sm:text-2xl md:text-[40px]">
                                 <MdManageAccounts/>
@@ -210,7 +219,7 @@ const Page = () => {
                             </div>
                         </button>
                         <button
-                            className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                            className="h-[150px] bg-blue-600 text-white flex flex-col justify-center items-center my-[5px] hover:bg-blue-700 transition-colors duration-200 rounded-[5px] cursor-pointer"
                             onClick={routeToManagerControl}>
                             <div className="text-4xl sm:text-2xl md:text-[40px]">
                                 <MdManageAccounts/>
@@ -220,9 +229,8 @@ const Page = () => {
                             </div>
                         </button>
                         <button
-                            className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
-                            onClick={routeToAddManager}
-                        >
+                            className="h-[150px] bg-blue-600 text-white flex flex-col justify-center items-center my-[5px] hover:bg-blue-700 transition-colors duration-200 rounded-[5px] cursor-pointer"
+                            onClick={routeToAddManager}>
                             <div className="text-4xl sm:text-2xl md:text-[40px]">
                                 <RiUserAddLine/>
                             </div>
@@ -231,7 +239,7 @@ const Page = () => {
                             </div>
                         </button>
                         <div
-                            className="h-[150px] bg-[#3a86ff] text-white flex flex-col justify-center items-center my-[5px] hover:bg-[#195fc2] transition-colors duration-200 rounded-[5px] cursor-pointer"
+                            className="h-[150px] bg-blue-600 text-white flex flex-col justify-center items-center my-[5px] hover:bg-blue-700 transition-colors duration-200 rounded-[5px] cursor-pointer"
                             onClick={routeToManagerDachboard}>
                             <div className="text-4xl sm:text-2xl md:text-[40px]">
                                 <MdOutlineDashboard/>
@@ -240,11 +248,11 @@ const Page = () => {
                                 Manager Dashboard
                             </div>
                         </div>
-
                     </div>
                 </div>
             </AdminProtectedRoute>
         </>
     )
 }
+
 export default Page;

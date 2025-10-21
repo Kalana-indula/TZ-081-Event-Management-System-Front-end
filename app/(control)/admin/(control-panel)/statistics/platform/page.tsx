@@ -200,11 +200,11 @@ const Statistics = () => {
                 {/*generate report*/}
                 <div className="flex justify-center">
                     <Button
-                        className="my-2 bg-white border border-black text-black hover:text-white active:text-black active:bg-white w-full sm:w-1/5"
+                        className="my-2 w-full sm:w-1/5 bg-blue-600 border border-blue-600 text-white rounded-lg shadow-sm font-medium py-2 sm:py-3 px-4 text-sm flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer"
                         onClick={() => downloadTotalEarningsReport(totalEarnings, selectedYear)}
                     >
                         <IoDocumentTextOutline />
-                        Generate report
+                        Generate Report
                     </Button>
                 </div>
             </div>

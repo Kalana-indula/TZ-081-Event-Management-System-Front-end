@@ -2,12 +2,7 @@
 
 import React, {useState} from 'react'
 import Link from "next/link";
-import {OrganizerLoginDetails} from "@/types/entityTypes";
-import axios, {AxiosError} from "axios";
-import toast from "react-hot-toast";
-import {useRouter} from "next/navigation";
 import MainFooter from "@/app/(root)/app-components/MainFooter";
-import {LogIn} from "lucide-react";
 import OrganizerLoginButton from "@/app/(root)/app-components/OrganizerLoginButton";
 
 const Page = () => {
@@ -15,13 +10,6 @@ const Page = () => {
     //fetch password details
     const [email,setEmail]=useState<string>("");
     const [password,setPassword]=useState<string>("");
-
-    const router=useRouter();
-
-    //route to organizer dashboard
-    const routeToDashboard= (id:number)=>{
-        router.push(`/organizer/${id}/dashboard`);
-    }
 
     const handleEmail = (e:React.ChangeEvent<HTMLInputElement>)=>{
         const {value} = e.target;
@@ -31,62 +19,6 @@ const Page = () => {
     const handlePassword = (e:React.ChangeEvent<HTMLInputElement>)=>{
         const {value} = e.target;
         setPassword(value);
-    }
-
-    //handle organizer login
-    const handleLogin = async (event:React.FormEvent<HTMLFormElement>):Promise<void>=>{
-        event.preventDefault();
-
-        const loginPayload:OrganizerLoginDetails={
-            email:email,
-            password:password
-        }
-
-        try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/organizers/login`,loginPayload,
-                {
-                    headers:{
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-            //check if the login successful
-            if(response.status === 200){
-                if((response.data.userRole==='ORGANIZER') && (response.data.isApproved===true)){
-                    //store the token in local storage
-                    localStorage.setItem("token", response.data.authToken);
-                    localStorage.setItem("userId", response.data.userId);
-                    localStorage.setItem("userName", response.data.userName);
-                    localStorage.setItem("userRole", response.data.userRole);
-
-                    //set the token as default token for axios
-                    axios.defaults.headers.common['Authorization']=`Bearer ${response.data.authToken}`;
-
-                    console.log(response.data.authToken);
-
-                    routeToDashboard(Number(response.data.userId));
-                    toast.success("Login Successfully");
-                }else if(response.data.userRole !== 'ORGANIZER'){
-                    toast.error("Not a valid user type");
-                }else {
-                    toast.error("Your account is pending approval");
-                }
-            }
-
-        }catch(err){
-            if (err instanceof AxiosError) {
-                // Handle Axios-specific errors
-                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
-                toast.error(errorMessage);
-            } else if (err instanceof Error) {
-                // Handle generic errors
-                toast.error(err.message);
-            } else {
-                // Handle unknown errors
-                toast.error('An unknown error occurred');
-            }
-        }
     }
 
     return (
@@ -173,8 +105,8 @@ const Page = () => {
                             </div>
 
                             {/* Login button */}
-                            <div className="space-y-4 pt-4">
-                                <div className="space-y-4 pt-4">
+                            <div className="space-y-2 pt-2">
+                                <div className="space-y-2 pt-2">
                                     <OrganizerLoginButton email={email} password={password}/>
                                 </div>
                             </div>
@@ -183,7 +115,7 @@ const Page = () => {
                             <div className="text-center pt-4">
                                 <p className="text-sm text-gray-600">
                                     Don't have an account?{' '}
-                                    <Link href="/organizer/auth/register" className="font-semibold underline" style={{color: '#193cb8'}}>
+                                    <Link href="/auth//organizer/register" className="font-semibold underline" style={{color: '#193cb8'}}>
                                         Register here
                                     </Link>
                                 </p>
@@ -191,7 +123,7 @@ const Page = () => {
 
                             {/* Forgot password link */}
                             <div className="text-center">
-                                <Link href="/forgot-password" className="text-sm font-medium hover:underline" style={{color: '#193cb8'}}>
+                                <Link href="/auth/forgot" className="text-sm font-medium hover:underline" style={{color: '#193cb8'}}>
                                     Forgot your password?
                                 </Link>
                             </div>

@@ -126,13 +126,13 @@ const Page = () => {
                                         {/*save button*/}
                                         <Button
                                             type="submit"
-                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium text-white hover:bg-white hover:text-black active:bg-black active:text-white">
+                                            className="w-full bg-blue-600 flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-medium text-white hover:bg-blue-700 active:bg-blue-600 active:text-white hover:cursor-pointer">
                                             Submit
                                         </Button>
 
                                         {/*cancel button*/}
                                         <Button
-                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium bg-white text-black hover:bg-black hover:text-white active:text-black active:bg-white"
+                                            className="w-full flex justify-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium bg-white text-blue-600 hover:bg-blue-600 hover:text-white active:text-blue-600 active:bg-white hover:cursor-pointer"
                                             onClick={handleCancel}>
                                             Cancel
                                         </Button>

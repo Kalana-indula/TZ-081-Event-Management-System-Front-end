@@ -55,8 +55,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Revenue Insights
-                            - {organizerId}</h1>
+                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Revenue Insights</h1>
                         <p className="mt-1 text-sm sm:text-base text-gray-600">Activities And Earnings By Organizer</p>
                     </div>
                 </div>
@@ -189,11 +188,13 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                         </div>
                         <div className="flex justify-center items-center my-5">
                             <Button
-                                className="bg-white border border-black text-black hover:text-white active:bg-white active:text-black"
-                                onClick={routeToOrganizerStats}>
+                                onClick={routeToOrganizerStats}
+                                className="bg-blue-600 border border-blue-600 text-white rounded-lg shadow-sm font-medium py-2 sm:py-3 px-4 text-sm flex items-center justify-center gap-2 hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer"
+                            >
                                 <ChartSpline strokeWidth={2}/>
                                 Organizer Statistics
                             </Button>
+
                         </div>
                     </div>
                 </div>

@@ -263,15 +263,12 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                 {/* Approve Button - Show when pending or disapproved */}
                                 {(organizerApproval === 'pending' || organizerApproval === 'disapproved') && (
                                     <Button
-                                        className="hover:cursor-pointer text-white border-blue-500"
-                                        variant={'default'}
                                         onClick={approveAccount}
                                         disabled={isLoading}
+                                        className="flex items-center justify-center bg-blue-600 border border-blue-600 text-white rounded-lg shadow-sm font-medium py-2 sm:py-3 px-4 text-sm hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
-                                        <div className="flex items-center justify-center">
-                                            <CircleCheck className="mr-2"/>
-                                            {isLoading ? 'Approving...' : 'Approve Organizer'}
-                                        </div>
+                                        <CircleCheck className="mr-2" />
+                                        {isLoading ? 'Approving...' : 'Approve Organizer'}
                                     </Button>
                                 )}
 

@@ -6,16 +6,9 @@ import Image from "next/image";
 import axios, {AxiosError} from "axios";
 import {CreateTransactionRequest} from "@/types/entityTypes";
 import {useParams, useRouter} from "next/navigation";
-import ChangeBankButton from "@/app/(control)/organizer/organizer-components/ChangeBankButton";
 import WithdrawalDialog from "@/app/(control)/organizer/organizer-components/WithdrawalDialog";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/utils/ProtectedRoutes";
-
-interface BankDetails {
-    bankName: string;
-    branchCode: string;
-    accountNumber: string;
-}
 
 const Page = () => {
 
@@ -196,11 +189,12 @@ const Page = () => {
                             </div>
                             <Button
                                 onClick={routeToBankDetailsUpdate}
-                                className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-white text-black border border-black sm:hover:bg-black sm:hover:text-white sm:active:bg-white sm:active:text-black active:bg-black hover:text-white active:text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm hover:cursor-pointer"
+                                className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-blue-600 text-white rounded-lg shadow-sm text-xs sm:text-sm font-medium px-2 sm:px-4 py-1 sm:py-2 hover:bg-blue-700 active:bg-blue-600 active:text-white hover:cursor-pointer"
                             >
                                 <span className="hidden sm:inline">Update Details</span>
                                 <span className="sm:hidden">Update</span>
                             </Button>
+
                         </div>
                     </div>
 

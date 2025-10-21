@@ -80,7 +80,7 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
         localStorage.removeItem("userRole");
 
         // Redirect to login or home page
-        router.push("/organizer/auth/login");
+        router.push("/auth/organizer/login");
     }
 
     return (
@@ -127,31 +127,6 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
                     </div>
                     <hr className="border-gray-600 border-t-2 mx-4 my-5 shadow-sm" />
                 </div>
-
-                <div className="flex flex-col justify-center text-gray-100 lg:hidden">
-                    <button
-                        className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
-                        <div className="text-[32px]">
-                            <IoIosNotifications />
-                        </div>
-                        <div className="text-[20px] sm:hidden">
-                            Notifications
-                        </div>
-                    </button>
-                    <button
-                        className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
-                        <div className="text-[32px]">
-                            <LuMessageSquareText />
-                        </div>
-                        <div className="text-[20px] sm:hidden">
-                            Messages
-                        </div>
-                    </button>
-                    <hr className="border-gray-600 border-t-2 mx-4 my-5 shadow-sm" />
-                </div>
-
                 <div className="flex flex-col justify-center w-full">
                     {navItems.map((item) => {
                         const isActive = pathName === item.href;
@@ -179,7 +154,7 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
                     <button
                         onClick={handleLogout}
                         className="w-full">
-                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600
+                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600 hover:cursor-pointer
                             ${isNavBarOpen ? "justify-start" : ""}`}>
                             <div className="nav-icon text-[32px]">
                                 <IoLogOutOutline strokeWidth={1.5} />

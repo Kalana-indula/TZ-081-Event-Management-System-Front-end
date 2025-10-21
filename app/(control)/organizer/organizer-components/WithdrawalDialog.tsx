@@ -35,7 +35,7 @@ const WithdrawalDialog: React.FC<WithdrawalDialogProps> = ({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
-                    className="bg-white border border-black text-black hover:bg-black hover:text-white active:bg-gray-800 px-2 sm:px-3 py-1 text-xs sm:text-sm w-full sm:w-auto hover:cursor-pointer"
+                    className="w-full sm:w-auto flex justify-center py-3 px-4 bg-blue-600 rounded-lg shadow-sm text-sm sm:text-base font-medium text-white hover:bg-blue-700 active:bg-blue-600 active:text-white hover:cursor-pointer"
                 >
                     Withdraw
                 </Button>

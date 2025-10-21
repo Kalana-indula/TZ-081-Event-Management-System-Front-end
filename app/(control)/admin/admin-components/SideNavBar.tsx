@@ -1,11 +1,10 @@
 'use client'
 
-import React, {useEffect, useMemo, useState} from 'react'
-import {LuMessageSquareText} from "react-icons/lu";
+import React, {useEffect,useState} from 'react';
 import {FaMoneyBillTransfer} from "react-icons/fa6";
 import {TfiStatsUp} from "react-icons/tfi";
 import {IoLogOutOutline, IoSettingsOutline} from "react-icons/io5";
-import {IoIosClose, IoIosHome, IoIosLogOut, IoIosNotifications} from "react-icons/io";
+import {IoIosClose, IoIosHome} from "react-icons/io";
 import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
 import {FaUserCircle} from "react-icons/fa";
@@ -69,11 +68,6 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
         setIsNavBarOpen(false);
     }
 
-    const navigateToUser = () => {
-        router.push("/user");
-    }
-
-
     const handleLogout = () => {
         setIsNavBarOpen(false);
         if (typeof window !== 'undefined') {
@@ -116,7 +110,7 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                         </Link>
 
                         {/*Username*/}
-                        <Link className="w-full" href="/user">
+                        <div className="w-full">
                             <div
                                 className="flex items-center justify-start px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200">
                                 <div className="text-[32px]">
@@ -126,34 +120,9 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                                     {username || "Username"}
                                 </div>
                             </div>
-                        </Link>
+                        </div>
 
                     </div>
-                    <hr className="border-gray-600 border-t-2 mx-4 my-5 shadow-sm"/>
-                </div>
-
-                {/*notifications and messages*/}
-                <div className="flex flex-col justify-center text-gray-100 lg:hidden">
-                    <button
-                        className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
-                        <div className="text-[32px]">
-                            <IoIosNotifications/>
-                        </div>
-                        <div className="text-[20px] sm:hidden">
-                            Notifications
-                        </div>
-                    </button>
-                    <button
-                        className="flex items-center justify-start sm:justify-center px-[20px] py-[10px] gap-4 hover:bg-gray-600 transition-colors duration-200"
-                        onClick={navigateToUser}>
-                        <div className="text-[32px]">
-                            <LuMessageSquareText/>
-                        </div>
-                        <div className="text-[20px] sm:hidden">
-                            Messages
-                        </div>
-                    </button>
                     <hr className="border-gray-600 border-t-2 mx-4 my-5 shadow-sm"/>
                 </div>
 
@@ -186,7 +155,7 @@ const SideNavBar = ({isNavBarOpen, setIsNavBarOpen}: SideNavBarProps) => {
                     <button
                         onClick={handleLogout}
                         className="w-full">
-                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600
+                        <div className={`flex items-center justify-center lg:justify-start gap-4 h-[50px] px-[20px] py-[20px] w-full transition-colors duration-200 text-gray-100 hover:bg-gray-600 hover:cursor-pointer
                             ${isNavBarOpen ? "justify-start" : ""}`}>
                             <div className="nav-icon text-[32px]">
                                 <IoLogOutOutline strokeWidth={1.5} />
