@@ -1,6 +1,6 @@
 'use client'
 import React, {useEffect, useState} from 'react'
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import axios, {AxiosError} from "axios";
 import toast from "react-hot-toast";
 import {UpdateBankDetails} from "@/types/entityTypes";
@@ -17,6 +17,12 @@ const Page = () => {
     const params = useParams();
 
     const organizerId = params.organizerId;
+
+    const router=useRouter();
+
+    const routeToRevenuePage = ()=>{
+        router.push(`/organizer/${organizerId}/revenue`);
+    }
 
     useEffect(() => {
         getBankDetails();
@@ -79,6 +85,7 @@ const Page = () => {
             console.log(response.data.entityData);
             toast.success("Bank details updated successfully");
             clearFields();
+            routeToRevenuePage();
         } catch (err) {
             if (err instanceof AxiosError) {
                 // Handle Axios-specific errors

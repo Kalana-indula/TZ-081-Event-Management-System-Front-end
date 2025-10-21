@@ -45,11 +45,11 @@ const SideNavBar = ({ isNavBarOpen, setIsNavBarOpen }: SideNavBarProps) => {
     }
 
     const navigateToRegister = () => {
-        router.push("/organizer/auth/register");
+        router.push("/auth/organizer/register");
     }
 
     const navigateToLogin = () => {
-        router.push("/organizer/auth/login");
+        router.push("/auth/organizer/login");
     }
 
     const navigateToEntertainment = ()=>{

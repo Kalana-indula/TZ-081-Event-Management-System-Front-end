@@ -1,10 +1,11 @@
 'use client'
 import React, {useEffect, useState} from 'react'
 import {useRouter} from "next/navigation";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {OrganizerDetails} from "@/types/entityTypes";
 import {User} from "lucide-react";
 import ManagerProtectedRoutes from "@/utils/ManagerProtectedRoutes";
+import {toast} from "react-hot-toast";
 
 
 const Page = () => {
@@ -34,7 +35,17 @@ const Page = () => {
             setPendingOrganizers(response.data.entityList);
             console.log(response.data.entityList);
         } catch (err) {
-            console.log(err);
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
         }
     }
 
@@ -45,7 +56,17 @@ const Page = () => {
             setApprovedOrganizers(response.data.entityList);
             console.log(response.data.entityList);
         } catch (err) {
-            console.log(err);
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
         }
     }
 
@@ -56,7 +77,17 @@ const Page = () => {
             setDisapprovedOrganizers(response.data.entityList);
             console.log(response.data.entityList);
         } catch (err) {
-            console.log(err);
+            if (err instanceof AxiosError) {
+                // Handle Axios-specific errors
+                const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+                toast.error(errorMessage);
+            } else if (err instanceof Error) {
+                // Handle generic errors
+                toast.error(err.message);
+            } else {
+                // Handle unknown errors
+                toast.error('An unknown error occurred');
+            }
         }
     }
 

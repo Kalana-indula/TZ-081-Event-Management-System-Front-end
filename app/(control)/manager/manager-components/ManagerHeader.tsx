@@ -3,8 +3,7 @@
 import React, {useEffect, useState} from 'react'
 import Link from "next/link";
 import {IoIosMenu} from "react-icons/io";
-import {useRouter} from "next/navigation";
-import {Bell, CircleUserRound, House, Mail} from "lucide-react";
+import {CircleUserRound, House} from "lucide-react";
 
 interface ManagerHeaderProps {
     isNavBarOpen: boolean;
@@ -13,7 +12,6 @@ interface ManagerHeaderProps {
 
 const ManagerHeader = ({isNavBarOpen, toggleNavBar}: ManagerHeaderProps) => {
 
-    const router = useRouter();
 
     const [username,setUsername]=useState<string|null>(null);
     console.log(username);
@@ -27,9 +25,6 @@ const ManagerHeader = ({isNavBarOpen, toggleNavBar}: ManagerHeaderProps) => {
         }
     }, []);
 
-    const navigateToUser = () => {
-        router.push("/user");
-    }
 
     return (
         <>
@@ -60,20 +55,8 @@ const ManagerHeader = ({isNavBarOpen, toggleNavBar}: ManagerHeaderProps) => {
                 {/* Right Section - User Link */}
                 <div className="hidden sm:block">
                     <div className="flex justify-center items-center gap-[20px]">
-                        <button onClick={navigateToUser} className="hidden lg:block hover:cursor-pointer">
-                            <div className="text-[25px]">
-                                <Bell />
-                            </div>
-                        </button>
-                        <button onClick={navigateToUser} className="hidden lg:block hover:cursor-pointer">
-                            <div className="text-[25px]">
-                                <Mail />
-                            </div>
-                        </button>
 
-                        <button className="flex items-center hover:cursor-pointer"
-                                onClick={navigateToUser}
-                        >
+                        <button className="flex items-center hover:cursor-pointer">
                             <div className="text-[25px]">
                                 <CircleUserRound />
                             </div>

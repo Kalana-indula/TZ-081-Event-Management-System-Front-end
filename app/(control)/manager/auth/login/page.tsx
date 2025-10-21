@@ -143,9 +143,17 @@ const Page = () => {
 
                                 {/*password field*/}
                                 <div>
-                                    <label htmlFor="Password" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Password<span className="text-red-600">*</span>
-                                    </label>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label htmlFor="Password" className="block text-sm font-medium text-gray-700">
+                                            Password<span className="text-red-600">*</span>
+                                        </label>
+                                        <Link
+                                            href="/manager/auth/forgot"
+                                            className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                                        >
+                                            Forgot Password?
+                                        </Link>
+                                    </div>
                                     <input
                                         id="Password"
                                         name="Password"

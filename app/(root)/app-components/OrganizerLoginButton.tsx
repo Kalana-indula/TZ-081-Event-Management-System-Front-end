@@ -84,13 +84,13 @@ const OrganizerLoginButton: React.FC<OrganizerLoginButtonProps> = ({ email, pass
         <>
             <Button
                 type="button"
-                className="w-full py-4 px-6 rounded-2xl text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] hover:cursor-pointer"
+                className="w-full py-8 px-6 rounded-xl text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] hover:cursor-pointer"
                 style={{ backgroundColor: '#193cb8' }}
                 onClick={handleLoginClick}
                 disabled={isLoading}
             >
                 <div className="flex items-center justify-center gap-2">
-                    <LogIn strokeWidth={1} size={40} />
+                    <LogIn className="w-5 h-5" strokeWidth={2} />
                     {isLoading ? 'Signing in…' : 'Sign In'}
                 </div>
             </Button>

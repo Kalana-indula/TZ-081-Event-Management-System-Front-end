@@ -114,7 +114,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                         {/* Action buttons */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4">
                             <Button
-                                className={` bg-gray-700 hover:bg-gray-800 text-white border-gray-700 hover:cursor-pointer`}
+                                className={` bg-blue-600 hover:bg-blue-700 text-white border-gray-700 hover:cursor-pointer`}
                                 onClick={routeToDeleteAccount}
                             >
                                 <div className="flex items-center justify-center">

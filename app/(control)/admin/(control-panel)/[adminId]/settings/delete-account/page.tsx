@@ -165,19 +165,22 @@ const Page = () => {
 
                                     {/*buttons*/}
                                     <div className="space-y-2">
-                                        {/*save button*/}
+                                        {/* Delete Account button */}
                                         <Button
                                             type="submit"
-                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium text-white hover:bg-white hover:text-black active:bg-black active:text-white hover:cursor-pointer">
+                                            className="w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer"
+                                        >
                                             Delete Account
                                         </Button>
 
-                                        {/*cancel button*/}
+                                        {/* Cancel button */}
                                         <Button
-                                            className="w-full flex justify-center py-3 px-4 border border-black rounded-lg shadow-sm text-sm font-medium bg-white text-black hover:bg-black hover:text-white active:text-black active:bg-white hover:cursor-pointer"
-                                            onClick={handleCancel}>
+                                            onClick={handleCancel}
+                                            className="w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-medium bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white active:bg-white active:text-blue-600 transition-colors duration-200 hover:cursor-pointer"
+                                        >
                                             Cancel
                                         </Button>
+
                                     </div>
                                 </form>
                             </div>

@@ -69,15 +69,14 @@ const DeleteOrganizerDialog: React.FC<DeleteOrganizerDialogProps> = ({
     return (
         <>
             <Button
-                className={className ?? 'bg-gray-700 hover:bg-gray-800 hover:cursor-pointer text-white border-gray-700'}
                 onClick={handleDelete}
                 disabled={isLoading}
+                className={`flex items-center justify-center bg-blue-600 border border-blue-600 text-white rounded-lg shadow-sm font-medium py-2 sm:py-3 px-4 text-sm hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${className ?? ''}`}
             >
-                <div className="flex items-center justify-center">
-                    <Trash2 strokeWidth={1.5} className="mr-2" />
-                    {isLoading ? 'Deleting...' : 'Delete Organizer'}
-                </div>
+                <Trash2 strokeWidth={1.5} className="mr-2" />
+                {isLoading ? 'Deleting...' : 'Delete Organizer'}
             </Button>
+
 
             <AlertDialog open={open} onOpenChange={setOpen}>
                 <AlertDialogContent>

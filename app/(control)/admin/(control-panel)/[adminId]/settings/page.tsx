@@ -66,8 +66,8 @@ const Page = () => {
                 {/*Header section*/}
                 <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
                     <div className="text-center mb-2 sm:mb-4 pt-3 sm:p-1">
-                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Statistics</h1>
-                        <p className="mt-1 text-sm sm:text-base text-gray-600">Analyze Financial Data</p>
+                        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Settings</h1>
+                        <p className="mt-1 text-sm sm:text-base text-gray-600">Update account status</p>
                     </div>
                 </div>
 
