@@ -109,14 +109,6 @@ const TopNavBar = ({isNavBarOpen, toggleNavBar}: OrganizerHeaderProps) => {
                 <div className="hidden sm:block">
                     <div className="flex justify-center items-center gap-[20px]">
                         <button className="flex items-center hover:cursor-pointer"
-                                onClick={navigateToRegister}
-                        >
-                            <div className="text-[16px] text-white">
-                                Register
-                            </div>
-                        </button>
-
-                        <button className="flex items-center hover:cursor-pointer"
                                 onClick={navigateToLogin}
                         >
                             <div className="text-[16px] text-white">

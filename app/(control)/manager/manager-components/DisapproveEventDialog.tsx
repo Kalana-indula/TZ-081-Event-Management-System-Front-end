@@ -50,7 +50,7 @@ const DisapproveEventDialog = (props: DialogBoxParams) => {
     return (
         <>
             <Button
-                className={`rounded hover:cursor-pointer ${props.isStarted ? 'hidden' : 'block'}`}
+                className={`rounded-lg hover:cursor-pointer bg-blue-600 border border-blue-600 text-white hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 ${props.isStarted ? 'hidden' : 'block'}`}
                 variant="default"
                 disabled={buttonDisabled}
                 onClick={() => setOpen(true)}

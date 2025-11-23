@@ -20,7 +20,7 @@ const MainFooter = () => {
                             <li><Link href="/categories/business-tech" className="text-gray-300 hover:text-white">Business & Tech</Link></li>
                             <li><Link href="/categories/educational" className="text-gray-300 hover:text-white">Educational</Link></li>
                             <li><Link href="/categories/entertainment" className="text-gray-300 hover:text-white">Entertainment</Link></li>
-                            <li><Link href="/organizer/auth/register" className="text-gray-300 hover:text-white">Register</Link></li>
+                            <li><Link href="/organizer/auth/register" className="text-gray-300 hover:text-white">Register As Organizer</Link></li>
                             <li><Link href="/organizer/auth/login" className="text-gray-300 hover:text-white">Login</Link></li>
                         </ul>
                     </div>

@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react'
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import {CircleCheck, FileText} from "lucide-react";
-import {SlClose} from "react-icons/sl";
 import axios, {AxiosError} from "axios";
 import {EventDetails, EventStatus, Session} from "@/types/entityTypes";
 import toast from "react-hot-toast";
@@ -176,7 +175,7 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                             </div>
                             <div className="sm:py-[20px] flex-1">
                                 <h2 className="text-lg sm:text-2xl font-semibold">{eventDetails?.eventName}</h2>
-                                <div className="break-words text-gray-700 text-sm sm:text-base">Organizer ID
+                                <div className="break-words text-gray-700 text-sm sm:text-base"><span className="font-semibold">Organizer ID</span>
                                     : {eventDetails?.organizerId}
                                 </div>
                                 <div className="break-words text-gray-700 mt-2 text-sm sm:text-base">
@@ -230,14 +229,14 @@ const Page = ({params}: { params: Promise<{ eventId: number }> }) => {
                         {/* Action buttons */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4">
                             {!isApproved && (
-                                <Button className={`rounded hover:cursor-pointer`}
-                                        onClick={approveEvent}
+                                <Button
+                                    onClick={approveEvent}
+                                    className="w-full sm:w-1/5 bg-blue-600 border border-blue-600 text-white rounded-md shadow-sm font-medium py-2 sm:py-3 px-4 text-sm flex items-center justify-center hover:bg-blue-700 active:bg-blue-600 active:text-white transition-colors duration-200 hover:cursor-pointer"
                                 >
-                                    <div
-                                        className="flex justify-center items-center gap-2 rounded hover:cursor-pointer">
-                                        <CircleCheck/> Approve Event
-                                    </div>
+                                    <CircleCheck className="w-4 h-4" />
+                                    Approve Event
                                 </Button>
+
                             )}
                             {/*rounded hover:cursor-pointer*/}
                             <DisapproveEventDialog

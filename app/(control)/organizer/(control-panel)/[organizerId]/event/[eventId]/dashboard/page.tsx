@@ -281,7 +281,7 @@ const Page = () => {
                                     <h2 className="text-lg sm:text-2xl font-semibold">{eventDetails?.eventName}</h2>
                                     <div className="break-words text-gray-700 mt-2 text-sm sm:text-base">
                                         <div className="my-1">
-                                            Date : {eventDetails?.startingDate}
+                                            <span className="font-semibold">Date :</span>  {eventDetails?.startingDate}
                                         </div>
                                         <div className="mt-3 sm:mt-5">
                                             {eventDetails?.eventDescription}
@@ -671,8 +671,6 @@ const Page = () => {
                     </div>
                 </div>
             </ProtectedRoute>
-
-
         </>
     )
 }

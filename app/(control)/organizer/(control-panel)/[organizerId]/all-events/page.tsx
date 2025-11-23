@@ -86,6 +86,7 @@ const Page = () => {
         try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/organizers/${organizerId}/events`);
             setTableData(response.data.approvedEvents);
+            console.log(response.data.approvedEvents);
 
         }catch (err){
             handleApiError(err,"Failed to load events");
@@ -185,7 +186,7 @@ const Page = () => {
                                     Event Type
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                                    { isOngoing ?  'Date Started' : isPending ? 'Date Requested' : isPendingApproval ? 'Date Requested' : 'Date Completed'}
+                                    { isOngoing ?  'Date Started' : isPending ? 'Starting Date' : isPendingApproval ? 'Date Requested' : 'Date Completed'}
                                 </th>
                             </tr>
                             </thead>
@@ -197,11 +198,11 @@ const Page = () => {
                                         key={event.eventId}
                                         onClick={()=>routeToEventDashboard(event.eventId)}
                                     >
-                                        <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventId}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.generatedId}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventName}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">{event.eventType}</td>
                                         <td className="px-6 py-4 text-sm text-gray-900 font-sm">
-                                            {isOngoing ? `${event.startingDate}`: isPending ? `${event.dateAdded}`: isPendingApproval ? `${event.dateAdded}`: `${event.dateCompleted}`}
+                                            {isOngoing ? `${event.startingDate}`: isPending ? `${event.startingDate}`: isPendingApproval ? `${event.dateAdded}`: `${event.dateCompleted}`}
                                         </td>
                                     </tr>
                                 ))
@@ -238,7 +239,7 @@ const Page = () => {
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">ID:</span>
-                                            <span className="text-sm text-gray-900 font-sm">{event.eventId}</span>
+                                            <span className="text-sm text-gray-900 font-sm">{event.generatedId}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm font-medium text-gray-500">Name:</span>
@@ -249,9 +250,9 @@ const Page = () => {
                                             <span className="text-sm text-gray-900 font-sm">{event.eventType}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm font-medium text-gray-500">Started:</span>
+                                            <span className="text-sm font-medium text-gray-500">{ isOngoing ?  'Date Started' : isPending ? 'Starting Date' : isPendingApproval ? 'Date Requested' : 'Date Completed'}</span>
                                             <span className="text-sm text-gray-900 font-sm">
-                                                {isOngoing ? `${event.startingDate}`: isPending ? `${event.dateAdded}`:`${event.dateCompleted}`}
+                                                {isOngoing ? `${event.startingDate}`: isPending ? `${event.startingDate}`:`${event.dateCompleted}`}
                                             </span>
                                         </div>
                                     </div>

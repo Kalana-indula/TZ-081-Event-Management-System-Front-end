@@ -175,7 +175,7 @@ const Page = () => {
                                         <tr className="hover:bg-gray-50 transition-colors duration-200 hover:cursor-pointer"
                                             key={organizer.id}
                                             onClick={() => routeToOrganizer(organizer.id)}>
-                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.id}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.organizerId}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.name}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600 font-sm">{organizer.nic}</td>
                                         </tr>

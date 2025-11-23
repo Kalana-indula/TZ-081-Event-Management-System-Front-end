@@ -59,7 +59,7 @@ const Page = () => {
                 {/* Subtitle section */}
                 <div className="text-center mb-8">
                     <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
-                        Welcome back! Sign in to manage your events
+                        Welcome ! Sign in to manage your events
                     </p>
                 </div>
 
@@ -114,7 +114,7 @@ const Page = () => {
                             {/* Additional info */}
                             <div className="text-center pt-4">
                                 <p className="text-sm text-gray-600">
-                                    Don't have an account?{' '}
+                                    Want to register as an organizer ?{' '}
                                     <Link href="/auth//organizer/register" className="font-semibold underline" style={{color: '#193cb8'}}>
                                         Register here
                                     </Link>

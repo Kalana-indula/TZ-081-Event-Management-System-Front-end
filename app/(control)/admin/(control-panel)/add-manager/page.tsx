@@ -86,7 +86,7 @@ const Page = () => {
             }
 
             try {
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/managers`, ManagerData,
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/managers`, ManagerData,
                     {
                         headers: {
                             'Accept': 'application/json',

@@ -77,7 +77,7 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                             </div>
                             <div className="sm:py-[20px] flex-1">
                                 <h2 className="text-lg sm:text-2xl font-semibold">{organizerDetails?.name}</h2>
-                                <div className="break-words text-gray-700 text-sm sm:text-base">Company Name : {organizerDetails?.companyName}
+                                <div className="break-words text-gray-700 text-sm sm:text-base"><span className="font-semibold">Company Name : </span>  {organizerDetails?.companyName}
                                     xxxx
                                 </div>
                                 <div className="break-words text-gray-700 mt-2 text-sm sm:text-base space-y-2">
@@ -86,7 +86,8 @@ const Page = ({params}: { params: Promise<{ organizerId: number }> }) => {
                                             <Image src="/organizer-id.png" alt="event" height={32} width={32}/>
                                         </div>
                                         <div>
-                                            Organizer {organizerDetails?.id}
+                                            <span
+                                                className="font-semibold">ID : </span> {organizerDetails?.organizerId}
                                         </div>
                                     </div>
 

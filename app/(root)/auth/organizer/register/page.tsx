@@ -30,7 +30,7 @@ const Page = () => {
     const router=useRouter();
 
     const routeToLogin=()=>{
-        router.push('/organizer/auth/login');
+        router.push('/auth/organizer/login');
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
