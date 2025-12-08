@@ -11,6 +11,10 @@ Analytics Dashboard: Insights on sales, demographics, and finances for better de
 
 Developed using React.js for the frontend, Node.js for the backend, and MySQL for secure data storage, the system ensures scalability for small workshops to large concerts. It reduces costs, boosts revenue through promotions, and enhances satisfaction for organizers and attendees.
 
+# Db structure of the system
+
+<img width="1948" height="1336" alt="DB" src="https://github.com/user-attachments/assets/70a87189-28f4-4442-b3c2-c495e5b013d8" />
+
 # UI Of the system
 
 <img width="1888" height="883" alt="image" src="https://github.com/user-attachments/assets/9bcd96a2-fb71-4e68-af36-f1690126090b" />
@@ -22,7 +26,8 @@ Developed using React.js for the frontend, Node.js for the backend, and MySQL fo
 ## UI walkthrough video
 https://youtu.be/SEDoVyToiVs
 
-
+## User Journey Ticket booking
+https://youtu.be/3S-pkdKt4dU
 
 
 
