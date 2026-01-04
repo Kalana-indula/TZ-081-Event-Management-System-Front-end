@@ -92,13 +92,22 @@ const Page = () => {
             <div className="bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
                 {/* Hero section with modern styling */}
                 <div className="relative h-[500px] w-full overflow-hidden">
-                    {/* Background with modern gradient */}
-                    <div
-                        className="relative h-full flex flex-col items-center justify-center px-4"
-                        style={{
-                            background: `linear-gradient(135deg, #193cb8 0%, #2563eb 30%, #3b82f6 70%, #193cb8 100%)`
-                        }}
-                    >
+                    {/* Background with modern image */}
+                    <div className="relative h-full flex flex-col items-center justify-center px-4 overflow-hidden">
+
+                        {/* Blurred background image */}
+                        <div
+                            className="absolute inset-0 scale-110 blur-sm"
+                            style={{
+                                backgroundImage: "url('/bg-image.jpg')",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                backgroundRepeat: "no-repeat"
+                            }}
+                        />
+
+                        {/* Optional dark overlay for better text contrast */}
+                        <div className="absolute inset-0 bg-black/20" />
                         {/* Decorative background elements */}
                         <div className="absolute inset-0 overflow-hidden">
                             <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
