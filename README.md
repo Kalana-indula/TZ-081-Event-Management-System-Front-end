@@ -18,10 +18,10 @@ Developed using React.js for the frontend, Node.js for the backend, and MySQL fo
 # UI Of the system
 
 <img width="1755" height="802" alt="image" src="https://github.com/user-attachments/assets/e6bb3e98-daa4-4355-ba61-e63a751d8330" />
-<img width="1905" height="888" alt="image" src="https://github.com/user-attachments/assets/62fa6320-1650-4f15-b3be-f918ba84a810" />
-<img width="1911" height="879" alt="image" src="https://github.com/user-attachments/assets/54ef7057-8af8-4ceb-af51-7b230a124bc1" />
-<img width="1899" height="891" alt="image" src="https://github.com/user-attachments/assets/df078a83-c450-40dc-84f0-d3d88a609077" />
-<img width="1906" height="832" alt="image" src="https://github.com/user-attachments/assets/d1fefe3c-eae3-40dc-a366-394033a1b129" />
+<img width="1755" height="987" alt="image" src="https://github.com/user-attachments/assets/b6d1dff9-1c85-4d40-befb-0057b90d015d" />
+<img width="1755" height="987" alt="image" src="https://github.com/user-attachments/assets/88055c3a-2d42-44ed-a1f4-bebd2f1bb4e9" />
+<img width="1755" height="987" alt="image" src="https://github.com/user-attachments/assets/37dc4311-f101-4386-94e8-5973cd625e5b" />
+<img width="1755" height="987" alt="image" src="https://github.com/user-attachments/assets/ae6a86ba-31ca-4ae6-81e3-e8eb1ccb58cd" />
 
 ## UI walkthrough video
 https://youtu.be/SEDoVyToiVs
